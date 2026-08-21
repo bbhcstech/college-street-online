@@ -41,7 +41,8 @@ class CheckoutController extends Controller
         $items = Cart::with('book')->where('customer_id', auth()->id())->get();
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
 
-        $coupon = $data['coupon_code'] ? Coupon::where('code', $data['coupon_code'])->first() : null;
+        $couponCode = $data['coupon_code'] ?? null;
+        $coupon = $couponCode ? Coupon::where('code', $couponCode)->first() : null;
         $quote = $pricing->quote($items, $data['country'] ?? 'IN', $coupon);
 
         $order = DB::transaction(function () use ($data, $items, $quote, $coupon, $inventoryService) {
