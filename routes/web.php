@@ -38,6 +38,8 @@ Route::middleware('role:customer')->group(function () {
 Route::prefix('publisher')->name('publisher.')->group(function () {
     Route::get('/login', [PublisherAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [PublisherAuthController::class, 'login'])->name('login.submit');
+    Route::get('/register', [PublisherAuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [PublisherAuthController::class, 'register'])->name('register.submit');
     Route::post('/logout', [PublisherAuthController::class, 'logout'])->name('logout');
 
     Route::middleware('role:publisher')->group(function () {
@@ -63,6 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/publishers', [Admin\PublisherController::class, 'store'])->name('publishers.store');
         Route::get('/publishers/{publisher}/edit', [Admin\PublisherController::class, 'edit'])->name('publishers.edit');
         Route::put('/publishers/{publisher}', [Admin\PublisherController::class, 'update'])->name('publishers.update');
+        Route::patch('/publishers/{publisher}/approval', [Admin\PublisherController::class, 'updateApproval'])->name('publishers.approval');
         Route::delete('/publishers/{publisher}', [Admin\PublisherController::class, 'destroy'])->name('publishers.destroy');
 
         Route::get('/books', [Admin\BookController::class, 'index'])->name('books.index');

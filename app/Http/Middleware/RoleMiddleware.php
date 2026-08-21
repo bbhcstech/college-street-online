@@ -24,7 +24,11 @@ class RoleMiddleware
         }
         if (Auth::user()->status !== 'active') {
             Auth::logout();
-            return redirect()->route('account.login')->withErrors(['email' => 'Your account has been suspended.']);
+            return redirect()->route($guardRoute)->withErrors(['email' => 'Your account has been suspended.']);
+        }
+        if ($role === 'publisher' && Auth::user()->publisher?->approval_status !== 'approved') {
+            Auth::logout();
+            return redirect()->route('publisher.login')->withErrors(['email' => 'Your publisher account is not approved.']);
         }
         return $next($request);
     }

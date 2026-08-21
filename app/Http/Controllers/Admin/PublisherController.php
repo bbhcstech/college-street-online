@@ -70,4 +70,12 @@ class PublisherController extends Controller
         $publisher->user()->delete(); // cascades to publisher via FK
         return back()->with('success', 'Publisher removed.');
     }
+
+    public function updateApproval(Request $request, Publisher $publisher)
+    {
+        $data = $request->validate(['approval_status' => 'required|in:approved,rejected']);
+        $publisher->update(['approval_status' => $data['approval_status']]);
+
+        return back()->with('success', 'Publisher application ' . $data['approval_status'] . '.');
+    }
 }
