@@ -12,6 +12,8 @@ class CustomerAuthController extends Controller
 {
     public function showLogin() { return view('pages.account-login'); }
 
+    public function showRegister() { return view('pages.account-register'); }
+
     public function login(Request $request)
     {
         $creds = $request->validate(['email' => 'required|email', 'password' => 'required']);

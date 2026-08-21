@@ -22,6 +22,7 @@ Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'uns
 // Customer auth
 Route::get('/login', [CustomerAuthController::class, 'showLogin'])->name('account.login');
 Route::post('/login', [CustomerAuthController::class, 'login'])->name('account.login.submit');
+Route::get('/register', [CustomerAuthController::class, 'showRegister'])->name('account.register.form');
 Route::post('/register', [CustomerAuthController::class, 'register'])->name('account.register');
 Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('account.logout');
 
