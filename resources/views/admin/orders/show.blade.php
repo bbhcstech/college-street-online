@@ -6,8 +6,8 @@
 @section('title', 'Order #CSO' . $order->id)
 @section('nav')@include('admin.partials.nav', ['active' => 'orders'])@endsection
 @section('content')
-<div class="a-grid" style="grid-template-columns:1.6fr 1fr;align-items:start;">
-<div>
+<div class="a-grid" style="grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);align-items:start;">
+<div style="min-width:0;">
 <div class="a-card">
     <h3 style="margin-top:0;">Items</h3>
     <table class="a-table"><thead><tr><th>Book</th><th>Qty</th><th>Unit Price</th></tr></thead><tbody>
@@ -39,7 +39,7 @@
     </tbody></table>
 </div>
 </div>
-<div>
+<div style="min-width:0;">
 <div class="a-card">
     <h3 style="margin-top:0;">Customer</h3>
     <p>{{ $order->customer->name ?? '—' }}<br>{{ $order->customer->email ?? '' }}</p>
@@ -50,6 +50,21 @@
     <h3 style="margin-top:0;">Payment</h3>
     <p>UTR: <strong>{{ $order->payment->utr_number }}</strong></p>
     <p>Status: <span class="badge {{ $order->payment->verified_status==='verified'?'badge-success':'badge-gold' }}">{{ ucfirst($order->payment->verified_status) }}</span></p>
+    @if($order->payment->proof_url)
+        @php($proofExtension = strtolower(pathinfo($order->payment->proof_url, PATHINFO_EXTENSION)))
+        <div style="margin:14px 0;max-width:100%;overflow:hidden;">
+            <strong>Payment Proof</strong>
+            @if(in_array($proofExtension, ['jpg', 'jpeg', 'png']))
+                <a href="{{ route('admin.payments.proof', $order->payment) }}" target="_blank" rel="noopener">
+                    <img src="{{ route('admin.payments.proof', $order->payment) }}" alt="Payment proof" style="display:block;width:100%;max-width:100%;height:220px;object-fit:contain;margin-top:8px;border:1px solid var(--a-border);border-radius:8px;box-sizing:border-box;">
+                </a>
+            @else
+                <a href="{{ route('admin.payments.proof', $order->payment) }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="margin-top:8px;">View Payment Proof</a>
+            @endif
+        </div>
+    @else
+        <p style="color:var(--a-text-muted);">No payment proof uploaded.</p>
+    @endif
     @if($order->payment->verified_status === 'pending')
     <form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}" class="flex gap-2">
         @csrf @method('PATCH')

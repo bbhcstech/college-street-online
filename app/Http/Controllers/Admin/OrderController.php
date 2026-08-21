@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -40,5 +41,12 @@ class OrderController extends Controller
             $payment->order->transitionTo('confirmed', auth()->id());
         }
         return back()->with('success', 'Payment ' . $data['decision'] . '.');
+    }
+
+    public function paymentProof(Payment $payment)
+    {
+        abort_unless($payment->proof_url && Storage::disk('public')->exists($payment->proof_url), 404);
+
+        return response()->file(Storage::disk('public')->path($payment->proof_url));
     }
 }

@@ -21,12 +21,6 @@ class CheckoutController extends Controller
         return view('pages.checkout', compact('items', 'quote'));
     }
 
-    /**
-     * FR-6/FR-7: totals are always recomputed server-side here via
-     * PricingService — never trusted from client-submitted values — and
-     * the order starts pending_payment until an admin manually verifies
-     * the UTR (FR-7: no gateway integration yet, see SRS Section 10.2).
-     */
     public function store(Request $request, PricingService $pricing, InventoryService $inventoryService)
     {
         $data = $request->validate([

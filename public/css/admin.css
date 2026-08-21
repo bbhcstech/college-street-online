@@ -109,7 +109,6 @@ table.a-table, table.a-table tbody tr, .badge, .btn, .a-input, .a-textarea, .a-s
     background: radial-gradient(circle at 15% 0%, #2B5D85 0%, #0E2740 45%, #081726 100%);
     color: #fff;
     padding: 24px 16px 32px;
-    position: relative;
 }
 .admin-sidebar::before {
     content: '';

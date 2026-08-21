@@ -89,6 +89,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
         Route::patch('/payments/{payment}/verify', [Admin\OrderController::class, 'verifyPayment'])->name('payments.verify');
+        Route::get('/payments/{payment}/proof', [Admin\OrderController::class, 'paymentProof'])->name('payments.proof');
 
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
         Route::get('/newsletter/export', [Admin\NewsletterController::class, 'export'])->name('newsletter.export');
