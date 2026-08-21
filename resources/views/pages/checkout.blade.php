@@ -32,7 +32,17 @@
                     <div class="summary-line"><span>Subtotal</span><span>&#8377;{{ number_format($quote['subtotal'], 0) }}</span></div>
                     <div class="summary-line"><span>Shipping</span><span>{{ $quote['shipping'] == 0 ? 'Free' : '₹'.number_format($quote['shipping'],0) }}</span></div>
                     <div class="summary-line"><span>Platform Fee</span><span>&#8377;{{ number_format($quote['platformFee'], 0) }}</span></div>
+                    @if($quote['discount'] > 0)
+                        <div class="summary-line"><span>Discount</span><span>&minus;&#8377;{{ number_format($quote['discount'], 0) }}</span></div>
+                    @endif
                     <div class="summary-line total"><span>Total</span><span>&#8377;{{ number_format($quote['total'], 0) }}</span></div>
+                    <div class="form-group" style="margin-top:16px;">
+                        <label>Coupon Code</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" name="coupon_code" value="{{ old('coupon_code', $appliedCoupon?->code) }}" class="form-control" placeholder="Enter coupon code">
+                            <button type="submit" formaction="{{ route('checkout.coupon') }}" formmethod="POST" formnovalidate class="btn btn-outline">Apply</button>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width:100%;margin-top:16px;">Place Order</button>
                     <p style="font-size:0.74rem;color:var(--text-secondary);margin-top:10px;">Your order will show as Pending Payment until our team verifies your UTR.</p>
                 </div>

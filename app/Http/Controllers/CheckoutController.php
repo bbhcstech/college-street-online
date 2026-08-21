@@ -13,12 +13,33 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    public function index(PricingService $pricing)
+    public function index(Request $request, PricingService $pricing)
     {
         $items = Cart::with('book')->where('customer_id', auth()->id())->get();
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
-        $quote = $pricing->quote($items, 'IN');
-        return view('pages.checkout', compact('items', 'quote'));
+        $couponCode = $request->session()->get('checkout_coupon');
+        $appliedCoupon = $couponCode ? Coupon::where('code', $couponCode)->first() : null;
+        $quote = $pricing->quote($items, 'IN', $appliedCoupon);
+        return view('pages.checkout', compact('items', 'quote', 'appliedCoupon'));
+    }
+
+    public function applyCoupon(Request $request, PricingService $pricing)
+    {
+        $data = $request->validate(['coupon_code' => 'required|string|max:40']);
+        $items = Cart::with('book')->where('customer_id', auth()->id())->get();
+        abort_if($items->isEmpty(), 404, 'Your cart is empty.');
+
+        $code = strtoupper(trim($data['coupon_code']));
+        $coupon = Coupon::where('code', $code)->first();
+        $subtotal = $pricing->quote($items)['subtotal'];
+
+        if (! $coupon || ! $coupon->isValidFor($subtotal)) {
+            $request->session()->forget('checkout_coupon');
+            return back()->withErrors(['coupon_code' => 'This coupon is invalid, expired, or not applicable.']);
+        }
+
+        $request->session()->put('checkout_coupon', $coupon->code);
+        return back()->with('success', 'Coupon applied successfully.');
     }
 
     public function store(Request $request, PricingService $pricing, InventoryService $inventoryService)
@@ -78,6 +99,8 @@ class CheckoutController extends Controller
             Cart::where('customer_id', auth()->id())->delete();
             return $order;
         });
+
+        $request->session()->forget('checkout_coupon');
 
         return redirect()->route('account.orders')->with('success', "Order #{$order->id} placed! We'll confirm once your payment is verified.");
     }

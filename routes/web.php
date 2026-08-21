@@ -5,11 +5,7 @@ use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Public / Customer routes
-|--------------------------------------------------------------------------
-*/
+//CUSTOMER ROUTES
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
@@ -33,15 +29,12 @@ Route::middleware('role:customer')->group(function () {
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.coupon');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Publisher routes
-|--------------------------------------------------------------------------
-*/
+//PUBLISHER ROUTES
 Route::prefix('publisher')->name('publisher.')->group(function () {
     Route::get('/login', [PublisherAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [PublisherAuthController::class, 'login'])->name('login.submit');
@@ -56,11 +49,7 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin routes
-|--------------------------------------------------------------------------
-*/
+//ADMIN ROUTES
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
