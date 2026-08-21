@@ -1,0 +1,42 @@
+<?php
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Publisher;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class PublisherController extends Controller
+{
+    public function index()
+    {
+        $publishers = Publisher::with('user')->withCount('books')->latest()->paginate(15);
+        return view('admin.publishers.index', compact('publishers'));
+    }
+
+    public function create() { return view('admin.publishers.form'); }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'business_name' => 'required|string|max:200',
+            'contact_details' => 'nullable|string',
+        ]);
+        $user = User::create([
+            'name' => $data['name'], 'email' => $data['email'],
+            'password' => Hash::make($data['password']), 'role' => 'publisher',
+        ]);
+        Publisher::create(['user_id' => $user->id, 'business_name' => $data['business_name'], 'contact_details' => $data['contact_details'] ?? null]);
+        return redirect()->route('admin.publishers.index')->with('success', 'Publisher created.');
+    }
+
+    public function destroy(Publisher $publisher)
+    {
+        $publisher->user()->delete(); // cascades to publisher via FK
+        return back()->with('success', 'Publisher removed.');
+    }
+}
