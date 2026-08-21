@@ -6,6 +6,7 @@ use App\Models\Publisher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class PublisherController extends Controller
 {
@@ -32,6 +33,36 @@ class PublisherController extends Controller
         ]);
         Publisher::create(['user_id' => $user->id, 'business_name' => $data['business_name'], 'contact_details' => $data['contact_details'] ?? null]);
         return redirect()->route('admin.publishers.index')->with('success', 'Publisher created.');
+    }
+
+    public function edit(Publisher $publisher)
+    {
+        $publisher->load('user');
+        return view('admin.publishers.form', compact('publisher'));
+    }
+
+    public function update(Request $request, Publisher $publisher)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($publisher->user_id)],
+            'password' => 'nullable|string|min:8',
+            'business_name' => 'required|string|max:200',
+            'contact_details' => 'nullable|string',
+        ]);
+
+        $userData = ['name' => $data['name'], 'email' => $data['email']];
+        if (! empty($data['password'])) {
+            $userData['password'] = Hash::make($data['password']);
+        }
+
+        $publisher->user->update($userData);
+        $publisher->update([
+            'business_name' => $data['business_name'],
+            'contact_details' => $data['contact_details'] ?? null,
+        ]);
+
+        return redirect()->route('admin.publishers.index')->with('success', 'Publisher updated.');
     }
 
     public function destroy(Publisher $publisher)

@@ -12,7 +12,7 @@
     @forelse($publishers as $p)
         <tr>
             <td>{{ $p->business_name }}</td><td>{{ $p->user->email ?? '—' }}</td><td>{{ $p->books_count }}</td>
-            <td><form method="POST" action="{{ route('admin.publishers.destroy', $p) }}" onsubmit="return confirm('Remove this publisher?');">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Remove</button></form></td>
+            <td><div class="flex gap-2"><a href="{{ route('admin.publishers.edit', $p) }}" class="btn btn-outline btn-sm">Edit</a><form method="POST" action="{{ route('admin.publishers.destroy', $p) }}" onsubmit="return confirm('Remove this publisher?');">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Remove</button></form></div></td>
         </tr>
     @empty
         <tr><td colspan="4">No publishers yet.</td></tr>
