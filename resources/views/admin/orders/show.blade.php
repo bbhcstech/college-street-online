@@ -12,7 +12,7 @@
     <h3 style="margin-top:0;">Items</h3>
     <table class="a-table"><thead><tr><th>Book</th><th>Qty</th><th>Unit Price</th></tr></thead><tbody>
     @foreach($order->items as $item)
-        <tr><td>{{ $item->book->title }}</td><td>{{ $item->quantity }}</td><td>&#8377;{{ number_format($item->unit_price,0) }}</td></tr>
+        <tr><td>{{ $item->book?->title ?? 'Book unavailable' }}</td><td>{{ $item->quantity }}</td><td>&#8377;{{ number_format($item->unit_price,0) }}</td></tr>
     @endforeach
     </tbody></table>
 </div>
