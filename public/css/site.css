@@ -208,6 +208,21 @@ html.dark .mega-cta-text a { color: var(--accent-gold-light); }
 html.dark .dropdown-panel a:hover { color: var(--accent-gold-light); }
 
 .header-actions { display: flex; align-items: center; gap: 12px; }
+.auth-portal { position: relative; }
+.auth-portal summary { list-style: none; }
+.auth-portal summary::-webkit-details-marker { display: none; }
+.auth-portal-button { background-color: var(--brand-primary); color: #fff; white-space: nowrap; }
+.auth-portal-button:hover { background-color: var(--brand-primary-light); transform: translateY(-1px); }
+.auth-portal-menu {
+    position: absolute; right: 0; top: calc(100% + 10px); z-index: 50;
+    min-width: 190px; padding: 8px; border-radius: 12px;
+    background-color: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+}
+.auth-portal-menu a {
+    display: block; padding: 10px 12px; border-radius: 8px;
+    color: var(--text-primary); font-family: var(--font-heading); font-weight: 600; font-size: 0.86rem;
+}
+.auth-portal-menu a:hover { background-color: var(--surface-alt); color: var(--brand-primary); }
 .header-cta { display: inline-flex; }
 @media (max-width: 560px) { .header-cta { display: none; } }
 

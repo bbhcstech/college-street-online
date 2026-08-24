@@ -23,9 +23,11 @@
             </ul></div>
             <div><h4>Company</h4><ul style="display:flex;flex-direction:column;gap:10px;">
                 <li><a href="{{ route('about') }}">About Us</a></li>
-                <li><a href="{{ route('publisher.login') }}">Sell With Us</a></li>
-                <li><a href="{{ route('account.login') }}">My Account</a></li>
-                <li><a href="{{ route('admin.login') }}">Admin Login</a></li>
+                <li><a href="{{ route('publisher.register') }}">Sell With Us</a></li>
+                <li style="margin-top:6px;"><strong style="color:#fff;">Login Portals</strong></li>
+                <li><a href="{{ route('account.login') }}" style="color:var(--accent-gold-light);font-weight:700;">Customer Login</a></li>
+                <li><a href="{{ route('publisher.login') }}" style="color:var(--accent-gold-light);font-weight:700;">Publisher Login</a></li>
+                <li><a href="{{ route('admin.login') }}" style="color:var(--accent-gold-light);font-weight:700;">Admin Login</a></li>
             </ul></div>
             <div><h4>Get in Touch</h4><ul style="display:flex;flex-direction:column;gap:10px;">
                 <li>College Street, Kolkata, West Bengal, India</li>

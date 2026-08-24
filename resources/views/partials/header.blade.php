@@ -3,23 +3,6 @@
         ? \App\Models\Cart::where('customer_id', auth()->id())->sum('quantity')
         : 0;
 @endphp
-<div class="utility-bar">
-    <div class="container">
-        <div class="utility-left"><a href="tel:+919230653975">Free shipping in India above &#8377;499</a></div>
-        <div class="utility-right">
-            <a href="{{ route('publisher.login') }}">Sell on College Street Online</a>
-            @auth
-                @if(auth()->user()->role === 'customer')
-                    <a href="{{ route('account.orders') }}">My Orders</a>
-                    <form method="POST" action="{{ route('account.logout') }}" style="display:inline;">@csrf<button type="submit" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Logout</button></form>
-                @endif
-            @else
-                <a href="{{ route('account.login') }}">Login</a>
-            @endauth
-        </div>
-    </div>
-</div>
-
 <header class="site-header">
     <div class="container header-inner">
         <a href="{{ route('home') }}" class="brand">
@@ -36,6 +19,14 @@
             <a href="{{ route('account.login') }}" class="icon-btn-nav" aria-label="Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
             <a href="{{ route('cart.index') }}" class="icon-btn-nav" aria-label="Cart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>@if($cartCount)<span class="cart-count">{{ $cartCount }}</span>@endif</a>
             <a href="{{ route('books.index') }}" class="btn btn-gold header-cta">Shop Now</a>
+            <details class="auth-portal">
+                <summary class="btn auth-portal-button">Login Portal</summary>
+                <div class="auth-portal-menu">
+                    <a href="{{ route('account.login') }}">Customer Login</a>
+                    <a href="{{ route('publisher.login') }}">Publisher Login</a>
+                    <a href="{{ route('admin.login') }}">Admin Login</a>
+                </div>
+            </details>
             <button type="button" class="hamburger" data-hamburger aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         </div>
     </div>
