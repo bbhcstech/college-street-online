@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Publisher;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -67,7 +68,18 @@ class PublisherController extends Controller
 
     public function destroy(Publisher $publisher)
     {
-        $publisher->user()->delete(); // cascades to publisher via FK
+        try {
+            $publisher->user()->delete(); // cascades to publisher via FK
+        } catch (QueryException $exception) {
+            if ($exception->getCode() === '23000') {
+                return back()->withErrors([
+                    'publisher' => 'This publisher cannot be deleted because their books are linked to existing orders.',
+                ]);
+            }
+
+            throw $exception;
+        }
+
         return back()->with('success', 'Publisher removed.');
     }
 
