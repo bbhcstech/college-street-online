@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController};
+use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
@@ -32,6 +32,9 @@ Route::middleware('role:customer')->group(function () {
     Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.coupon');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('/account/profile', [ProfileController::class, 'customerEdit'])->name('account.profile');
+    Route::put('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
+    Route::put('/account/password', [ProfileController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/books/{book}/reviews', [BookReviewController::class, 'store'])->name('books.reviews.store');
 });
 
@@ -45,6 +48,9 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
 
     Route::middleware('role:publisher')->group(function () {
         Route::get('/dashboard', [Pub\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [ProfileController::class, 'publisherEdit'])->name('profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
         Route::resource('books', Pub\BookController::class)->except('show');
         Route::get('/inventory', [Pub\InventoryController::class, 'index'])->name('inventory.index');
         Route::post('/inventory/{book}/restock', [Pub\InventoryController::class, 'restock'])->name('inventory.restock');
@@ -63,6 +69,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [ProfileController::class, 'adminEdit'])->name('profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');

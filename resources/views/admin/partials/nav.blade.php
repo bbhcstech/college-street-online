@@ -1,6 +1,7 @@
 <div class="nav-group"><div class="nav-group-title">Overview</div>
     <a href="{{ route('admin.dashboard') }}" class="nav-link {{ $active === 'dashboard' ? 'active' : '' }}"><span class="nav-icon">&#9635;</span><span>Dashboard</span></a>
     <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ $active === 'analytics' ? 'active' : '' }}"><span class="nav-icon">&#128200;</span><span>Analytics &amp; Reports</span></a>
+    <a href="{{ route('admin.profile.edit') }}" class="nav-link {{ $active === 'profile' ? 'active' : '' }}"><span class="nav-icon">&#128100;</span><span>My Profile</span></a>
 </div>
 <div class="nav-group"><div class="nav-group-title">Marketplace</div>
     <a href="{{ route('admin.publishers.index') }}" class="nav-link {{ $active === 'publishers' ? 'active' : '' }}"><span class="nav-icon">&#128100;</span><span>Publishers</span></a>

@@ -26,7 +26,8 @@
             <div class="topbar-actions">
                 <button type="button" class="admin-theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span class="knob"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></span></button>
                 <a href="{{ route('home') }}" target="_blank" class="btn btn-outline btn-sm">View Site &#8599;</a>
-                <div class="user-chip"><div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div><div class="meta"><strong>{{ auth()->user()->name ?? 'User' }}</strong><span>{{ $crumb ?? '' }}</span></div></div>
+                @php($profileRoute = auth()->user()?->isAdmin() ? route('admin.profile.edit') : route('publisher.profile.edit'))
+                <a href="{{ $profileRoute }}" class="user-chip"><div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div><div class="meta"><strong>{{ auth()->user()->name ?? 'User' }}</strong><span>Profile</span></div></a>
                 <form method="POST" action="{{ $logoutRoute }}">@csrf<button type="submit" class="btn btn-outline btn-sm">Logout</button></form>
             </div>
         </div>
