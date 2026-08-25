@@ -1,8 +1,22 @@
 @extends('layouts.dashboard')
-@php($homeRoute = route('admin.dashboard'))
-@php($brandLabel = 'Admin Console')
-@php($crumb = 'Operations')
-@php($logoutRoute = route('admin.logout'))
+@php
+    $homeRoute = route('admin.dashboard');
+    $brandLabel = 'Admin Console';
+    $crumb = 'Operations';
+    $logoutRoute = route('admin.logout');
+    $statusBadgeClasses = [
+        'pending_payment' => 'badge-gold',
+        'confirmed' => 'badge-info',
+        'processing' => 'badge-purple',
+        'packed' => 'badge-orange',
+        'shipped' => 'badge-blue',
+        'delivered' => 'badge-success',
+        'completed' => 'badge-success',
+        'cancelled' => 'badge-danger',
+        'return_requested' => 'badge-orange',
+        'returned' => 'badge-muted',
+    ];
+@endphp
 @section('title', 'All Orders')
 @section('nav')@include('admin.partials.nav', ['active' => 'orders'])@endsection
 @section('content')
@@ -11,7 +25,7 @@
     @forelse($orders as $order)
         <tr>
             <td>#CSO{{ $order->id }}</td><td>{{ $order->customer->name ?? '—' }}</td><td>&#8377;{{ number_format($order->total_amount,0) }}</td>
-            <td><span class="badge badge-success">{{ ucfirst(str_replace('_',' ',$order->status)) }}</span></td>
+            <td><span class="badge {{ $statusBadgeClasses[$order->status] ?? 'badge-muted' }}">{{ ucfirst(str_replace('_',' ',$order->status)) }}</span></td>
             <td><a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-sm">View</a></td>
         </tr>
     @empty

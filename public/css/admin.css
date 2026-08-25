@@ -264,6 +264,14 @@ html.dark .btn-outline:hover { border-color: var(--a-gold-light); color: var(--a
 .badge-gold { background: rgba(242,169,59,0.14); color: #C97F1B; }
 html.dark .badge-gold { color: var(--a-gold-light); }
 .badge-danger { background-color: var(--a-danger-bg); color: var(--a-danger); }
+.badge-info { background: rgba(43, 93, 133, 0.13); color: #2B5D85; }
+.badge-blue { background: rgba(38, 132, 190, 0.13); color: #237EAE; }
+.badge-purple { background: rgba(115, 82, 180, 0.13); color: #7352B4; }
+.badge-orange { background: rgba(224, 124, 45, 0.14); color: #C56824; }
+html.dark .badge-info { color: #8CB8DE; }
+html.dark .badge-blue { color: #72BCE6; }
+html.dark .badge-purple { color: #B69AE8; }
+html.dark .badge-orange { color: #F0A267; }
 
 /* ---------------- Tables ---------------- */
 table.a-table { width: 100%; border-collapse: collapse; }
