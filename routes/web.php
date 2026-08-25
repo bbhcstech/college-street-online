@@ -11,6 +11,7 @@ Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/bulk-orders', [PageController::class, 'bulkOrders'])->name('bulk-orders');
+Route::post('/bulk-orders', [PageController::class, 'storeBulkOrder'])->middleware('throttle:10,1')->name('bulk-orders.store');
 Route::get('/book-rights', [PageController::class, 'bookRights'])->name('book-rights');
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
@@ -107,6 +108,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/coupons/{coupon}', [Admin\CouponController::class, 'destroy'])->name('coupons.destroy');
 
         Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/bulk-orders', [Admin\BulkOrderController::class, 'index'])->name('bulk-orders.index');
+        Route::get('/bulk-orders/{bulkOrder}', [Admin\BulkOrderController::class, 'show'])->name('bulk-orders.show');
+        Route::put('/bulk-orders/{bulkOrder}', [Admin\BulkOrderController::class, 'update'])->name('bulk-orders.update');
         Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
         Route::patch('/payments/{payment}/verify', [Admin\OrderController::class, 'verifyPayment'])->name('payments.verify');

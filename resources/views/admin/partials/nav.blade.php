@@ -11,6 +11,7 @@
 </div>
 <div class="nav-group"><div class="nav-group-title">Operations</div>
     <a href="{{ route('admin.orders.index') }}" class="nav-link {{ $active === 'orders' ? 'active' : '' }}"><span class="nav-icon">&#128666;</span><span>All Orders</span></a>
+    <a href="{{ route('admin.bulk-orders.index') }}" class="nav-link {{ $active === 'bulk-orders' ? 'active' : '' }}"><span class="nav-icon">&#128203;</span><span>Bulk Requests</span></a>
     <a href="{{ route('admin.payment-settings.edit') }}" class="nav-link {{ $active === 'payment-settings' ? 'active' : '' }}"><span class="nav-icon">&#9638;</span><span>Payment QR</span></a>
 </div>
 <div class="nav-group"><div class="nav-group-title">Growth</div>
