@@ -33,6 +33,58 @@
         </div>
     </div>
 </section>
+<section class="section section-alt">
+    <div class="container" style="max-width:900px;">
+        @php($averageRating = $book->reviews->avg('rating'))
+        <div class="section-head">
+            <div>
+                <span class="eyebrow"><span class="dot"></span> Reader Feedback</span>
+                <h2>Reviews &amp; Ratings</h2>
+            </div>
+            <div class="review-average">
+                <strong>{{ $averageRating ? number_format($averageRating, 1) : '—' }}</strong>
+                <span class="review-stars">★★★★★</span>
+                <small>{{ $book->reviews->count() }} {{ Str::plural('review', $book->reviews->count()) }}</small>
+            </div>
+        </div>
+
+        @if($eligibleOrder)
+            <div class="card review-form-card">
+                <h3 style="margin-top:0;">Review your purchase</h3>
+                <form method="POST" action="{{ route('books.reviews.store', $book) }}">
+                    @csrf
+                    <input type="hidden" name="order_id" value="{{ $eligibleOrder->id }}">
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select name="rating" required class="form-control">
+                            <option value="">Choose a rating</option>
+                            @foreach([5 => '5 — Excellent', 4 => '4 — Good', 3 => '3 — Average', 2 => '2 — Fair', 1 => '1 — Poor'] as $value => $label)
+                                <option value="{{ $value }}" {{ old('rating') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Review (optional)</label><textarea name="review" maxlength="2000" class="form-control" style="min-height:100px;">{{ old('review') }}</textarea></div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        @endif
+
+        <div class="review-list">
+            @forelse($book->reviews->sortByDesc('created_at') as $review)
+                <article class="card review-card">
+                    <div class="review-card-head">
+                        <div><strong>{{ $review->customer->name }}</strong><small>Verified purchase</small></div>
+                        <span class="review-stars">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</span>
+                    </div>
+                    @if($review->review)<p>{{ $review->review }}</p>@endif
+                    <small>{{ $review->created_at->format('d M Y') }}</small>
+                </article>
+            @empty
+                <p style="color:var(--text-secondary);">No reviews yet. Delivered customers can be the first to review this book.</p>
+            @endforelse
+        </div>
+    </div>
+</section>
 @if($related->count())
 <section class="section section-alt">
     <div class="container">

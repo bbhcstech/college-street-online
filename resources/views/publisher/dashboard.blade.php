@@ -14,7 +14,7 @@
 @endsection
 @section('content')
 <div class="a-grid a-grid-4" style="margin-bottom:24px;">
-    <div class="stat-box"><div class="num">{{ $bookCount }}</div><div class="label">Books Listed</div></div>
+    <div class="stat-bx"><div class="num">{{ $bookCount }}</div><div class="label">Books Listed</div></div>
     <div class="stat-box"><div class="num">{{ $lowStockCount }}</div><div class="label">Low Stock Titles</div></div>
 </div>
 <div class="a-card">

@@ -594,4 +594,14 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .tracking-history div { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; font-size: 0.82rem; }
 .tracking-history span { color: var(--text-secondary); }
 .tracking-notice { color: var(--danger); font-weight: 600; }
+.review-average { display: grid; justify-items: end; }
+.review-average strong { font-family: var(--font-display); font-size: 2rem; }
+.review-average small, .review-card small { color: var(--text-secondary); }
+.review-stars { color: var(--accent-gold); letter-spacing: 2px; white-space: nowrap; }
+.review-form-card { margin-bottom: 20px; }
+.review-list { display: grid; gap: 14px; }
+.review-card { padding: 20px; }
+.review-card-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.review-card-head div { display: grid; gap: 3px; }
+.review-card p { margin-bottom: 8px; }
 @media (max-width: 767px) { .status-timeline { flex-direction: column; gap: 20px; align-items: flex-start; } .status-timeline::before { display: none; } .status-step { display: flex; align-items: center; gap: 12px; text-align: left; } .status-step .dot { margin: 0; } }

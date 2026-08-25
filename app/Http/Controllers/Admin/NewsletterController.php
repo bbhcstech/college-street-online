@@ -2,7 +2,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewsletterUpdateMail;
 use App\Models\NewsletterSubscriber;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterController extends Controller
@@ -23,5 +27,24 @@ class NewsletterController extends Controller
             }
             fclose($out);
         }, 'newsletter-subscribers.csv');
+    }
+
+    public function send(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'subject' => 'required|string|max:150',
+            'message' => 'required|string|max:10000',
+        ]);
+
+        $count = NewsletterSubscriber::count();
+        NewsletterSubscriber::query()->chunkById(100, function ($subscribers) use ($data) {
+            foreach ($subscribers as $subscriber) {
+                Mail::to($subscriber->email)->queue(
+                    new NewsletterUpdateMail($subscriber, $data['subject'], $data['message'])
+                );
+            }
+        });
+
+        return back()->with('success', "Newsletter queued for {$count} subscribers.");
     }
 }

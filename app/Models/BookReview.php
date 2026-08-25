@@ -9,4 +9,5 @@ class BookReview extends Model
 
     public function book() { return $this->belongsTo(Book::class); }
     public function customer() { return $this->belongsTo(User::class, 'customer_id'); }
+    public function order() { return $this->belongsTo(Order::class); }
 }

@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\BookReview;
 use App\Models\Category;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -30,7 +32,21 @@ class BookController extends Controller
     {
         $book->load(['author', 'category', 'publisher', 'inventory', 'reviews.customer']);
         $related = Book::active()->where('category_id', $book->category_id)->where('id', '!=', $book->id)->limit(4)->get();
+        $eligibleOrder = null;
 
-        return view('pages.book-detail', compact('book', 'related'));
+        if (auth()->check() && auth()->user()->isCustomer()) {
+            $reviewedOrderIds = BookReview::where('book_id', $book->id)
+                ->where('customer_id', auth()->id())
+                ->pluck('order_id');
+
+            $eligibleOrder = Order::where('customer_id', auth()->id())
+                ->whereIn('status', ['delivered', 'completed'])
+                ->whereHas('items', fn ($query) => $query->where('book_id', $book->id))
+                ->whereNotIn('id', $reviewedOrderIds)
+                ->latest()
+                ->first();
+        }
+
+        return view('pages.book-detail', compact('book', 'related', 'eligibleOrder'));
     }
 }

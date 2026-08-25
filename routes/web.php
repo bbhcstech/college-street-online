@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\{HomeController, BookController, CartController, CheckoutController, AccountController, NewsletterController, PageController};
+use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
@@ -32,6 +32,7 @@ Route::middleware('role:customer')->group(function () {
     Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.coupon');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::post('/books/{book}/reviews', [BookReviewController::class, 'store'])->name('books.reviews.store');
 });
 
 //PUBLISHER ROUTES
@@ -86,6 +87,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments/{payment}/proof', [Admin\OrderController::class, 'paymentProof'])->name('payments.proof');
 
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
+        Route::post('/newsletter/send', [Admin\NewsletterController::class, 'send'])->name('newsletter.send');
         Route::get('/newsletter/export', [Admin\NewsletterController::class, 'export'])->name('newsletter.export');
     });
 });
