@@ -586,4 +586,12 @@ html.dark .stock-pill.low { color: var(--accent-gold-light); }
 .status-step.current .dot { background-color: var(--brand-primary); border-color: var(--brand-primary); color: #fff; }
 html.dark .status-step.current .dot { background-color: var(--accent-gold); border-color: var(--accent-gold); color: #12242B; }
 .status-step .lbl { font-family: var(--font-heading); font-size: 0.76rem; color: var(--text-secondary); }
+.customer-tracking { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
+.customer-tracking summary { width: fit-content; color: var(--brand-primary); font-family: var(--font-heading); font-weight: 700; cursor: pointer; }
+.customer-status-timeline { min-width: 620px; }
+.customer-tracking[open] { overflow-x: auto; }
+.tracking-history { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px; min-width: 320px; }
+.tracking-history div { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; font-size: 0.82rem; }
+.tracking-history span { color: var(--text-secondary); }
+.tracking-notice { color: var(--danger); font-weight: 600; }
 @media (max-width: 767px) { .status-timeline { flex-direction: column; gap: 20px; align-items: flex-start; } .status-timeline::before { display: none; } .status-step { display: flex; align-items: center; gap: 12px; text-align: left; } .status-step .dot { margin: 0; } }
