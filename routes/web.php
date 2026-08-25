@@ -84,7 +84,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/categories', [Admin\CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [Admin\CategoryController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [Admin\CategoryController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{category}', [Admin\CategoryController::class, 'destroyCategory'])->name('categories.destroy');
         Route::post('/authors', [Admin\CategoryController::class, 'storeAuthor'])->name('authors.store');
+        Route::put('/authors/{author}', [Admin\CategoryController::class, 'updateAuthor'])->name('authors.update');
+        Route::delete('/authors/{author}', [Admin\CategoryController::class, 'destroyAuthor'])->name('authors.destroy');
 
         Route::get('/coupons', [Admin\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Admin\CouponController::class, 'store'])->name('coupons.store');
