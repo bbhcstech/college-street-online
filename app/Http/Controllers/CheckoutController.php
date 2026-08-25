@@ -25,7 +25,10 @@ class CheckoutController extends Controller
 
     public function applyCoupon(Request $request, PricingService $pricing)
     {
-        $data = $request->validate(['coupon_code' => 'required|string|max:40']);
+        $data = $request->validate([
+            'coupon_code' => 'required|string|max:40',
+            'country' => 'nullable|string|size:2',
+        ]);
         $items = Cart::with('book')->where('customer_id', auth()->id())->get();
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
 
@@ -35,10 +38,26 @@ class CheckoutController extends Controller
 
         if (! $coupon || ! $coupon->isValidFor($subtotal)) {
             $request->session()->forget('checkout_coupon');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'This coupon is invalid, expired, or not applicable.',
+                ], 422);
+            }
+
             return back()->withErrors(['coupon_code' => 'This coupon is invalid, expired, or not applicable.']);
         }
 
         $request->session()->put('checkout_coupon', $coupon->code);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Coupon applied successfully.',
+                'code' => $coupon->code,
+                'quote' => $pricing->quote($items, $data['country'] ?? 'IN', $coupon),
+            ]);
+        }
+
         return back()->with('success', 'Coupon applied successfully.');
     }
 
