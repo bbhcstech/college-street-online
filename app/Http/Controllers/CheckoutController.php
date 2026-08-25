@@ -6,6 +6,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Models\SiteSetting;
 use App\Services\InventoryService;
 use App\Services\PricingService;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class CheckoutController extends Controller
         $couponCode = $request->session()->get('checkout_coupon');
         $appliedCoupon = $couponCode ? Coupon::where('code', $couponCode)->first() : null;
         $quote = $pricing->quote($items, 'IN', $appliedCoupon);
-        return view('pages.checkout', compact('items', 'quote', 'appliedCoupon'));
+        $paymentQrUrl = SiteSetting::valueFor('payment_qr');
+        return view('pages.checkout', compact('items', 'quote', 'appliedCoupon', 'paymentQrUrl'));
     }
 
     public function applyCoupon(Request $request, PricingService $pricing)

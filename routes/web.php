@@ -64,6 +64,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
+        Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
 
         Route::get('/publishers', [Admin\PublisherController::class, 'index'])->name('publishers.index');
         Route::get('/publishers/create', [Admin\PublisherController::class, 'create'])->name('publishers.create');

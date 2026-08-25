@@ -20,6 +20,14 @@
                     <div class="card">
                         <h3 style="margin-top:0;">Payment &mdash; Manual Bank Transfer</h3>
                         <p style="font-size:0.88rem;">Transfer the order total, then upload your UTR so our team can verify and confirm your order.</p>
+                        @if($paymentQrUrl)
+                            <div style="display:flex;align-items:center;gap:20px;padding:16px;margin-bottom:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface-alt);">
+                                <img src="{{ $paymentQrUrl }}" alt="Scan to pay" style="width:160px;height:160px;object-fit:contain;padding:8px;background:#fff;border-radius:10px;">
+                                <div><strong>Scan to pay</strong><p style="margin:7px 0 0;font-size:.82rem;color:var(--text-secondary);">Pay the exact order total shown in the summary. Then enter the UTR and upload your payment proof.</p></div>
+                            </div>
+                        @else
+                            <div class="alert alert-danger">Online QR payment is currently unavailable. Please use the bank details below.</div>
+                        @endif
                         <div class="card" style="background-color:var(--surface-alt);padding:16px;"><p style="margin:0;font-size:0.85rem;"><strong>Account Name:</strong> College Street Online Pvt Ltd<br><strong>Account No:</strong> 0123 4567 8901<br><strong>IFSC:</strong> SBIN0001234</p></div>
                         <div class="grid grid-2" style="gap:14px;margin-top:14px;">
                             <div class="form-group"><label>UTR / Reference Number</label><input type="text" name="utr_number" required class="form-control"></div>

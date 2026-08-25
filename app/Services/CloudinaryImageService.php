@@ -10,9 +10,18 @@ class CloudinaryImageService
 {
     public function uploadBookCover(UploadedFile $file): array
     {
-        $cloudinary = $this->client();
-        $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
-            'folder' => config('services.cloudinary.folder'),
+        return $this->upload($file, config('services.cloudinary.folder'));
+    }
+
+    public function uploadPaymentQr(UploadedFile $file): array
+    {
+        return $this->upload($file, 'college-street-online/payment');
+    }
+
+    private function upload(UploadedFile $file, string $folder): array
+    {
+        $result = $this->client()->uploadApi()->upload($file->getRealPath(), [
+            'folder' => $folder,
             'resource_type' => 'image',
             'use_filename' => false,
             'unique_filename' => true,
