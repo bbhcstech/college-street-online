@@ -8,7 +8,11 @@
     <div class="container">
         <div class="grid grid-2" style="gap:48px;align-items:start;">
             <div class="reveal in-view">
-                <div class="book-cover" style="border-radius:var(--radius-lg);aspect-ratio:3/4;max-width:380px;"><div class="spine"></div><span class="title-mark" style="font-size:1.4rem;">{{ $book->title }}</span></div>
+                @if($book->cover_url)
+                    <div class="book-cover book-cover-uploaded" style="border-radius:var(--radius-lg);aspect-ratio:3/4;max-width:380px;"><img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="book-cover-image"></div>
+                @else
+                    <div class="book-cover" style="border-radius:var(--radius-lg);aspect-ratio:3/4;max-width:380px;"><div class="spine"></div><span class="title-mark" style="font-size:1.4rem;">{{ $book->title }}</span></div>
+                @endif
             </div>
             <div class="reveal in-view">
                 <span class="badge-tag-outline">{{ $book->category->name ?? 'General' }}</span>

@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use App\Services\TransliterationService;
 
 class Book extends Model
@@ -12,7 +13,7 @@ class Book extends Model
 
     protected $fillable = [
         'publisher_id', 'category_id', 'author_id', 'title', 'title_transliterated',
-        'isbn', 'price', 'mrp', 'description', 'cover_image_url', 'status',
+        'isbn', 'price', 'mrp', 'description', 'cover_image_url', 'cover_image_public_id', 'status',
     ];
     protected $casts = ['price' => 'decimal:2', 'mrp' => 'decimal:2'];
 
@@ -33,6 +34,15 @@ class Book extends Model
     public function inventory() { return $this->hasOne(Inventory::class); }
     public function inventoryTransactions() { return $this->hasMany(InventoryTransaction::class); }
     public function reviews() { return $this->hasMany(BookReview::class); }
+
+    public function getCoverUrlAttribute(): ?string
+    {
+        if (! $this->cover_image_url) return null;
+
+        return str_starts_with($this->cover_image_url, 'http')
+            ? $this->cover_image_url
+            : Storage::disk('public')->url($this->cover_image_url);
+    }
 
     public function scopeActive($q) { return $q->where('status', 'active'); }
 

@@ -551,6 +551,8 @@ html.dark .icon-btn-nav:hover { color: var(--accent-gold-light); border-color: v
 .book-card-body .price { font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: 1.2rem; color: var(--brand-primary); }
 html.dark .book-card-body .price { color: var(--accent-gold-light); }
 .book-card-body .price-strike { font-size: 0.8rem; color: var(--text-secondary); text-decoration: line-through; }
+.book-cover-uploaded { padding: 0; overflow: hidden; background: var(--surface-alt); }
+.book-cover-image { width: 100%; height: 100%; display: block; object-fit: cover; }
 .stock-pill { font-family: var(--font-heading); font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
 .stock-pill.in { background-color: rgba(31,157,108,0.12); color: var(--success); }
 .stock-pill.low { background-color: rgba(237,161,58,0.15); color: #B8791E; }

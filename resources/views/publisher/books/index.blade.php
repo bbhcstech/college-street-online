@@ -18,7 +18,16 @@
     <table class="a-table"><thead><tr><th>Title</th><th>ISBN</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>
     @forelse($books as $book)
         <tr>
-            <td>{{ $book->title }}</td><td>{{ $book->isbn }}</td><td>&#8377;{{ number_format($book->price,0) }}</td>
+            <td>
+                <div class="a-book-title">
+                    @if($book->cover_url)
+                        <img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="a-book-cover-thumb">
+                    @else
+                        <div class="a-book-cover-thumb a-book-cover-placeholder" aria-hidden="true">&#128214;</div>
+                    @endif
+                    <span>{{ $book->title }}</span>
+                </div>
+            </td><td>{{ $book->isbn }}</td><td>&#8377;{{ number_format($book->price,0) }}</td>
             <td>{{ $book->inventory->quantity ?? 0 }}</td>
             <td><span class="badge {{ $book->status === 'active' ? 'badge-success' : 'badge-muted' }}">{{ ucfirst($book->status) }}</span></td>
             <td class="flex gap-2">

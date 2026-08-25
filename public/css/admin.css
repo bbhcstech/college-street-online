@@ -272,6 +272,10 @@ table.a-table th { color: var(--a-text-muted); font-weight: 700; font-size: 0.72
 table.a-table tbody tr { transition: background-color 150ms ease; }
 table.a-table tbody tr:hover { background-color: var(--a-surface-alt); }
 table.a-table tbody tr:last-child td { border-bottom: none; }
+.a-book-title { display: flex; align-items: center; gap: 12px; min-width: 180px; }
+.a-book-title span { font-weight: 600; }
+.a-book-cover-thumb { width: 42px; height: 56px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; border: 1px solid var(--a-border); }
+.a-book-cover-placeholder { display: grid; place-items: center; background: var(--a-surface-alt); font-size: 1.15rem; }
 .table-avatar-row { display: flex; align-items: center; gap: 10px; }
 .mini-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--a-primary), var(--a-primary-light)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 700; font-size: 0.72rem; flex-shrink: 0; }
 

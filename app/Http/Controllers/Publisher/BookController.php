@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Publisher;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Inventory;
+use App\Services\CloudinaryImageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -17,15 +20,28 @@ class BookController extends Controller
     public function create() { return view('publisher.books.form', ['book' => new Book()]); }
 
     /** FR-2: ISBN validated for format/uniqueness; cover image validated by MIME/size before storage. */
-    public function store(Request $request)
+    public function store(Request $request, CloudinaryImageService $images)
     {
         $data = $this->validated($request);
+        unset($data['cover_image']);
         $data['publisher_id'] = auth()->user()->publisher->id;
+        $cover = null;
         if ($request->hasFile('cover_image')) {
-            $data['cover_image_url'] = $request->file('cover_image')->store('covers', 'public');
+            $cover = $images->uploadBookCover($request->file('cover_image'));
+            $data['cover_image_url'] = $cover['url'];
+            $data['cover_image_public_id'] = $cover['public_id'];
         }
-        $book = Book::create($data);
-        Inventory::create(['book_id' => $book->id, 'quantity' => (int) $request->input('initial_stock', 0)]);
+
+        try {
+            DB::transaction(function () use ($data, $request) {
+                $book = Book::create($data);
+                Inventory::create(['book_id' => $book->id, 'quantity' => (int) $request->input('initial_stock', 0)]);
+            });
+        } catch (\Throwable $exception) {
+            if ($cover) $images->delete($cover['public_id']);
+            throw $exception;
+        }
+
         return redirect()->route('publisher.books.index')->with('success', 'Book added.');
     }
 
@@ -35,10 +51,39 @@ class BookController extends Controller
         return view('publisher.books.form', compact('book'));
     }
 
-    public function update(Request $request, Book $book)
+    public function update(Request $request, Book $book, CloudinaryImageService $images)
     {
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
-        $book->update($this->validated($request, $book->id));
+        $data = $this->validated($request, $book->id);
+        unset($data['cover_image']);
+
+        if ($request->hasFile('cover_image')) {
+            $oldUrl = $book->cover_image_url;
+            $oldPublicId = $book->cover_image_public_id;
+            $cover = $images->uploadBookCover($request->file('cover_image'));
+            $data['cover_image_url'] = $cover['url'];
+            $data['cover_image_public_id'] = $cover['public_id'];
+
+            try {
+                $book->update($data);
+            } catch (\Throwable $exception) {
+                $images->delete($cover['public_id']);
+                throw $exception;
+            }
+
+            try {
+                if ($oldPublicId) {
+                    $images->delete($oldPublicId);
+                } elseif ($oldUrl && ! str_starts_with($oldUrl, 'http')) {
+                    Storage::disk('public')->delete($oldUrl);
+                }
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        } else {
+            $book->update($data);
+        }
+
         return redirect()->route('publisher.books.index')->with('success', 'Book updated.');
     }
 
@@ -60,6 +105,7 @@ class BookController extends Controller
             'price' => 'required|numeric|min:0',
             'mrp' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'status' => 'nullable|in:active,inactive',
         ]);
     }
