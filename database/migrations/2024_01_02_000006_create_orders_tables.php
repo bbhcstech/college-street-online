@@ -37,7 +37,7 @@ return new class extends Migration {
         // FR-8 fix: every status transition is written here (actor, from, to,
         // timestamp) instead of only overwriting orders.status, so support
         // staff have an auditable timeline.
-        Schema::create('order_status_history', function (Blueprint $table) {
+        Schema::create('order_status_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
             $table->string('from_status', 30)->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration {
         });
     }
     public function down(): void {
-        Schema::dropIfExists('order_status_history');
+        Schema::dropIfExists('order_status_histories');
         Schema::dropIfExists('order_items');
         Schema::dropIfExists('orders');
     }

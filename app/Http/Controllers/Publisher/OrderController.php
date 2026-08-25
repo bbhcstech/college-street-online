@@ -47,6 +47,18 @@ class OrderController extends Controller
                 'to_status' => $data['status'],
                 'changed_by' => auth()->id(),
             ]);
+
+            $order = $orderItem->order()->with('items')->lockForUpdate()->first();
+            $levels = ['pending' => 0, 'processing' => 1, 'packed' => 2, 'shipped' => 3];
+            $lowestItemLevel = $order->items->min(fn ($item) => $levels[$item->fulfillment_status] ?? 0);
+            $syncedStatus = [1 => 'processing', 2 => 'packed', 3 => 'shipped'][$lowestItemLevel] ?? null;
+            $overallLevels = ['confirmed' => 0, 'processing' => 1, 'packed' => 2, 'shipped' => 3];
+
+            if ($syncedStatus
+                && isset($overallLevels[$order->status])
+                && $overallLevels[$syncedStatus] > $overallLevels[$order->status]) {
+                $order->transitionTo($syncedStatus, auth()->id());
+            }
         });
 
         return back()->with('success', 'Item status updated.');
