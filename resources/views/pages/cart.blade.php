@@ -13,7 +13,14 @@
                 <table class="cart-table">
                     @foreach($items as $item)
                     <tr>
-                        <td><div class="cart-row-book"><div class="cart-thumb"></div><div><strong>{{ $item->book->title }}</strong><div style="font-size:0.8rem;color:var(--text-secondary);">{{ $item->book->author->name ?? '' }}</div></div></div></td>
+                        <td><div class="cart-row-book">
+                            @if($item->book->cover_url)
+                                <img src="{{ $item->book->cover_url }}" alt="{{ $item->book->title }} cover" class="cart-thumb" style="object-fit:cover;">
+                            @else
+                                <div class="cart-thumb" aria-hidden="true"></div>
+                            @endif
+                            <div><strong>{{ $item->book->title }}</strong><div style="font-size:0.8rem;color:var(--text-secondary);">{{ $item->book->author->name ?? '' }}</div></div>
+                        </div></td>
                         <td>
                             <form method="POST" action="{{ route('cart.update', $item) }}" class="qty-stepper" data-cart-quantity-form>
                                 @csrf @method('PATCH')

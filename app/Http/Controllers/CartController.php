@@ -10,7 +10,7 @@ class CartController extends Controller
 {
     public function index(PricingService $pricing)
     {
-        $items = Cart::with('book')->where('customer_id', auth()->id())->get();
+        $items = Cart::with('book.author')->where('customer_id', auth()->id())->get();
         $quote = $pricing->quote($items, 'IN');
         return view('pages.cart', compact('items', 'quote'));
     }
