@@ -24,7 +24,7 @@ return new class extends Migration {
             // total_amount is always computed server-side (pricing service), never trusted from client — FR-6
             $table->decimal('total_amount', 10, 2);
             $table->timestamps();
-            $table->index('status');
+            $table->index('status');    
         });
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
