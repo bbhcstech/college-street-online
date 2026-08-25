@@ -8,6 +8,7 @@ class Order extends Model
     protected $fillable = [
         'customer_id', 'status', 'country', 'currency', 'shipping_address', 'shipping_phone',
         'subtotal', 'shipping_fee', 'platform_fee', 'coupon_id', 'discount_amount', 'total_amount',
+        'exchange_rate', 'base_total_amount',
     ];
 
     const STATUSES = [
@@ -20,6 +21,7 @@ class Order extends Model
     public function coupon() { return $this->belongsTo(Coupon::class); }
     public function payment() { return $this->hasOne(Payment::class); }
     public function statusHistory() { return $this->hasMany(OrderStatusHistory::class)->latest('created_at'); }
+    public function getCurrencySymbolAttribute(): string { return ['INR'=>'₹', 'BDT'=>'৳', 'GBP'=>'£', 'USD'=>'$'][$this->currency] ?? $this->currency.' '; }
 
     /** FR-8 fix: every transition writes an audit row, not just the column. */
     public function transitionTo(string $newStatus, ?int $actorId = null): void

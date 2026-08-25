@@ -8,7 +8,7 @@
         @forelse($orders as $order)
         <div class="card" style="margin-bottom:20px;">
             <div class="flex items-center" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                <div><strong>Order #CSO{{ $order->id }}</strong><div style="font-size:0.82rem;color:var(--text-secondary);">Placed {{ $order->created_at->format('d M Y') }} &middot; {{ $order->items->count() }} items &middot; &#8377;{{ number_format($order->total_amount, 0) }}</div></div>
+                <div><strong>Order #CSO{{ $order->id }}</strong><div style="font-size:0.82rem;color:var(--text-secondary);">Placed {{ $order->created_at->format('d M Y') }} &middot; {{ $order->items->count() }} items &middot; {{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</div></div>
                 <span class="badge {{ in_array($order->status, ['delivered','completed']) ? 'badge-muted' : 'badge-success' }}">{{ ucfirst(str_replace('_',' ',$order->status)) }}</span>
             </div>
             <details class="customer-tracking">

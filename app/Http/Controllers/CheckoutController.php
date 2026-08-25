@@ -63,12 +63,22 @@ class CheckoutController extends Controller
         return back()->with('success', 'Coupon applied successfully.');
     }
 
+    public function quote(Request $request, PricingService $pricing)
+    {
+        $data = $request->validate(['country' => 'required|in:IN,BD,GB,US']);
+        $items = Cart::with('book')->where('customer_id', auth()->id())->get();
+        abort_if($items->isEmpty(), 404, 'Your cart is empty.');
+        $couponCode = $request->session()->get('checkout_coupon');
+        $coupon = $couponCode ? Coupon::where('code', $couponCode)->first() : null;
+        return response()->json(['quote' => $pricing->quote($items, $data['country'], $coupon)]);
+    }
+
     public function store(Request $request, PricingService $pricing, InventoryService $inventoryService)
     {
         $data = $request->validate([
             'shipping_address' => 'required|string',
             'shipping_phone' => 'nullable|string|max:30',
-            'country' => 'nullable|string|size:2',
+            'country' => 'required|in:IN,BD,GB,US',
             'coupon_code' => 'nullable|string',
             'utr_number' => 'required|string|max:50',
             'proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
@@ -86,7 +96,8 @@ class CheckoutController extends Controller
                 'customer_id' => auth()->id(),
                 'status' => 'pending_payment',
                 'country' => $data['country'] ?? 'IN',
-                'currency' => 'INR',
+                'currency' => $quote['currency'],
+                'exchange_rate' => $quote['rate'],
                 'shipping_address' => $data['shipping_address'],
                 'shipping_phone' => $data['shipping_phone'] ?? null,
                 'subtotal' => $quote['subtotal'],
@@ -95,13 +106,16 @@ class CheckoutController extends Controller
                 'coupon_id' => $coupon?->id,
                 'discount_amount' => $quote['discount'],
                 'total_amount' => $quote['total'],
+                'base_total_amount' => $quote['baseTotal'],
             ]);
             $order->statusHistory()->create(['to_status' => 'pending_payment', 'changed_by' => auth()->id()]);
 
             foreach ($items as $item) {
                 OrderItem::create([
                     'order_id' => $order->id, 'book_id' => $item->book_id,
-                    'quantity' => $item->quantity, 'unit_price' => $item->book->price,
+                    'quantity' => $item->quantity,
+                    'unit_price' => round((float) $item->book->price * $quote['rate'], 2),
+                    'base_unit_price' => $item->book->price,
                 ]);
                 $inventoryService->recordSale($item->book, $item->quantity, $order->id);
             }

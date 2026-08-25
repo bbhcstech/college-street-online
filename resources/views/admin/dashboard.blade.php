@@ -20,7 +20,7 @@
     <table class="a-table"><thead><tr><th>Order</th><th>Customer</th><th>UTR</th><th>Amount</th><th></th></tr></thead><tbody>
     @forelse($recentPayments as $p)
         <tr>
-            <td>#CSO{{ $p->order_id }}</td><td>{{ $p->order->customer->name ?? '—' }}</td><td>{{ $p->utr_number }}</td><td>&#8377;{{ number_format($p->order->total_amount,0) }}</td>
+            <td>#CSO{{ $p->order_id }}</td><td>{{ $p->order->customer->name ?? '—' }}</td><td>{{ $p->utr_number }}</td><td>{{ $p->order->currency_symbol }}{{ number_format($p->order->total_amount,2) }} {{ $p->order->currency }}</td>
             <td class="flex gap-2">
                 <form method="POST" action="{{ route('admin.payments.verify', $p) }}">@csrf @method('PATCH')<input type="hidden" name="decision" value="verified"><button class="btn btn-outline btn-sm">Verify</button></form>
                 <form method="POST" action="{{ route('admin.payments.verify', $p) }}">@csrf @method('PATCH')<input type="hidden" name="decision" value="rejected"><button class="btn btn-danger btn-sm">Reject</button></form>

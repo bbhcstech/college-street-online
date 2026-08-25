@@ -30,7 +30,7 @@ class AnalyticsController extends Controller
         $useMonths = $period === '365' || $period === 'all';
         $dateExpression = $useMonths ? "DATE_FORMAT(orders.created_at, '%Y-%m')" : 'DATE(orders.created_at)';
         $revenueTrend = (clone $paidOrders)
-            ->selectRaw("{$dateExpression} as period, SUM(total_amount) as revenue, COUNT(*) as orders")
+            ->selectRaw("{$dateExpression} as period, SUM(base_total_amount) as revenue, COUNT(*) as orders")
             ->groupBy('period')->orderBy('period')->get();
 
         $statuses = ['pending_payment', 'confirmed', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'];
@@ -42,14 +42,14 @@ class AnalyticsController extends Controller
             ->join('books', 'books.id', '=', 'order_items.book_id')
             ->when($from, fn ($query) => $query->where('orders.created_at', '>=', $from))
             ->where('orders.status', '!=', 'cancelled')
-            ->selectRaw('books.id, books.title, SUM(order_items.quantity) as units, SUM(order_items.quantity * order_items.unit_price) as sales')
+            ->selectRaw('books.id, books.title, SUM(order_items.quantity) as units, SUM(order_items.quantity * order_items.base_unit_price) as sales')
             ->groupBy('books.id', 'books.title')->orderByDesc('units')->limit(8)->get();
 
         return view('admin.analytics', [
             'period' => $period,
-            'revenue' => (float) (clone $paidOrders)->sum('total_amount'),
+            'revenue' => (float) (clone $paidOrders)->sum('base_total_amount'),
             'orderVolume' => (clone $orders)->count(),
-            'averageOrder' => (float) (clone $paidOrders)->avg('total_amount'),
+            'averageOrder' => (float) (clone $paidOrders)->avg('base_total_amount'),
             'revenueTrend' => $revenueTrend,
             'statusCounts' => $statusCounts,
             'statusLabels' => array_combine($statuses, ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Completed', 'Cancelled']),

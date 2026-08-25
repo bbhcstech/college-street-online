@@ -24,7 +24,7 @@
     <table class="a-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>
     @forelse($orders as $order)
         <tr>
-            <td>#CSO{{ $order->id }}</td><td>{{ $order->customer->name ?? '—' }}</td><td>&#8377;{{ number_format($order->total_amount,0) }}</td>
+            <td>#CSO{{ $order->id }}</td><td>{{ $order->customer->name ?? '—' }}</td><td>{{ $order->currency_symbol }}{{ number_format($order->total_amount,2) }} {{ $order->currency }}</td>
             <td><span class="badge {{ $statusBadgeClasses[$order->status] ?? 'badge-muted' }}">{{ ucfirst(str_replace('_',' ',$order->status)) }}</span></td>
             <td><a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-sm">View</a></td>
         </tr>

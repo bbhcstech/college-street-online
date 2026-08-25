@@ -12,7 +12,7 @@
     <h3 style="margin-top:0;">Items</h3>
     <table class="a-table"><thead><tr><th>Book</th><th>Qty</th><th>Unit Price</th><th>Fulfillment</th></tr></thead><tbody>
     @foreach($order->items as $item)
-        <tr><td>{{ $item->book?->title ?? 'Book unavailable' }}</td><td>{{ $item->quantity }}</td><td>&#8377;{{ number_format($item->unit_price,0) }}</td><td>{{ ucfirst($item->fulfillment_status) }}</td></tr>
+        <tr><td>{{ $item->book?->title ?? 'Book unavailable' }}</td><td>{{ $item->quantity }}</td><td>{{ $order->currency_symbol }}{{ number_format($item->unit_price,2) }}</td><td>{{ ucfirst($item->fulfillment_status) }}</td></tr>
     @endforeach
     </tbody></table>
 </div>
@@ -75,11 +75,11 @@
 @endif
 <div class="a-card">
     <h3 style="margin-top:0;">Totals</h3>
-    <div class="summary-line"><span>Subtotal</span><span>&#8377;{{ number_format($order->subtotal,0) }}</span></div>
-    <div class="summary-line"><span>Shipping</span><span>&#8377;{{ number_format($order->shipping_fee,0) }}</span></div>
-    <div class="summary-line"><span>Platform Fee</span><span>&#8377;{{ number_format($order->platform_fee,0) }}</span></div>
-    <div class="summary-line"><span>Discount</span><span>&minus;&#8377;{{ number_format($order->discount_amount,0) }}</span></div>
-    <div class="summary-line total"><span>Total</span><span>&#8377;{{ number_format($order->total_amount,0) }}</span></div>
+    <div class="summary-line"><span>Subtotal</span><span>{{ $order->currency_symbol }}{{ number_format($order->subtotal,2) }}</span></div>
+    <div class="summary-line"><span>Shipping</span><span>{{ $order->currency_symbol }}{{ number_format($order->shipping_fee,2) }}</span></div>
+    <div class="summary-line"><span>Platform Fee</span><span>{{ $order->currency_symbol }}{{ number_format($order->platform_fee,2) }}</span></div>
+    <div class="summary-line"><span>Discount</span><span>&minus;{{ $order->currency_symbol }}{{ number_format($order->discount_amount,2) }}</span></div>
+    <div class="summary-line total"><span>Total ({{ $order->currency }})</span><span>{{ $order->currency_symbol }}{{ number_format($order->total_amount,2) }}</span></div>
 </div>
 </div>
 </div>

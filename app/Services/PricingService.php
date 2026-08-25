@@ -19,19 +19,29 @@ class PricingService
 
     public function quote(Collection $cartItems, string $country = 'IN', ?Coupon $coupon = null): array
     {
-        $subtotal = $cartItems->sum(fn (CartModel $c) => $c->quantity * (float) $c->book->price);
+        $country = array_key_exists($country, config('currencies.countries')) ? $country : 'IN';
+        $pricing = config("currencies.countries.{$country}");
+        $rate = (float) $pricing['rate'];
+        $baseSubtotal = $cartItems->sum(fn (CartModel $c) => $c->quantity * (float) $c->book->price);
 
-        $shipping = $this->shippingFor($subtotal, $country, $cartItems);
-        $platformFee = self::PLATFORM_FEE;
+        $baseShipping = $this->shippingFor($baseSubtotal, $country, $cartItems);
+        $basePlatformFee = self::PLATFORM_FEE;
 
-        $discount = 0.0;
-        if ($coupon && $coupon->isValidFor($subtotal)) {
-            $discount = $coupon->computeDiscount($subtotal);
+        $baseDiscount = 0.0;
+        if ($coupon && $coupon->isValidFor($baseSubtotal)) {
+            $baseDiscount = $coupon->computeDiscount($baseSubtotal);
         }
 
-        $total = max(0, $subtotal + $shipping + $platformFee - $discount);
+        $baseTotal = max(0, $baseSubtotal + $baseShipping + $basePlatformFee - $baseDiscount);
+        $subtotal = round($baseSubtotal * $rate, 2);
+        $shipping = round($baseShipping * $rate, 2);
+        $platformFee = round($basePlatformFee * $rate, 2);
+        $discount = round($baseDiscount * $rate, 2);
+        $total = round($baseTotal * $rate, 2);
 
-        return compact('subtotal', 'shipping', 'platformFee', 'discount', 'total');
+        return compact('subtotal', 'shipping', 'platformFee', 'discount', 'total', 'baseTotal', 'rate') + [
+            'country' => $country, 'currency' => $pricing['currency'], 'symbol' => $pricing['symbol'],
+        ];
     }
 
     protected function shippingFor(float $subtotal, string $country, Collection $cartItems): float
