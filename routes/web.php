@@ -49,6 +49,7 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::get('/inventory', [Pub\InventoryController::class, 'index'])->name('inventory.index');
         Route::post('/inventory/{book}/restock', [Pub\InventoryController::class, 'restock'])->name('inventory.restock');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');
+        Route::patch('/orders/items/{orderItem}/status', [Pub\OrderController::class, 'updateStatus'])->name('orders.items.status');
     });
 });
 

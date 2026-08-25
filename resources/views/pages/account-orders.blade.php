@@ -31,6 +31,15 @@
                         @endforeach
                     </div>
                 @endif
+                <div class="item-fulfillment-list">
+                    <h4>Book fulfillment</h4>
+                    @foreach($order->items as $item)
+                        <div>
+                            <span>{{ $item->book?->title ?? 'Book unavailable' }}</span>
+                            <strong>{{ ucfirst($item->fulfillment_status) }}</strong>
+                        </div>
+                    @endforeach
+                </div>
                 <div class="tracking-history">
                     @forelse($order->statusHistory->sortByDesc('created_at') as $history)
                         <div><strong>{{ ucfirst(str_replace('_', ' ', $history->to_status)) }}</strong><span>{{ $history->created_at->format('d M Y, h:i A') }}</span></div>

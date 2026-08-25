@@ -596,6 +596,10 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .tracking-history div { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; font-size: 0.82rem; }
 .tracking-history span { color: var(--text-secondary); }
 .tracking-notice { color: var(--danger); font-weight: 600; }
+.item-fulfillment-list { margin-top: 16px; min-width: 320px; }
+.item-fulfillment-list h4 { margin: 0 0 6px; }
+.item-fulfillment-list div { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.item-fulfillment-list strong { color: var(--brand-primary); }
 .review-average { display: grid; justify-items: end; }
 .review-average strong { font-family: var(--font-display); font-size: 2rem; }
 .review-average small, .review-card small { color: var(--text-secondary); }

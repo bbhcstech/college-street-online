@@ -10,9 +10,9 @@
 <div style="min-width:0;">
 <div class="a-card">
     <h3 style="margin-top:0;">Items</h3>
-    <table class="a-table"><thead><tr><th>Book</th><th>Qty</th><th>Unit Price</th></tr></thead><tbody>
+    <table class="a-table"><thead><tr><th>Book</th><th>Qty</th><th>Unit Price</th><th>Fulfillment</th></tr></thead><tbody>
     @foreach($order->items as $item)
-        <tr><td>{{ $item->book?->title ?? 'Book unavailable' }}</td><td>{{ $item->quantity }}</td><td>&#8377;{{ number_format($item->unit_price,0) }}</td></tr>
+        <tr><td>{{ $item->book?->title ?? 'Book unavailable' }}</td><td>{{ $item->quantity }}</td><td>&#8377;{{ number_format($item->unit_price,0) }}</td><td>{{ ucfirst($item->fulfillment_status) }}</td></tr>
     @endforeach
     </tbody></table>
 </div>
