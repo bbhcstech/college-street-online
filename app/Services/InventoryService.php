@@ -5,6 +5,7 @@ use App\Models\Book;
 use App\Models\Inventory;
 use App\Models\InventoryTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * FR-3 fix: the single write-path for every stock-affecting event. Every
@@ -25,6 +26,11 @@ class InventoryService
         $this->applyTransaction($book, 'restock', $qty, null);
     }
 
+    public function recordAdjustment(Book $book, int $signedQty): void
+    {
+        $this->applyTransaction($book, 'adjustment', $signedQty, null);
+    }
+
     public function recordCancel(Book $book, int $qty, ?int $orderId = null): void
     {
         $this->applyTransaction($book, 'cancel', $qty, $orderId);
@@ -42,6 +48,12 @@ class InventoryService
             // checkouts from overselling the same title.
             $inventory = Inventory::where('book_id', $book->id)->lockForUpdate()->first()
                 ?? Inventory::create(['book_id' => $book->id, 'quantity' => 0]);
+
+            if ($inventory->quantity + $signedQty < 0) {
+                throw ValidationException::withMessages([
+                    'quantity' => 'Stock cannot be reduced below zero.',
+                ]);
+            }
 
             InventoryTransaction::create([
                 'book_id' => $book->id,

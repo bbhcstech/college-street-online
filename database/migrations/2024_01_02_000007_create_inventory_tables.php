@@ -21,7 +21,7 @@ return new class extends Migration {
         Schema::create('inventory_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('book_id')->constrained('books')->cascadeOnDelete();
-            $table->enum('transaction_type', ['restock', 'sale', 'cancel', 'return']);
+            $table->string('transaction_type', 30);
             $table->integer('change_qty');
             $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete();
             $table->timestamp('created_at')->useCurrent();
