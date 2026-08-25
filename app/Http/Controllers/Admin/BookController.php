@@ -6,8 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Inventory;
+use App\Models\OrderItem;
 use App\Models\Publisher;
+use App\Services\CloudinaryImageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class BookController extends Controller
@@ -38,6 +43,56 @@ class BookController extends Controller
             'categories' => Category::orderBy('name')->get(),
             'publishers' => Publisher::orderBy('business_name')->get(),
         ]);
+    }
+
+    public function create()
+    {
+        return view('admin.books.create', [
+            'authors' => Author::orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
+            'publishers' => Publisher::where('approval_status', 'approved')->orderBy('business_name')->get(),
+        ]);
+    }
+
+    public function store(Request $request, CloudinaryImageService $images)
+    {
+        $data = $request->validate([
+            'publisher_id' => ['required', Rule::exists('publishers', 'id')->where('approval_status', 'approved')],
+            'title' => 'required|string|max:250',
+            'isbn' => 'required|string|max:20|unique:books,isbn',
+            'author_id' => 'nullable|required_without:new_author_name|exists:authors,id',
+            'new_author_name' => 'nullable|required_without:author_id|string|max:150',
+            'category_id' => 'nullable|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'mrp' => 'nullable|numeric|min:0',
+            'description' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+            'initial_stock' => 'required|integer|min:0',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        $cover = null;
+        if ($request->hasFile('cover_image')) {
+            $cover = $images->uploadBookCover($request->file('cover_image'));
+            $data['cover_image_url'] = $cover['url'];
+            $data['cover_image_public_id'] = $cover['public_id'];
+        }
+
+        try {
+            DB::transaction(function () use ($request, $data) {
+                $authorId = $this->resolveAuthorId($request, $data['author_id'] ?? null);
+                $initialStock = (int) $data['initial_stock'];
+                unset($data['author_id'], $data['new_author_name'], $data['initial_stock'], $data['cover_image']);
+                $data['author_id'] = $authorId;
+                $book = Book::create($data);
+                Inventory::create(['book_id' => $book->id, 'quantity' => $initialStock]);
+            });
+        } catch (\Throwable $exception) {
+            if ($cover) $images->delete($cover['public_id']);
+            throw $exception;
+        }
+
+        return redirect()->route('admin.books.index')->with('success', 'Book created.');
     }
 
     public function edit(Book $book)
@@ -84,5 +139,51 @@ class BookController extends Controller
         $book = Book::onlyTrashed()->findOrFail($id);
         $book->restore();
         return back()->with('success', 'Book restored.');
+    }
+
+    public function forceDestroy(int $id, CloudinaryImageService $images)
+    {
+        $book = Book::onlyTrashed()->findOrFail($id);
+        $ongoingStatuses = [
+            'pending_payment', 'confirmed', 'processing', 'packed', 'shipped',
+            'delivered', 'return_requested',
+        ];
+
+        $hasOngoingOrder = OrderItem::where('book_id', $book->id)
+            ->whereHas('order', fn ($order) => $order->whereIn('status', $ongoingStatuses))
+            ->exists();
+
+        if ($hasOngoingOrder) {
+            return back()->withErrors(['book' => 'This book cannot be permanently deleted because it has an ongoing order.']);
+        }
+
+        if (OrderItem::where('book_id', $book->id)->exists()) {
+            return back()->withErrors(['book' => 'This book cannot be permanently deleted because order history must be preserved.']);
+        }
+
+        $coverUrl = $book->cover_image_url;
+        $publicId = $book->cover_image_public_id;
+        $book->forceDelete();
+
+        try {
+            if ($publicId) {
+                $images->delete($publicId);
+            } elseif ($coverUrl && ! str_starts_with($coverUrl, 'http')) {
+                Storage::disk('public')->delete($coverUrl);
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        return back()->with('success', 'Book permanently deleted.');
+    }
+
+    protected function resolveAuthorId(Request $request, ?int $authorId): int
+    {
+        $newAuthorName = trim((string) $request->input('new_author_name'));
+        if ($newAuthorName === '') return (int) $authorId;
+
+        $author = Author::whereRaw('LOWER(name) = ?', [mb_strtolower($newAuthorName)])->first();
+        return ($author ?? Author::create(['name' => $newAuthorName]))->id;
     }
 }

@@ -73,10 +73,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/publishers/{publisher}', [Admin\PublisherController::class, 'destroy'])->name('publishers.destroy');
 
         Route::get('/books', [Admin\BookController::class, 'index'])->name('books.index');
+        Route::get('/books/create', [Admin\BookController::class, 'create'])->name('books.create');
+        Route::post('/books', [Admin\BookController::class, 'store'])->name('books.store');
         Route::get('/books/{book}/edit', [Admin\BookController::class, 'edit'])->name('books.edit');
         Route::put('/books/{book}', [Admin\BookController::class, 'update'])->name('books.update');
         Route::patch('/books/{book}/status', [Admin\BookController::class, 'updateStatus'])->name('books.status');
         Route::patch('/books/{id}/restore', [Admin\BookController::class, 'restore'])->name('books.restore');
+        Route::delete('/books/{id}/force', [Admin\BookController::class, 'forceDestroy'])->name('books.force-destroy');
         Route::delete('/books/{book}', [Admin\BookController::class, 'destroy'])->name('books.destroy');
 
         Route::get('/categories', [Admin\CategoryController::class, 'index'])->name('categories.index');

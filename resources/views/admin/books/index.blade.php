@@ -8,6 +8,7 @@
 @section('title', 'All Books')
 @section('nav')@include('admin.partials.nav', ['active' => 'books'])@endsection
 @section('content')
+<div class="page-header"><div></div><a href="{{ route('admin.books.create') }}" class="btn btn-primary">+ Add Book</a></div>
 <form method="GET" class="book-admin-filters">
     <input type="text" name="q" value="{{ request('q') }}" class="a-input" placeholder="Search title, ISBN, author or publisher">
     <select name="publisher_id" class="a-select"><option value="">All publishers</option>@foreach($publishers as $publisher)<option value="{{ $publisher->id }}" {{ (string) request('publisher_id') === (string) $publisher->id ? 'selected' : '' }}>{{ $publisher->business_name }}</option>@endforeach</select>
@@ -34,6 +35,7 @@
             <td><div class="admin-book-actions">
                 @if($book->trashed())
                     <form method="POST" action="{{ route('admin.books.restore', $book->id) }}">@csrf @method('PATCH')<button class="btn btn-primary btn-sm">Restore</button></form>
+                    <form method="POST" action="{{ route('admin.books.force-destroy', $book->id) }}" onsubmit="return confirm('Permanently delete this book? This cannot be undone.');">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Delete Permanently</button></form>
                 @else
                     <a href="{{ route('books.show', $book) }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">View</a>
                     <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-outline btn-sm">Edit</a>
