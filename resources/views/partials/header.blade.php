@@ -16,15 +16,23 @@
         </nav>
         <div class="header-actions">
             <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span class="knob"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></span></button>
-            <a href="{{ route('account.login') }}" class="icon-btn-nav" aria-label="Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
+            <a href="{{ auth()->check() ? route('account.orders') : route('account.login') }}" class="icon-btn-nav" aria-label="Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
             <a href="{{ route('cart.index') }}" class="icon-btn-nav" aria-label="Cart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>@if($cartCount)<span class="cart-count">{{ $cartCount }}</span>@endif</a>
             <a href="{{ route('books.index') }}" class="btn btn-gold header-cta">Shop Now</a>
             <details class="auth-portal">
-                <summary class="btn auth-portal-button">Login Portal</summary>
+                <summary class="btn auth-portal-button">{{ auth()->check() ? auth()->user()->name : 'Login Portal' }}</summary>
                 <div class="auth-portal-menu">
+                    @auth
+                    <a href="{{ route('account.orders') }}">My Orders</a>
+                    <form method="POST" action="{{ route('account.logout') }}">
+                        @csrf
+                        <button type="submit">Logout</button>
+                    </form>
+                    @else
                     <a href="{{ route('account.login') }}">Customer Login</a>
                     <a href="{{ route('publisher.login') }}">Publisher Login</a>
                     <a href="{{ route('admin.login') }}">Admin Login</a>
+                    @endauth
                 </div>
             </details>
             <button type="button" class="hamburger" data-hamburger aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>

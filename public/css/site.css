@@ -218,11 +218,14 @@ html.dark .dropdown-panel a:hover { color: var(--accent-gold-light); }
     min-width: 190px; padding: 8px; border-radius: 12px;
     background-color: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-lg);
 }
-.auth-portal-menu a {
+.auth-portal-menu a,
+.auth-portal-menu button {
     display: block; padding: 10px 12px; border-radius: 8px;
     color: var(--text-primary); font-family: var(--font-heading); font-weight: 600; font-size: 0.86rem;
 }
-.auth-portal-menu a:hover { background-color: var(--surface-alt); color: var(--brand-primary); }
+.auth-portal-menu button { width: 100%; border: 0; background: none; text-align: left; cursor: pointer; }
+.auth-portal-menu a:hover,
+.auth-portal-menu button:hover { background-color: var(--surface-alt); color: var(--brand-primary); }
 .header-cta { display: inline-flex; }
 @media (max-width: 560px) { .header-cta { display: none; } }
 
