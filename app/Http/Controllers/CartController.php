@@ -24,11 +24,22 @@ class CartController extends Controller
         return back()->with('success', 'Added to cart.');
     }
 
-    public function update(Request $request, Cart $cart)
+    public function update(Request $request, Cart $cart, PricingService $pricing)
     {
         abort_unless($cart->customer_id === auth()->id(), 403);
         $data = $request->validate(['quantity' => 'required|integer|min:1']);
         $cart->update($data);
+
+        if ($request->expectsJson()) {
+            $cart->load('book');
+            $items = Cart::with('book')->where('customer_id', auth()->id())->get();
+
+            return response()->json([
+                'line_total' => $cart->lineTotal(),
+                'quote' => $pricing->quote($items, 'IN'),
+            ]);
+        }
+
         return back();
     }
 

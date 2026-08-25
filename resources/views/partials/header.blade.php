@@ -1,6 +1,6 @@
 @php
     $cartCount = auth()->check() && auth()->user()->role === 'customer'
-        ? \App\Models\Cart::where('customer_id', auth()->id())->sum('quantity')
+        ? \App\Models\Cart::where('customer_id', auth()->id())->count()
         : 0;
 @endphp
 <header class="site-header">
