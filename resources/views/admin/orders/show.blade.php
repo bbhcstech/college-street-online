@@ -46,9 +46,9 @@
     <p style="font-size:0.85rem;color:var(--a-text-muted);">{{ $order->shipping_address }}</p>
 </div>
 @if($order->payment)
-<div class="a-card">
+<div class="a-card order-payment-review">
     <h3 style="margin-top:0;">Payment</h3>
-    <p>UTR: <strong>{{ $order->payment->utr_number }}</strong></p>
+    <div class="payment-review-utr"><span>Transaction reference (UTR)</span><strong>{{ $order->payment->utr_number }}</strong></div>
     <p>Status: <span class="badge {{ $order->payment->verified_status==='verified'?'badge-success':'badge-gold' }}">{{ ucfirst($order->payment->verified_status) }}</span></p>
     @if($order->payment->proof_url)
         @php($proofExtension = strtolower(pathinfo($order->payment->proof_url, PATHINFO_EXTENSION)))
@@ -66,10 +66,10 @@
         <p style="color:var(--a-text-muted);">No payment proof uploaded.</p>
     @endif
     @if($order->payment->verified_status === 'pending')
-    <form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}" class="flex gap-2">
+    <div class="payment-review-actions"><form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}">
         @csrf @method('PATCH')
-        <input type="hidden" name="decision" value="verified"><button class="btn btn-outline btn-sm">Verify</button>
-    </form>
+        <input type="hidden" name="decision" value="verified"><button class="btn btn-primary btn-sm">Verify payment</button>
+    </form><form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}" onsubmit="return confirm('Reject this payment proof?')">@csrf @method('PATCH')<input type="hidden" name="decision" value="rejected"><button class="btn btn-danger-outline btn-sm">Reject</button></form></div>
     @endif
 </div>
 @endif
