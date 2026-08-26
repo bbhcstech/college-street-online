@@ -12,12 +12,14 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
-        $creds = $request->validate(['email' => 'required|email', 'password' => 'required']);
+        $creds = $request->validate(['email' => 'required|email', 'password' => 'required', 'remember' => 'nullable|boolean']);
         $key = 'admin-login:' . $request->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return back()->withErrors(['email' => 'Too many attempts. Try again later.']);
         }
-        if (Auth::attempt($creds + ['role' => 'admin'])) {
+        $remember = (bool) ($creds['remember'] ?? false);
+        unset($creds['remember']);
+        if (Auth::attempt($creds + ['role' => 'admin'], $remember)) {
             $request->session()->regenerate();
             RateLimiter::clear($key);
             return redirect()->intended(route('admin.dashboard'));
