@@ -57,6 +57,7 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::patch('/books/{book}/status', [Pub\BookController::class, 'updateStatus'])->name('books.status');
         Route::resource('books', Pub\BookController::class)->except('show');
         Route::get('/inventory', [Pub\InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/inventory/export/{type}', [Pub\InventoryController::class, 'export'])->name('inventory.export');
         Route::post('/inventory/{book}/restock', [Pub\InventoryController::class, 'restock'])->name('inventory.restock');
         Route::post('/inventory/{book}/reduce', [Pub\InventoryController::class, 'reduce'])->name('inventory.reduce');
         Route::post('/inventory/{book}/adjust', [Pub\InventoryController::class, 'adjust'])->name('inventory.adjust');
