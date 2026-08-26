@@ -81,6 +81,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/publishers', [Admin\PublisherController::class, 'index'])->name('publishers.index');
         Route::get('/publishers/create', [Admin\PublisherController::class, 'create'])->name('publishers.create');
+        Route::get('/publishers/export/{type}', [Admin\PublisherController::class, 'export'])->name('publishers.export');
         Route::post('/publishers', [Admin\PublisherController::class, 'store'])->name('publishers.store');
         Route::get('/publishers/{publisher}/edit', [Admin\PublisherController::class, 'edit'])->name('publishers.edit');
         Route::put('/publishers/{publisher}', [Admin\PublisherController::class, 'update'])->name('publishers.update');
