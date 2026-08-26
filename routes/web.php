@@ -113,6 +113,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/coupons', [Admin\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Admin\CouponController::class, 'store'])->name('coupons.store');
+        Route::patch('/coupons/{coupon}/status', [Admin\CouponController::class, 'updateStatus'])->name('coupons.status');
         Route::delete('/coupons/{coupon}', [Admin\CouponController::class, 'destroy'])->name('coupons.destroy');
 
         Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');

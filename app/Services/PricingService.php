@@ -28,8 +28,9 @@ class PricingService
         $basePlatformFee = self::PLATFORM_FEE;
 
         $baseDiscount = 0.0;
-        if ($coupon && $coupon->isValidFor($baseSubtotal)) {
-            $baseDiscount = $coupon->computeDiscount($baseSubtotal);
+        $couponSubtotal = $coupon ? $this->couponSubtotal($cartItems, $coupon) : 0.0;
+        if ($coupon && $couponSubtotal > 0 && $coupon->isValidFor($couponSubtotal)) {
+            $baseDiscount = $coupon->computeDiscount($couponSubtotal);
         }
 
         $baseTotal = max(0, $baseSubtotal + $baseShipping + $basePlatformFee - $baseDiscount);
@@ -42,6 +43,15 @@ class PricingService
         return compact('subtotal', 'shipping', 'platformFee', 'discount', 'total', 'baseTotal', 'rate') + [
             'country' => $country, 'currency' => $pricing['currency'], 'symbol' => $pricing['symbol'],
         ];
+    }
+
+    public function couponSubtotal(Collection $cartItems, Coupon $coupon): float
+    {
+        return $cartItems
+            ->when($coupon->publisher_id, fn (Collection $items) => $items->filter(
+                fn (CartModel $cart) => (int) $cart->book->publisher_id === (int) $coupon->publisher_id
+            ))
+            ->sum(fn (CartModel $cart) => $cart->quantity * (float) $cart->book->price);
     }
 
     protected function shippingFor(float $subtotal, string $country, Collection $cartItems): float

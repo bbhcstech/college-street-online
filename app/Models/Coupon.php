@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 class Coupon extends Model
 {
     protected $fillable = [
-        'code', 'discount_type', 'discount_value', 'min_order_value',
+        'publisher_id', 'code', 'discount_type', 'discount_value', 'min_order_value',
         'valid_from', 'valid_to', 'usage_limit', 'times_used', 'is_active',
     ];
     protected $casts = ['valid_from' => 'datetime', 'valid_to' => 'datetime', 'is_active' => 'boolean'];
+
+    public function publisher() { return $this->belongsTo(Publisher::class); }
 
     /**
      * FR-9 fix: revalidated server-side at the moment of order placement

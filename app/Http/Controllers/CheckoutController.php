@@ -36,9 +36,9 @@ class CheckoutController extends Controller
 
         $code = strtoupper(trim($data['coupon_code']));
         $coupon = Coupon::where('code', $code)->first();
-        $subtotal = $pricing->quote($items)['subtotal'];
+        $subtotal = $coupon ? $pricing->couponSubtotal($items, $coupon) : 0;
 
-        if (! $coupon || ! $coupon->isValidFor($subtotal)) {
+        if (! $coupon || $subtotal <= 0 || ! $coupon->isValidFor($subtotal)) {
             $request->session()->forget('checkout_coupon');
 
             if ($request->expectsJson()) {
@@ -69,7 +69,11 @@ class CheckoutController extends Controller
         $items = Cart::with('book')->where('customer_id', auth()->id())->get();
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
         $couponCode = $request->session()->get('checkout_coupon');
-        $coupon = $couponCode ? Coupon::where('code', $couponCode)->first() : null;
+        $coupon = $couponCode ? Coupon::where('code', strtoupper(trim($couponCode)))->first() : null;
+        if ($coupon) {
+            $couponSubtotal = $pricing->couponSubtotal($items, $coupon);
+            if ($couponSubtotal <= 0 || ! $coupon->isValidFor($couponSubtotal)) $coupon = null;
+        }
         return response()->json(['quote' => $pricing->quote($items, $data['country'], $coupon)]);
     }
 
@@ -88,7 +92,11 @@ class CheckoutController extends Controller
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
 
         $couponCode = $data['coupon_code'] ?? null;
-        $coupon = $couponCode ? Coupon::where('code', $couponCode)->first() : null;
+        $coupon = $couponCode ? Coupon::where('code', strtoupper(trim($couponCode)))->first() : null;
+        if ($coupon) {
+            $couponSubtotal = $pricing->couponSubtotal($items, $coupon);
+            if ($couponSubtotal <= 0 || ! $coupon->isValidFor($couponSubtotal)) $coupon = null;
+        }
         $quote = $pricing->quote($items, $data['country'] ?? 'IN', $coupon);
 
         $order = DB::transaction(function () use ($data, $items, $quote, $coupon, $inventoryService) {
