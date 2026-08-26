@@ -36,7 +36,10 @@
         <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span
                 class="nav-icon">🚚</span><span>Orders</span></a>
     </div>
-    <div class="nav-group"><div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a></div>
+    <div class="nav-group">
+        <div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span
+                class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a>
+    </div>
 @endsection
 @section('content')
     <div class="publisher-dashboard-welcome">

@@ -38,6 +38,20 @@
     <div class="nav-group"><div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link active"><span class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a></div>
 @endsection
 @section('content')
+    <style>
+        html.dark .dashboard-card { background: var(--a-surface); color: var(--a-text); border-color: var(--a-border); }
+        html.dark .analytics-toolbar { background: var(--a-surface); border-color: var(--a-border); }
+        html.dark .analytics-toolbar p,
+        html.dark .card-heading p,
+        html.dark .chart-legend,
+        html.dark .analytics-bar-group small { color: var(--a-text-muted); }
+        html.dark .analytics-actions select { background: var(--a-surface-alt); color: var(--a-text); border-color: var(--a-border); }
+        html.dark .status-donut::before { background: var(--a-surface); }
+        html.dark .analytics-chart { border-color: var(--a-border); }
+        html.dark .publisher-analytics-table th,
+        html.dark .publisher-analytics-table td { color: var(--a-text); border-color: var(--a-border); }
+        html.dark .rank-pill { background: rgba(237, 161, 58, .18); color: #f1ad4d; }
+    </style>
     <div class="analytics-toolbar">
         <div>
             <h2>Sales analytics</h2>
