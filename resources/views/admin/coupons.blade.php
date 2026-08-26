@@ -12,6 +12,15 @@
     <div><span>Total redemptions</span><strong>{{ $totalUses }}</strong></div>
 </div>
 
+@if($couponRequests->isNotEmpty())
+<section class="a-card coupon-request-review">
+    <div class="coupon-section-head"><div><h3>Publisher offer requests</h3><p>Review proposals before they become available to customers.</p></div><span>{{ $couponRequests->count() }} pending</span></div>
+    <div class="coupon-table-wrap"><table class="a-table"><thead><tr><th>Publisher</th><th>Code</th><th>Offer</th><th>Validity</th><th>Publisher note</th><th>Decision</th></tr></thead><tbody>
+    @foreach($couponRequests as $item)<tr><td><strong>{{ $item->publisher?->business_name??'Publisher unavailable' }}</strong></td><td><strong class="coupon-code">{{ $item->code }}</strong></td><td>{{ $item->discount_type==='percentage'?number_format($item->discount_value,0).'%':'₹'.number_format($item->discount_value,2) }}<small>Min ₹{{ number_format($item->min_order_value??0,0) }} · Limit {{ $item->usage_limit??'Unlimited' }}</small></td><td>{{ $item->valid_from?->format('d M Y')??'Immediately' }}<small>to {{ $item->valid_to?->format('d M Y')??'No expiry' }}</small></td><td>{{ $item->publisher_notes??'—' }}</td><td><form method="POST" action="{{ route('admin.coupon-requests.review',$item) }}" class="coupon-review-form">@csrf @method('PATCH')<input name="admin_notes" class="a-input" maxlength="1000" placeholder="Response note (optional)"><div><button name="decision" value="approved" class="btn btn-primary btn-sm" onclick="return confirm('Approve and activate this publisher coupon?')">Approve</button><button name="decision" value="rejected" class="btn btn-danger-outline btn-sm" onclick="return confirm('Reject this coupon request?')">Reject</button></div></form></td></tr>@endforeach
+    </tbody></table></div>
+</section>
+@endif
+
 <section class="a-card coupon-create-card">
     <div class="coupon-section-head"><div><h3>Create coupon</h3><p>Choose a publisher to limit the offer to only that publisher's books.</p></div><span>New offer</span></div>
     <form method="POST" action="{{ route('admin.coupons.store') }}" class="coupon-form">@csrf

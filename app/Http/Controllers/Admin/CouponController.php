@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Models\CouponRequest;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CouponController extends Controller
 {
@@ -23,6 +25,7 @@ class CouponController extends Controller
             'publishers' => Publisher::where('approval_status', 'approved')->orderBy('business_name')->get(),
             'activeCount' => Coupon::where('is_active', true)->count(),
             'totalUses' => Coupon::sum('times_used'),
+            'couponRequests' => CouponRequest::with('publisher')->where('status','pending')->latest()->get(),
         ]);
     }
 
@@ -53,6 +56,44 @@ class CouponController extends Controller
         $data = $request->validate(['is_active' => 'required|boolean']);
         $coupon->update($data);
         return back()->with('success', $coupon->is_active ? 'Coupon activated.' : 'Coupon deactivated.');
+    }
+
+    public function reviewRequest(Request $request, CouponRequest $couponRequest)
+    {
+        $data = $request->validate([
+            'decision' => 'required|in:approved,rejected',
+            'admin_notes' => 'nullable|string|max:1000',
+        ]);
+        if ($couponRequest->status !== 'pending') {
+            return back()->withErrors(['coupon_request'=>'This request has already been reviewed.']);
+        }
+        if ($data['decision'] === 'approved' && Coupon::where('code',$couponRequest->code)->exists()) {
+            return back()->withErrors(['coupon_request'=>'This coupon code is already in use. Reject this request or use another code.']);
+        }
+
+        DB::transaction(function () use ($couponRequest,$data) {
+            $couponId = null;
+            if ($data['decision'] === 'approved') {
+                $coupon = Coupon::create([
+                    'publisher_id'=>$couponRequest->publisher_id,
+                    'code'=>$couponRequest->code,
+                    'discount_type'=>$couponRequest->discount_type,
+                    'discount_value'=>$couponRequest->discount_value,
+                    'min_order_value'=>$couponRequest->min_order_value,
+                    'valid_from'=>$couponRequest->valid_from,
+                    'valid_to'=>$couponRequest->valid_to,
+                    'usage_limit'=>$couponRequest->usage_limit,
+                    'is_active'=>true,
+                ]);
+                $couponId=$coupon->id;
+            }
+            $couponRequest->update([
+                'status'=>$data['decision'],'coupon_id'=>$couponId,
+                'admin_notes'=>$data['admin_notes']??null,'reviewed_by'=>auth()->id(),'reviewed_at'=>now(),
+            ]);
+        });
+
+        return back()->with('success','Coupon request '.$data['decision'].'.');
     }
 
     public function destroy(Coupon $coupon)

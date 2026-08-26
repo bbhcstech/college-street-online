@@ -61,6 +61,8 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::post('/inventory/{book}/restock', [Pub\InventoryController::class, 'restock'])->name('inventory.restock');
         Route::post('/inventory/{book}/reduce', [Pub\InventoryController::class, 'reduce'])->name('inventory.reduce');
         Route::post('/inventory/{book}/adjust', [Pub\InventoryController::class, 'adjust'])->name('inventory.adjust');
+        Route::get('/coupons', [Pub\CouponController::class, 'index'])->name('coupons.index');
+        Route::post('/coupons', [Pub\CouponController::class, 'store'])->name('coupons.store');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/items/{orderItem}/status', [Pub\OrderController::class, 'updateStatus'])->name('orders.items.status');
     });
@@ -117,6 +119,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/coupons', [Admin\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Admin\CouponController::class, 'store'])->name('coupons.store');
         Route::patch('/coupons/{coupon}/status', [Admin\CouponController::class, 'updateStatus'])->name('coupons.status');
+        Route::patch('/coupon-requests/{couponRequest}', [Admin\CouponController::class, 'reviewRequest'])->name('coupon-requests.review');
         Route::delete('/coupons/{coupon}', [Admin\CouponController::class, 'destroy'])->name('coupons.destroy');
 
         Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
