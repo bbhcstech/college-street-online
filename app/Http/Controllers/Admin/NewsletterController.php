@@ -11,9 +11,19 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.newsletter', ['subscribers' => NewsletterSubscriber::latest('subscribed_at')->paginate(30)]);
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
+        $subscribers = NewsletterSubscriber::query()
+            ->when($request->filled('q'), fn ($query) => $query->where('email', 'like', '%'.trim($request->query('q')).'%'))
+            ->latest('subscribed_at')->paginate($perPage)->withQueryString();
+
+        return view('admin.newsletter', [
+            'subscribers' => $subscribers,
+            'totalSubscribers' => NewsletterSubscriber::count(),
+            'newThisMonth' => NewsletterSubscriber::where('subscribed_at', '>=', now()->startOfMonth())->count(),
+            'latestSubscription' => NewsletterSubscriber::max('subscribed_at'),
+        ]);
     }
 
     public function export(): StreamedResponse
