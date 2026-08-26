@@ -68,6 +68,7 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::post('/coupons', [Pub\CouponController::class, 'store'])->name('coupons.store');
         Route::get('/payments', [Pub\PaymentController::class, 'index'])->name('payments.index');
         Route::get('/payments/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
+        Route::get('/orders/export/{type}', [Pub\OrderController::class, 'export'])->name('orders.export');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/items/{orderItem}/status', [Pub\OrderController::class, 'updateStatus'])->name('orders.items.status');
     });

@@ -1,29 +1,217 @@
 @extends('layouts.dashboard')
-@php $homeRoute=route('publisher.dashboard'); $brandLabel='Publisher Panel'; $crumb='Sales'; $logoutRoute=route('publisher.logout'); @endphp
-@section('title','Payments & Invoices')
+@php $homeRoute = route('publisher.dashboard');
+    $brandLabel = 'Publisher Panel';
+    $crumb = 'Sales';
+$logoutRoute = route('publisher.logout'); @endphp
+@section('title', 'Payments & Invoices')
 @section('nav')
-<div class="nav-group"><div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span class="nav-icon">&#9635;</span><span>Dashboard</span></a></div>
-<div class="nav-group"><div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span class="nav-icon">&#128214;</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}" class="nav-link"><span class="nav-icon">&#128230;</span><span>Inventory</span></a></div>
-<div class="nav-group"><div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span class="nav-icon">&#127991;</span><span>Coupons & Offers</span></a></div>
-<div class="nav-group"><div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span class="nav-icon">&#128666;</span><span>Orders</span></a><a href="{{ route('publisher.payments.index') }}" class="nav-link active"><span class="nav-icon">&#8377;</span><span>Payments & Invoices</span></a></div>
-<div class="nav-group"><div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a></div>
+    <div class="nav-group">
+        <div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span
+                class="nav-icon">&#9635;</span><span>Dashboard</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span
+                class="nav-icon">&#128214;</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}"
+            class="nav-link"><span class="nav-icon">&#128230;</span><span>Inventory</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span
+                class="nav-icon">&#127991;</span><span>Coupons & Offers</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span
+                class="nav-icon">&#128666;</span><span>Orders</span></a><a href="{{ route('publisher.payments.index') }}"
+            class="nav-link active"><span class="nav-icon">&#8377;</span><span>Payments & Invoices</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span
+                class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a>
+    </div>
 @endsection
 @section('content')
-<style>.payment-page-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}.payment-page-head h2{font:italic 600 1.8rem var(--font-display);margin:7px 0}.payment-page-head p{margin:0;color:var(--a-text-muted)}.payment-manual-note{padding:8px 12px;border-radius:99px;background:#fff3dc;color:#a6630c;font-size:.7rem;font-weight:800}.payment-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.payment-summary-grid>div{padding:17px 19px;background:var(--a-surface);border:1px solid var(--a-border);border-radius:12px}.payment-summary-grid span,.payment-summary-grid strong,.payment-summary-grid small{display:block}.payment-summary-grid span{color:var(--a-text-muted);font-size:.72rem;font-weight:700}.payment-summary-grid strong{font:italic 600 1.45rem var(--font-display);margin:8px 0 4px}.payment-summary-grid small{color:var(--a-text-muted);font-size:.64rem}.publisher-payment-card{padding:0;overflow:hidden}.publisher-payment-toolbar{display:grid;grid-template-columns:180px 180px auto auto;gap:9px;padding:18px 20px;border-bottom:1px solid var(--a-border)}.publisher-payment-table{min-width:1100px}.publisher-payment-table td small{display:block;color:var(--a-text-muted);font-size:.65rem;margin-top:3px}@media(max-width:850px){.payment-summary-grid{grid-template-columns:repeat(2,1fr)}.publisher-payment-toolbar{grid-template-columns:1fr 1fr}.payment-page-head{align-items:flex-start;flex-direction:column}}@media(max-width:520px){.payment-summary-grid,.publisher-payment-toolbar{grid-template-columns:1fr}}</style>
-<div class="payment-page-head"><div><span class="analytics-eyebrow">Manual payment records</span><h2>Payments and invoices</h2><p>Amounts appear after the administrator verifies the customer's UTR payment.</p></div><span class="payment-manual-note">No payment gateway connected</span></div>
+<style>
+    .payment-page-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 20px
+    }
+
+    .payment-page-head h2 {
+        font: italic 600 1.8rem var(--font-display);
+        margin: 7px 0
+    }
+
+    .payment-page-head p {
+        margin: 0;
+        color: var(--a-text-muted)
+    }
+
+    .payment-manual-note {
+        padding: 8px 12px;
+        border-radius: 99px;
+        background: #fff3dc;
+        color: #a6630c;
+        font-size: .7rem;
+        font-weight: 800
+    }
+
+    .payment-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 18px
+    }
+
+    .payment-summary-grid>div {
+        padding: 17px 19px;
+        background: var(--a-surface);
+        border: 1px solid var(--a-border);
+        border-radius: 12px
+    }
+
+    .payment-summary-grid span,
+    .payment-summary-grid strong,
+    .payment-summary-grid small {
+        display: block
+    }
+
+    .payment-summary-grid span {
+        color: var(--a-text-muted);
+        font-size: .72rem;
+        font-weight: 700
+    }
+
+    .payment-summary-grid strong {
+        font: italic 600 1.45rem var(--font-display);
+        margin: 8px 0 4px
+    }
+
+    .payment-summary-grid small {
+        color: var(--a-text-muted);
+        font-size: .64rem
+    }
+
+    .publisher-payment-card {
+        padding: 0;
+        overflow: hidden
+    }
+
+    .publisher-payment-toolbar {
+        display: grid;
+        grid-template-columns: 180px 180px auto auto;
+        gap: 9px;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--a-border)
+    }
+
+    .publisher-payment-table {
+        min-width: 1100px
+    }
+
+    .publisher-payment-table td small {
+        display: block;
+        color: var(--a-text-muted);
+        font-size: .65rem;
+        margin-top: 3px
+    }
+
+    @media(max-width:850px) {
+        .payment-summary-grid {
+            grid-template-columns: repeat(2, 1fr)
+        }
+
+        .publisher-payment-toolbar {
+            grid-template-columns: 1fr 1fr
+        }
+
+        .payment-page-head {
+            align-items: flex-start;
+            flex-direction: column
+        }
+    }
+
+    @media(max-width:520px) {
+
+        .payment-summary-grid,
+        .publisher-payment-toolbar {
+            grid-template-columns: 1fr
+        }
+    }
+</style>
+<div class="payment-page-head">
+    <div><span class="analytics-eyebrow">Manual payment records</span>
+        <h2>Payments and invoices</h2>
+        <p>Amounts appear after the administrator verifies the customer's UTR payment.</p>
+    </div><span class="payment-manual-note">No payment gateway connected</span>
+</div>
 <div class="payment-summary-grid">
-    <div><span>Net verified earnings</span><strong>₹{{ number_format(($totals->verified ?? 0)-($totals->deductions ?? 0),2) }}</strong><small>Gross sales minus deductions</small></div>
-    <div><span>Pending verification</span><strong>₹{{ number_format($totals->pending ?? 0,2) }}</strong><small>Awaiting admin review</small></div>
-    <div><span>Verified orders</span><strong>{{ number_format($totals->paid_orders ?? 0) }}</strong><small>Orders containing your books</small></div>
-    <div><span>Publisher deductions</span><strong>₹{{ number_format($totals->deductions ?? 0,2) }}</strong><small>Saved when payments are verified</small></div>
+    <div><span>Net verified
+            earnings</span><strong>₹{{ number_format(($totals->verified ?? 0) - ($totals->deductions ?? 0), 2) }}</strong><small>Gross
+            sales minus deductions</small></div>
+    <div><span>Pending verification</span><strong>₹{{ number_format($totals->pending ?? 0, 2) }}</strong><small>Awaiting
+            admin review</small></div>
+    <div><span>Verified orders</span><strong>{{ number_format($totals->paid_orders ?? 0) }}</strong><small>Orders
+            containing your books</small></div>
+    <div><span>Publisher deductions</span><strong>₹{{ number_format($totals->deductions ?? 0, 2) }}</strong><small>Saved
+            when payments are verified</small></div>
 </div>
 <section class="a-card publisher-payment-card">
-    <form method="GET" class="publisher-payment-toolbar"><select name="period" class="a-select"><option value="month" @selected($period==='month')>This month</option><option value="year" @selected($period==='year')>This year</option><option value="all" @selected($period==='all')>All time</option></select><select name="payment" class="a-select"><option value="">All payments</option><option value="pending" @selected($paymentStatus==='pending')>Pending</option><option value="verified" @selected($paymentStatus==='verified')>Verified</option><option value="rejected" @selected($paymentStatus==='rejected')>Rejected</option></select><button class="btn btn-primary">Filter</button><a href="{{ route('publisher.payments.index') }}" class="btn btn-outline">Reset</a></form>
-    <div class="publisher-table-scroll"><table class="a-table publisher-payment-table"><thead><tr><th>Invoice</th><th>Order</th><th>Customer</th><th>Date</th><th>My gross amount</th><th>Payment</th><th>Verified on</th><th>Action</th></tr></thead><tbody>
-    @forelse($orders as $order) @php($publisherGross=$order->items->sum(fn($item)=>$item->quantity*($item->base_unit_price ?? $item->unit_price)))
-    <tr><td><strong>INV-P{{ auth()->user()->publisher->id }}-{{ $order->id }}</strong></td><td>#CSO{{ $order->id }}</td><td><strong>{{ $order->customer?->name ?? '—' }}</strong><small>{{ $order->customer?->email }}</small></td><td>{{ $order->created_at->format('d M Y') }}</td><td><strong>₹{{ number_format($publisherGross,2) }}</strong></td><td><span class="order-payment payment-{{ $order->payment?->verified_status ?? 'none' }}">{{ ucfirst($order->payment?->verified_status ?? 'No payment') }}</span></td><td>{{ $order->payment?->verified_at?->format('d M Y, h:i A') ?? '—' }}</td><td><a target="_blank" href="{{ route('publisher.payments.invoice',$order) }}" class="btn btn-outline btn-sm">View invoice</a></td></tr>
-    @empty<tr><td colspan="8" class="empty-state">No payment records match these filters.</td></tr>@endforelse
-    </tbody></table></div>
-    <div class="publisher-table-footer"><span>Showing {{ $orders->firstItem() ?? 0 }}–{{ $orders->lastItem() ?? 0 }} of {{ $orders->total() }}</span><div class="order-pagination">@if($orders->previousPageUrl())<a href="{{ $orders->previousPageUrl() }}">Previous</a>@else<span class="disabled">Previous</span>@endif @if($orders->nextPageUrl())<a href="{{ $orders->nextPageUrl() }}">Next</a>@else<span class="disabled">Next</span>@endif</div></div>
+    <form method="GET" class="publisher-payment-toolbar"><select name="period" class="a-select">
+            <option value="month" @selected($period === 'month')>This month</option>
+            <option value="year" @selected($period === 'year')>This year</option>
+            <option value="all" @selected($period === 'all')>All time</option>
+        </select><select name="payment" class="a-select">
+            <option value="">All payments</option>
+            <option value="pending" @selected($paymentStatus === 'pending')>Pending</option>
+            <option value="verified" @selected($paymentStatus === 'verified')>Verified</option>
+            <option value="rejected" @selected($paymentStatus === 'rejected')>Rejected</option>
+        </select><button class="btn btn-primary">Filter</button><a href="{{ route('publisher.payments.index') }}"
+            class="btn btn-outline">Reset</a></form>
+    <div class="publisher-table-scroll">
+        <table class="a-table publisher-payment-table">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>My gross amount</th>
+                    <th>Payment</th>
+                    <th>Verified on</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($orders as $order)
+                @php($publisherGross = $order->items->sum(fn($item) => $item->quantity * ($item->base_unit_price ?? $item->unit_price)))
+                <tr>
+                    <td><strong>INV-P{{ auth()->user()->publisher->id }}-{{ $order->id }}</strong></td>
+                    <td>#CSO{{ $order->id }}</td>
+                    <td><strong>{{ $order->customer?->name ?? '—' }}</strong><small>{{ $order->customer?->email }}</small>
+                    </td>
+                    <td>{{ $order->created_at->format('d M Y') }}</td>
+                    <td><strong>₹{{ number_format($publisherGross, 2) }}</strong></td>
+                    <td><span
+                            class="order-payment payment-{{ $order->payment?->verified_status ?? 'none' }}">{{ ucfirst($order->payment?->verified_status ?? 'No payment') }}</span>
+                    </td>
+                    <td>{{ $order->payment?->verified_at?->format('d M Y, h:i A') ?? '—' }}</td>
+                    <td><a target="_blank" href="{{ route('publisher.payments.invoice', $order) }}"
+                            class="btn btn-outline btn-sm">View invoice</a></td>
+                </tr>
+                @empty<tr>
+                    <td colspan="8" class="empty-state">No payment records match these filters.</td>
+                </tr>@endforelse
+            </tbody>
+        </table>
+    </div>
+    <div class="publisher-table-footer"><span>Showing {{ $orders->firstItem() ?? 0 }}–{{ $orders->lastItem() ?? 0 }} of
+            {{ $orders->total() }}</span>
+        <div class="order-pagination">@if($orders->previousPageUrl())<a
+        href="{{ $orders->previousPageUrl() }}">Previous</a>@else<span class="disabled">Previous</span>@endif
+            @if($orders->nextPageUrl())<a href="{{ $orders->nextPageUrl() }}">Next</a>@else<span
+            class="disabled">Next</span>@endif</div>
+    </div>
 </section>
 @endsection

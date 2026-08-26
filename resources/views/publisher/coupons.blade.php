@@ -1,14 +1,122 @@
 @extends('layouts.dashboard')
-@php $homeRoute=route('publisher.dashboard');$brandLabel='Publisher Panel';$crumb='Marketing';$logoutRoute=route('publisher.logout'); @endphp
-@section('title','Coupons & Offers')
+@php $homeRoute = route('publisher.dashboard');
+    $brandLabel = 'Publisher Panel';
+    $crumb = 'Marketing';
+$logoutRoute = route('publisher.logout'); @endphp
+@section('title', 'Coupons & Offers')
 @section('nav')
-<div class="nav-group"><div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span class="nav-icon">▣</span><span>Dashboard</span></a></div><div class="nav-group"><div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span class="nav-icon">📖</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}" class="nav-link"><span class="nav-icon">📦</span><span>Inventory</span></a></div><div class="nav-group"><div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link active"><span class="nav-icon">🏷</span><span>Coupons & Offers</span></a></div><div class="nav-group"><div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span class="nav-icon">🚚</span><span>Orders</span></a></div>
+    <div class="nav-group">
+        <div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span
+                class="nav-icon">▣</span><span>Dashboard</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span
+                class="nav-icon">📖</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}"
+            class="nav-link"><span class="nav-icon">📦</span><span>Inventory</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}"
+            class="nav-link active"><span class="nav-icon">🏷</span><span>Coupons & Offers</span></a>
+    </div>
+    <div class="nav-group">
+        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span
+                class="nav-icon">🚚</span><span>Orders</span></a>
+    </div>
 @endsection
 @section('content')
-<div class="publisher-page-head"><div><span class="analytics-eyebrow">Marketing</span><h2>Coupons & offers</h2><p>Propose discounts for your books and track admin approval.</p></div></div>
-<div class="coupon-summary"><div><span>Total requests</span><strong>{{ $requests->total() }}</strong></div><div><span>Active offers</span><strong>{{ $activeCoupons }}</strong></div><div><span>Total redemptions</span><strong>{{ $totalUses }}</strong></div></div>
-<div class="publisher-coupon-grid">
-<section class="a-card publisher-coupon-form"><div class="coupon-section-head"><div><h3>Request a new offer</h3><p>Admin approval is required before customers can use it.</p></div><span>Proposal</span></div><form method="POST" action="{{ route('publisher.coupons.store') }}">@csrf
-<div class="a-form-group"><label>Coupon code</label><input name="code" value="{{ old('code') }}" class="a-input" maxlength="40" placeholder="MYBOOK20" required style="text-transform:uppercase"></div><div class="a-grid a-grid-2"><div class="a-form-group"><label>Discount type</label><select name="discount_type" class="a-select"><option value="percentage">Percentage (%)</option><option value="fixed">Fixed amount (₹)</option></select></div><div class="a-form-group"><label>Discount value</label><input type="number" step="0.01" min="0.01" name="discount_value" value="{{ old('discount_value') }}" class="a-input" required></div></div><div class="a-form-group"><label>Minimum order value (₹)</label><input type="number" step="0.01" min="0" name="min_order_value" value="{{ old('min_order_value') }}" class="a-input" placeholder="Optional"></div><div class="a-grid a-grid-2"><div class="a-form-group"><label>Valid from</label><input type="date" name="valid_from" value="{{ old('valid_from') }}" class="a-input"></div><div class="a-form-group"><label>Valid until</label><input type="date" name="valid_to" value="{{ old('valid_to') }}" class="a-input"></div></div><div class="a-form-group"><label>Usage limit</label><input type="number" min="1" name="usage_limit" value="{{ old('usage_limit') }}" class="a-input" placeholder="Unlimited"></div><div class="a-form-group"><label>Reason / campaign notes</label><textarea name="publisher_notes" class="a-textarea" maxlength="1000" placeholder="Explain the campaign to admin">{{ old('publisher_notes') }}</textarea></div><button class="btn btn-primary" style="width:100%">Submit for approval</button></form></section>
-<section class="a-card publisher-coupon-history"><div class="coupon-section-head"><div><h3>Request history</h3><p>Approval status and customer availability.</p></div></div><div class="publisher-table-scroll"><table class="a-table"><thead><tr><th>Code</th><th>Offer</th><th>Period</th><th>Status</th><th>Admin response</th></tr></thead><tbody>@forelse($requests as $item)<tr><td><strong class="coupon-code">{{ $item->code }}</strong></td><td><strong>{{ $item->discount_type==='percentage'?number_format($item->discount_value,0).'%':'₹'.number_format($item->discount_value,2) }}</strong><small>Min ₹{{ number_format($item->min_order_value??0,0) }}</small></td><td>{{ $item->valid_from?->format('d M Y')??'Immediately' }}<small>to {{ $item->valid_to?->format('d M Y')??'No expiry' }}</small></td><td><span class="status-pill request-status-{{ $item->status }}">{{ ucfirst($item->status) }}</span></td><td>{{ $item->admin_notes??'—' }}@if($item->coupon)<small>{{ $item->coupon->is_active?'Active for customers':'Currently inactive' }}</small>@endif</td></tr>@empty<tr><td colspan="5" class="taxonomy-empty">No coupon requests submitted yet.</td></tr>@endforelse</tbody></table></div><div class="publisher-table-footer"><span>Showing {{ $requests->firstItem()??0 }}–{{ $requests->lastItem()??0 }} of {{ $requests->total() }}</span>@if($requests->hasPages())<nav class="order-pagination">@if($requests->onFirstPage())<span class="disabled">Previous</span>@else<a href="{{ $requests->previousPageUrl() }}">Previous</a>@endif @foreach(range(1,$requests->lastPage()) as $page)<a href="{{ $requests->url($page) }}" class="{{ $requests->currentPage()===$page?'active':'' }}">{{ $page }}</a>@endforeach @if($requests->hasMorePages())<a href="{{ $requests->nextPageUrl() }}">Next</a>@else<span class="disabled">Next</span>@endif</nav>@endif</div></section></div>
+    <div class="publisher-page-head">
+        <div><span class="analytics-eyebrow">Marketing</span>
+            <h2>Coupons & offers</h2>
+            <p>Propose discounts for your books and track admin approval.</p>
+        </div>
+    </div>
+    <div class="coupon-summary">
+        <div><span>Total requests</span><strong>{{ $requests->total() }}</strong></div>
+        <div><span>Active offers</span><strong>{{ $activeCoupons }}</strong></div>
+        <div><span>Total redemptions</span><strong>{{ $totalUses }}</strong></div>
+    </div>
+    <div class="publisher-coupon-grid">
+        <section class="a-card publisher-coupon-form">
+            <div class="coupon-section-head">
+                <div>
+                    <h3>Request a new offer</h3>
+                    <p>Admin approval is required before customers can use it.</p>
+                </div><span>Proposal</span>
+            </div>
+            <form method="POST" action="{{ route('publisher.coupons.store') }}">@csrf
+                <div class="a-form-group"><label>Coupon code</label><input name="code" value="{{ old('code') }}"
+                        class="a-input" maxlength="40" placeholder="MYBOOK20" required style="text-transform:uppercase">
+                </div>
+                <div class="a-grid a-grid-2">
+                    <div class="a-form-group"><label>Discount type</label><select name="discount_type" class="a-select">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed amount (₹)</option>
+                        </select></div>
+                    <div class="a-form-group"><label>Discount value</label><input type="number" step="0.01" min="0.01"
+                            name="discount_value" value="{{ old('discount_value') }}" class="a-input" required></div>
+                </div>
+                <div class="a-form-group"><label>Minimum order value (₹)</label><input type="number" step="0.01" min="0"
+                        name="min_order_value" value="{{ old('min_order_value') }}" class="a-input" placeholder="Optional">
+                </div>
+                <div class="a-grid a-grid-2">
+                    <div class="a-form-group"><label>Valid from</label><input type="date" name="valid_from"
+                            value="{{ old('valid_from') }}" class="a-input"></div>
+                    <div class="a-form-group"><label>Valid until</label><input type="date" name="valid_to"
+                            value="{{ old('valid_to') }}" class="a-input"></div>
+                </div>
+                <div class="a-form-group"><label>Usage limit</label><input type="number" min="1" name="usage_limit"
+                        value="{{ old('usage_limit') }}" class="a-input" placeholder="Unlimited"></div>
+                <div class="a-form-group"><label>Reason / campaign notes</label><textarea name="publisher_notes"
+                        class="a-textarea" maxlength="1000"
+                        placeholder="Explain the campaign to admin">{{ old('publisher_notes') }}</textarea></div><button
+                    class="btn btn-primary" style="width:100%">Submit for approval</button>
+            </form>
+        </section>
+        <section class="a-card publisher-coupon-history">
+            <div class="coupon-section-head">
+                <div>
+                    <h3>Request history</h3>
+                    <p>Approval status and customer availability.</p>
+                </div>
+            </div>
+            <div class="publisher-table-scroll">
+                <table class="a-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Offer</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th>Admin response</th>
+                        </tr>
+                    </thead>
+                    <tbody>@forelse($requests as $item)
+                        <tr>
+                            <td><strong class="coupon-code">{{ $item->code }}</strong></td>
+                            <td><strong>{{ $item->discount_type === 'percentage' ? number_format($item->discount_value, 0) . '%' : '₹' . number_format($item->discount_value, 2) }}</strong><small>Min
+                                    ₹{{ number_format($item->min_order_value ?? 0, 0) }}</small></td>
+                            <td>{{ $item->valid_from?->format('d M Y') ?? 'Immediately' }}<small>to
+                                    {{ $item->valid_to?->format('d M Y') ?? 'No expiry' }}</small></td>
+                            <td><span
+                                    class="status-pill request-status-{{ $item->status }}">{{ ucfirst($item->status) }}</span>
+                            </td>
+                            <td>{{ $item->admin_notes ?? '—' }}@if($item->coupon)<small>{{ $item->coupon->is_active ? 'Active for customers' : 'Currently inactive' }}</small>@endif
+                            </td>
+                    </tr>@empty<tr>
+                            <td colspan="5" class="taxonomy-empty">No coupon requests submitted yet.</td>
+                        </tr>@endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="publisher-table-footer"><span>Showing {{ $requests->firstItem() ?? 0 }}–{{ $requests->lastItem() ?? 0 }}
+                    of {{ $requests->total() }}</span>@if($requests->hasPages())
+                        <nav class="order-pagination">@if($requests->onFirstPage())<span class="disabled">Previous</span>@else<a
+                        href="{{ $requests->previousPageUrl() }}">Previous</a>@endif
+                            @foreach(range(1, $requests->lastPage()) as $page)<a href="{{ $requests->url($page) }}"
+                            class="{{ $requests->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
+                            @if($requests->hasMorePages())<a href="{{ $requests->nextPageUrl() }}">Next</a>@else<span
+                    class="disabled">Next</span>@endif</nav>@endif
+            </div>
+        </section>
+    </div>
 @endsection
