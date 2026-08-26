@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
@@ -50,6 +51,8 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
 
     Route::middleware('role:publisher')->group(function () {
         Route::get('/dashboard', [Pub\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/analytics', [Pub\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/export/{type}', [Pub\AnalyticsController::class, 'export'])->name('analytics.export');
         Route::get('/profile', [ProfileController::class, 'publisherEdit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');

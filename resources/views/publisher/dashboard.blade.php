@@ -28,11 +28,15 @@
                 class="nav-icon">📖</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}"
             class="nav-link"><span class="nav-icon">📦</span><span>Inventory</span></a>
     </div>
-    <div class="nav-group"><div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span class="nav-icon">🏷</span><span>Coupons & Offers</span></a></div>
+    <div class="nav-group">
+        <div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span
+                class="nav-icon">🏷</span><span>Coupons & Offers</span></a>
+    </div>
     <div class="nav-group">
         <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span
                 class="nav-icon">🚚</span><span>Orders</span></a>
     </div>
+    <div class="nav-group"><div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a></div>
 @endsection
 @section('content')
     <div class="publisher-dashboard-welcome">
@@ -42,7 +46,7 @@
         </div><a href="{{ route('publisher.books.create') }}" class="btn btn-primary">+ Add new book</a>
     </div>
 
-    <div class="publisher-dashboard-stats"> 
+    <div class="publisher-dashboard-stats">
         <div class="stat-box">
             <div class="stat-top">
                 <div class="stat-icon green">₹</div><span class="trend-chip trend-up">This month</span>
@@ -77,7 +81,8 @@
     <div class="publisher-dashboard-health">
         <div><strong>{{ $monthlyOrders }}</strong><span>Orders this month</span></div>
         <div><strong>{{ $activeBookCount }}</strong><span>Active titles</span></div>
-        <div class="{{ $lowStockCount ? 'attention' : '' }}"><strong>{{ $lowStockCount }}</strong><span>Low-stock titles</span>
+        <div class="{{ $lowStockCount ? 'attention' : '' }}"><strong>{{ $lowStockCount }}</strong><span>Low-stock
+                titles</span>
         </div>
     </div>
 
@@ -94,8 +99,10 @@
             <div class="weekly-chart">@foreach($weeklyTrend as $point)
                 <div class="weekly-column" title="{{ $point['units'] }} units · ₹{{ number_format($point['revenue'], 0) }}">
                     <div class="bar-area"><i class="revenue-bar"
-                            style="height:{{ $point['revenue'] > 0 ? max(4, $point['revenue'] / $maxRevenue * 100) : 0 }}%"></i><i class="order-bar"
-                            style="height:{{ $point['units'] > 0 ? max(4, $point['units'] / $maxUnits * 100) : 0 }}%"></i></div>
+                            style="height:{{ $point['revenue'] > 0 ? max(4, $point['revenue'] / $maxRevenue * 100) : 0 }}%"></i><i
+                            class="order-bar"
+                            style="height:{{ $point['units'] > 0 ? max(4, $point['units'] / $maxUnits * 100) : 0 }}%"></i>
+                    </div>
                     <strong>{{ $point['units'] }}</strong><span>{{ $point['label'] }}</span>
             </div>@endforeach
             </div>
