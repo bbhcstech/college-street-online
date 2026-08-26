@@ -90,6 +90,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/books', [Admin\BookController::class, 'index'])->name('books.index');
         Route::get('/books/create', [Admin\BookController::class, 'create'])->name('books.create');
+        Route::get('/books/export/{type}', [Admin\BookController::class, 'export'])->name('books.export');
         Route::post('/books', [Admin\BookController::class, 'store'])->name('books.store');
         Route::get('/books/{book}/edit', [Admin\BookController::class, 'edit'])->name('books.edit');
         Route::put('/books/{book}', [Admin\BookController::class, 'update'])->name('books.update');

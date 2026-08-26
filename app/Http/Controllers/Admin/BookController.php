@@ -19,8 +19,45 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $books = Book::query()
-            ->with(['publisher', 'category', 'author', 'inventory'])
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
+        $books = $this->filteredQuery($request)
+            ->latest()->paginate($perPage)->withQueryString();
+
+        return view('admin.books.index', [
+            'books' => $books,
+            'categories' => Category::orderBy('name')->get(),
+            'publishers' => Publisher::orderBy('business_name')->get(),
+        ]);
+    }
+
+    public function export(Request $request, string $type)
+    {
+        abort_unless(in_array($type, ['csv', 'excel', 'print', 'pdf'], true), 404);
+        $books = $this->filteredQuery($request)
+            ->when($request->filled('ids'), fn ($query) => $query->whereIn('books.id', collect(explode(',', $request->query('ids')))->filter(fn ($id) => ctype_digit($id))))
+            ->orderBy('title')->get();
+
+        if ($type === 'csv') {
+            return response()->streamDownload(function () use ($books) {
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['Title', 'ISBN', 'Author', 'Publisher', 'Category', 'Price INR', 'Stock', 'Status']);
+                foreach ($books as $book) fputcsv($output, [$book->title, $book->isbn, $book->author?->name, $book->publisher?->business_name, $book->category?->name, $book->price, $book->inventory?->quantity ?? 0, $book->trashed() ? 'Removed' : ucfirst($book->status)]);
+                fclose($output);
+            }, 'books-' . now()->format('Y-m-d') . '.csv');
+        }
+
+        if ($type === 'excel') {
+            return response()->view('admin.books.report', compact('books') + ['mode' => 'excel'])
+                ->header('Content-Type', 'application/vnd.ms-excel')
+                ->header('Content-Disposition', 'attachment; filename="books-' . now()->format('Y-m-d') . '.xls"');
+        }
+
+        return view('admin.books.report', compact('books') + ['mode' => $type]);
+    }
+
+    private function filteredQuery(Request $request)
+    {
+        return Book::query()->with(['publisher', 'category', 'author', 'inventory'])
             ->when($request->query('q'), function ($query, $term) {
                 $query->where(function ($search) use ($term) {
                     $search->where('title', 'like', "%{$term}%")
@@ -33,16 +70,7 @@ class BookController extends Controller
             ->when($request->query('category_id'), fn ($query, $category) => $query->where('category_id', $category))
             ->when($request->query('publisher_id'), fn ($query, $publisher) => $query->where('publisher_id', $publisher))
             ->when($request->query('deleted') === 'only', fn ($query) => $query->onlyTrashed())
-            ->when($request->query('deleted') === 'with', fn ($query) => $query->withTrashed())
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
-
-        return view('admin.books.index', [
-            'books' => $books,
-            'categories' => Category::orderBy('name')->get(),
-            'publishers' => Publisher::orderBy('business_name')->get(),
-        ]);
+            ->when($request->query('deleted') === 'with', fn ($query) => $query->withTrashed());
     }
 
     public function create()

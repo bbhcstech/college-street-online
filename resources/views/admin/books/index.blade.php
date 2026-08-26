@@ -1,53 +1,16 @@
 @extends('layouts.dashboard')
-@php
-    $homeRoute = route('admin.dashboard');
-    $brandLabel = 'Admin Console';
-    $crumb = 'Marketplace';
-    $logoutRoute = route('admin.logout');
-@endphp
-@section('title', 'All Books')
-@section('nav')@include('admin.partials.nav', ['active' => 'books'])@endsection
+@php $homeRoute=route('admin.dashboard');$brandLabel='Admin Console';$crumb='Marketplace';$logoutRoute=route('admin.logout'); @endphp
+@section('title','All Books')
+@section('nav')@include('admin.partials.nav',['active'=>'books'])@endsection
 @section('content')
-<div class="page-header"><div></div><a href="{{ route('admin.books.create') }}" class="btn btn-primary">+ Add Book</a></div>
-<form method="GET" class="book-admin-filters">
-    <input type="text" name="q" value="{{ request('q') }}" class="a-input" placeholder="Search title, ISBN, author or publisher">
-    <select name="publisher_id" class="a-select"><option value="">All publishers</option>@foreach($publishers as $publisher)<option value="{{ $publisher->id }}" {{ (string) request('publisher_id') === (string) $publisher->id ? 'selected' : '' }}>{{ $publisher->business_name }}</option>@endforeach</select>
-    <select name="category_id" class="a-select"><option value="">All categories</option>@foreach($categories as $category)<option value="{{ $category->id }}" {{ (string) request('category_id') === (string) $category->id ? 'selected' : '' }}>{{ $category->name }}</option>@endforeach</select>
-    <select name="status" class="a-select"><option value="">All statuses</option><option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option><option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option></select>
-    <select name="deleted" class="a-select"><option value="">Current books</option><option value="with" {{ request('deleted') === 'with' ? 'selected' : '' }}>Include removed</option><option value="only" {{ request('deleted') === 'only' ? 'selected' : '' }}>Removed only</option></select>
-    <button class="btn btn-primary btn-sm">Filter</button>
-    @if(request()->query())<a href="{{ route('admin.books.index') }}" class="btn btn-outline btn-sm">Clear</a>@endif
-</form>
-
-<div class="a-card admin-books-table">
-    <table class="a-table"><thead><tr><th>Book</th><th>Publisher</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody>
-    @forelse($books as $book)
-        <tr class="{{ $book->trashed() ? 'admin-book-removed' : '' }}">
-            <td><div class="a-book-title">
-                @if($book->cover_url)<img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="a-book-cover-thumb">@else<div class="a-book-cover-thumb a-book-cover-placeholder">&#128214;</div>@endif
-                <div><span>{{ $book->title }}</span><small>{{ $book->author->name ?? 'Unknown author' }} · {{ $book->isbn }}</small></div>
-            </div></td>
-            <td>{{ $book->publisher->business_name ?? '—' }}</td>
-            <td>{{ $book->category->name ?? 'General' }}</td>
-            <td>&#8377;{{ number_format($book->price, 0) }}</td>
-            <td>{{ $book->inventory->quantity ?? 0 }}</td>
-            <td>@if($book->trashed())<span class="badge badge-danger">Removed</span>@else<span class="badge {{ $book->status === 'active' ? 'badge-success' : 'badge-muted' }}">{{ ucfirst($book->status) }}</span>@endif</td>
-            <td><div class="admin-book-actions">
-                @if($book->trashed())
-                    <form method="POST" action="{{ route('admin.books.restore', $book->id) }}">@csrf @method('PATCH')<button class="btn btn-primary btn-sm">Restore</button></form>
-                    <form method="POST" action="{{ route('admin.books.force-destroy', $book->id) }}" onsubmit="return confirm('Permanently delete this book? This cannot be undone.');">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Delete Permanently</button></form>
-                @else
-                    <a href="{{ route('books.show', $book) }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">View</a>
-                    <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-outline btn-sm">Edit</a>
-                    <form method="POST" action="{{ route('admin.books.status', $book) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="{{ $book->status === 'active' ? 'inactive' : 'active' }}"><button class="btn btn-outline btn-sm">{{ $book->status === 'active' ? 'Deactivate' : 'Activate' }}</button></form>
-                    <form method="POST" action="{{ route('admin.books.destroy', $book) }}" onsubmit="return confirm('Remove this book?');">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Remove</button></form>
-                @endif
-            </div></td>
-        </tr>
-    @empty
-        <tr><td colspan="7">No books match your filters.</td></tr>
-    @endforelse
-    </tbody></table>
-    <div style="margin-top:16px;">{{ $books->links() }}</div>
-</div>
+<div class="publisher-page-head"><div><span class="analytics-eyebrow">Catalogue management</span><h2>Book inventory</h2><p>Search, filter, export, and control catalogue visibility.</p></div><a href="{{ route('admin.books.create') }}" class="btn btn-primary">+ Add book</a></div>
+<div class="a-card publisher-table-card" data-book-table data-export-base="{{ route('admin.books.export','csv') }}">
+<form method="GET" class="book-table-toolbar"><div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}" placeholder="Search title, ISBN, author or publisher"></div><select name="publisher_id" class="a-select"><option value="">All publishers</option>@foreach($publishers as $publisher)<option value="{{ $publisher->id }}" @selected((string)request('publisher_id')===(string)$publisher->id)>{{ $publisher->business_name }}</option>@endforeach</select><select name="category_id" class="a-select"><option value="">All categories</option>@foreach($categories as $category)<option value="{{ $category->id }}" @selected((string)request('category_id')===(string)$category->id)>{{ $category->name }}</option>@endforeach</select><select name="status" class="a-select"><option value="">All statuses</option><option value="active" @selected(request('status')==='active')>Active</option><option value="inactive" @selected(request('status')==='inactive')>Inactive</option></select><select name="deleted" class="a-select"><option value="">Current books</option><option value="with" @selected(request('deleted')==='with')>Include removed</option><option value="only" @selected(request('deleted')==='only')>Removed only</option></select><select name="per_page" class="a-select"><option value="10" @selected($books->perPage()===10)>10 entries</option><option value="25" @selected($books->perPage()===25)>25 entries</option><option value="50" @selected($books->perPage()===50)>50 entries</option><option value="100" @selected($books->perPage()===100)>100 entries</option></select><button class="btn btn-primary btn-sm">Apply</button>@if(request()->query())<a href="{{ route('admin.books.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif</form>
+<div class="publisher-export-bar"><div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered books when none are selected.</span></div><div class="publisher-export-buttons"><button type="button" class="btn btn-outline btn-sm" data-copy>Copy</button><button type="button" class="btn btn-outline btn-sm" data-export="excel">Excel</button><button type="button" class="btn btn-outline btn-sm" data-export="pdf">PDF</button><button type="button" class="btn btn-outline btn-sm" data-export="print">Print</button><button type="button" class="btn btn-outline btn-sm" data-export="csv">CSV</button></div></div>
+<div class="publisher-table-scroll"><table class="a-table book-data-table"><thead><tr><th><input type="checkbox" data-select-all aria-label="Select all books"></th><th>Book</th><th>Publisher</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+@forelse($books as $book)<tr data-export-row data-id="{{ $book->id }}" class="{{ $book->trashed()?'admin-book-removed':'' }}"><td><input type="checkbox" data-row-select aria-label="Select {{ $book->title }}"></td><td><div class="a-book-title">@if($book->cover_url)<img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="a-book-cover-thumb">@else<div class="a-book-cover-thumb a-book-cover-placeholder">▣</div>@endif<div><span data-cell>{{ $book->title }}</span><small><span data-cell>{{ $book->author->name??'Unknown author' }}</span> · <span data-cell>{{ $book->isbn }}</span></small></div></div></td><td data-cell>{{ $book->publisher->business_name??'—' }}</td><td data-cell>{{ $book->category->name??'General' }}</td><td data-cell>₹{{ number_format($book->price,2) }}</td><td data-cell><strong>{{ $book->inventory->quantity??0 }}</strong></td><td>
+@if($book->trashed())<span class="badge badge-danger">Removed</span>@else<form method="POST" action="{{ route('admin.books.status',$book) }}">@csrf @method('PATCH')<select name="status" class="book-status-select status-{{ $book->status }}" data-current="{{ $book->status }}" onchange="if(confirm('Change book status?'))this.form.submit();else this.value=this.dataset.current"><option value="active" @selected($book->status==='active')>Active</option><option value="inactive" @selected($book->status==='inactive')>Inactive</option></select></form>@endif</td><td><div class="book-row-actions">@if($book->trashed())<form method="POST" action="{{ route('admin.books.restore',$book->id) }}">@csrf @method('PATCH')<button class="btn btn-primary btn-sm">Restore</button></form><form method="POST" action="{{ route('admin.books.force-destroy',$book->id) }}" onsubmit="return confirm('Permanently delete this book?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Delete permanently</button></form>@else<a href="{{ route('books.show',$book) }}" target="_blank" class="btn btn-outline btn-sm">View</a><a href="{{ route('admin.books.edit',$book) }}" class="btn btn-outline btn-sm">Edit</a><form method="POST" action="{{ route('admin.books.destroy',$book) }}" onsubmit="return confirm('Archive this book?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Archive</button></form>@endif</div></td></tr>
+@empty<tr><td colspan="8"><div class="analytics-empty">No books match your filters.</div></td></tr>@endforelse
+</tbody></table></div><div class="publisher-table-footer"><span>Showing {{ $books->firstItem()??0 }}–{{ $books->lastItem()??0 }} of {{ $books->total() }} books</span><div>{{ $books->links() }}</div></div></div>
+<script>(()=>{const root=document.querySelector('[data-book-table]'),rows=[...root.querySelectorAll('[data-export-row]')],all=root.querySelector('[data-select-all]'),count=root.querySelector('[data-selection-count]');const selected=()=>rows.filter(r=>r.querySelector('[data-row-select]').checked),update=()=>{const n=selected().length;count.textContent=`${n} selected`;all.checked=n===rows.length&&n>0;all.indeterminate=n>0&&n<rows.length};all?.addEventListener('change',()=>{rows.forEach(r=>r.querySelector('[data-row-select]').checked=all.checked);update()});rows.forEach(r=>r.querySelector('[data-row-select]').addEventListener('change',update));const ids=()=>selected().map(r=>r.dataset.id).join(',');root.querySelector('[data-copy]').addEventListener('click',async e=>{const chosen=selected().length?selected():rows,text=chosen.map(r=>[...r.querySelectorAll('[data-cell]')].map(c=>c.textContent.trim()).join('\t')).join('\n');await navigator.clipboard.writeText(text);e.target.textContent='Copied';setTimeout(()=>e.target.textContent='Copy',1200)});root.querySelectorAll('[data-export]').forEach(b=>b.addEventListener('click',()=>{const url=new URL(root.dataset.exportBase.replace(/csv$/,b.dataset.export),location.origin),params=new URLSearchParams(location.search);params.delete('page');if(ids())params.set('ids',ids());url.search=params;b.dataset.export==='print'||b.dataset.export==='pdf'?window.open(url,'_blank'):location.href=url}));})();</script>
 @endsection
