@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Author;
-use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -15,8 +14,8 @@ class CategoryController extends Controller
     public function index()
     {
         return view('admin.categories', [
-            'categories' => Category::withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->get(),
-            'authors' => Author::withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->get(),
+            'categories' => Category::withTrashed()->withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->get(),
+            'authors' => Author::withTrashed()->withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->get(),
         ]);
     }
 
@@ -41,11 +40,26 @@ class CategoryController extends Controller
 
     public function destroyCategory(Category $category)
     {
-        if (Book::withTrashed()->where('category_id', $category->id)->exists()) {
-            return back()->withErrors(['category' => 'This category cannot be deleted because books are linked to it.']);
-        }
         $category->delete();
-        return back()->with('success', 'Category deleted.');
+        return back()->with('success', 'Category archived. Existing books were not changed.');
+    }
+
+    public function restoreCategory(Category $category)
+    {
+        $category->restore();
+        return back()->with('success', 'Category restored.');
+    }
+
+    public function forceDestroyCategory(int $id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+
+        if ($category->books()->withTrashed()->exists()) {
+            return back()->withErrors(['category' => 'This category cannot be permanently deleted because books are linked to it.']);
+        }
+
+        $category->forceDelete();
+        return back()->with('success', 'Category permanently deleted.');
     }
 
     public function storeAuthor(Request $request)
@@ -66,11 +80,26 @@ class CategoryController extends Controller
 
     public function destroyAuthor(Author $author)
     {
-        if (Book::withTrashed()->where('author_id', $author->id)->exists()) {
-            return back()->withErrors(['author' => 'This author cannot be deleted because books are linked to them.']);
-        }
         $author->delete();
-        return back()->with('success', 'Author deleted.');
+        return back()->with('success', 'Author archived. Existing books were not changed.');
+    }
+
+    public function restoreAuthor(Author $author)
+    {
+        $author->restore();
+        return back()->with('success', 'Author restored.');
+    }
+
+    public function forceDestroyAuthor(int $id)
+    {
+        $author = Author::onlyTrashed()->findOrFail($id);
+
+        if ($author->books()->withTrashed()->exists()) {
+            return back()->withErrors(['author' => 'This author cannot be permanently deleted because books are linked to them.']);
+        }
+
+        $author->forceDelete();
+        return back()->with('success', 'Author permanently deleted.');
     }
 
     protected function uniqueCategorySlug(string $name, ?Category $ignore = null): string

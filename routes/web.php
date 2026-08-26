@@ -103,9 +103,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/categories', [Admin\CategoryController::class, 'storeCategory'])->name('categories.store');
         Route::put('/categories/{category}', [Admin\CategoryController::class, 'updateCategory'])->name('categories.update');
         Route::delete('/categories/{category}', [Admin\CategoryController::class, 'destroyCategory'])->name('categories.destroy');
+        Route::post('/categories/{category}/restore', [Admin\CategoryController::class, 'restoreCategory'])->withTrashed()->name('categories.restore');
+        Route::delete('/categories/{id}/force', [Admin\CategoryController::class, 'forceDestroyCategory'])->name('categories.force-destroy');
         Route::post('/authors', [Admin\CategoryController::class, 'storeAuthor'])->name('authors.store');
         Route::put('/authors/{author}', [Admin\CategoryController::class, 'updateAuthor'])->name('authors.update');
         Route::delete('/authors/{author}', [Admin\CategoryController::class, 'destroyAuthor'])->name('authors.destroy');
+        Route::post('/authors/{author}/restore', [Admin\CategoryController::class, 'restoreAuthor'])->withTrashed()->name('authors.restore');
+        Route::delete('/authors/{id}/force', [Admin\CategoryController::class, 'forceDestroyAuthor'])->name('authors.force-destroy');
 
         Route::get('/coupons', [Admin\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Admin\CouponController::class, 'store'])->name('coupons.store');

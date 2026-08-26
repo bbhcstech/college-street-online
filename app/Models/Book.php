@@ -29,8 +29,8 @@ class Book extends Model
     }
 
     public function publisher() { return $this->belongsTo(Publisher::class); }
-    public function category() { return $this->belongsTo(Category::class); }
-    public function author() { return $this->belongsTo(Author::class); }
+    public function category() { return $this->belongsTo(Category::class)->withTrashed(); }
+    public function author() { return $this->belongsTo(Author::class)->withTrashed(); }
     public function inventory() { return $this->hasOne(Inventory::class); }
     public function inventoryTransactions() { return $this->hasMany(InventoryTransaction::class); }
     public function reviews() { return $this->hasMany(BookReview::class); }
