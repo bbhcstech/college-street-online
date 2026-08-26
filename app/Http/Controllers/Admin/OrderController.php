@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\SiteSetting;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -91,6 +92,14 @@ class OrderController extends Controller
         $data = $request->validate(['decision' => 'required|in:verified,rejected']);
         $payment->update(['verified_status' => $data['decision'], 'verified_by' => auth()->id(), 'verified_at' => now()]);
         if ($data['decision'] === 'verified') {
+            $commissionRate = (float) (SiteSetting::where('key', 'publisher_commission_rate')->value('value') ?? 0);
+            foreach ($payment->order->items as $item) {
+                $gross = $item->quantity * ($item->base_unit_price ?? $item->unit_price);
+                $item->update([
+                    'publisher_commission_rate' => $commissionRate,
+                    'publisher_commission_amount' => round($gross * $commissionRate / 100, 2),
+                ]);
+            }
             $payment->order->transitionTo('confirmed', auth()->id());
         }
         return back()->with('success', 'Payment ' . $data['decision'] . '.');

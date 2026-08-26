@@ -66,6 +66,8 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::post('/inventory/{book}/adjust', [Pub\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::get('/coupons', [Pub\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Pub\CouponController::class, 'store'])->name('coupons.store');
+        Route::get('/payments', [Pub\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/items/{orderItem}/status', [Pub\OrderController::class, 'updateStatus'])->name('orders.items.status');
     });
@@ -86,6 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
+        Route::put('/payment-settings/commission', [Admin\PaymentSettingController::class, 'updateCommission'])->name('payment-settings.commission');
 
         Route::get('/publishers', [Admin\PublisherController::class, 'index'])->name('publishers.index');
         Route::get('/publishers/create', [Admin\PublisherController::class, 'create'])->name('publishers.create');

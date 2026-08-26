@@ -14,7 +14,22 @@ class PaymentSettingController extends Controller
         return view('admin.payment-settings', [
             'qr' => SiteSetting::where('key', 'payment_qr')->first(),
             'qrUrl' => SiteSetting::valueFor('payment_qr'),
+            'commissionRate' => (float) (SiteSetting::where('key', 'publisher_commission_rate')->value('value') ?? 0),
         ]);
+    }
+
+    public function updateCommission(Request $request)
+    {
+        $data = $request->validate([
+            'publisher_commission_rate' => 'required|numeric|min:0|max:100',
+        ]);
+
+        SiteSetting::updateOrCreate(['key' => 'publisher_commission_rate'], [
+            'value' => number_format((float) $data['publisher_commission_rate'], 2, '.', ''),
+            'meta' => ['type' => 'percentage'],
+        ]);
+
+        return back()->with('success', 'Publisher deduction rate updated. It will apply when future payments are verified.');
     }
 
     public function update(Request $request, PublicImageStorageService $images)
