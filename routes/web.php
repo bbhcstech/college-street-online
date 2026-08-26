@@ -119,7 +119,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/export/{type}', [Admin\OrderController::class, 'export'])->name('orders.export');
         Route::get('/bulk-orders', [Admin\BulkOrderController::class, 'index'])->name('bulk-orders.index');
+        Route::get('/bulk-orders/export/{type}', [Admin\BulkOrderController::class, 'export'])->name('bulk-orders.export');
         Route::get('/bulk-orders/{bulkOrder}', [Admin\BulkOrderController::class, 'show'])->name('bulk-orders.show');
+        Route::patch('/bulk-orders/{bulkOrder}/status', [Admin\BulkOrderController::class, 'updateStatus'])->name('bulk-orders.status');
         Route::put('/bulk-orders/{bulkOrder}', [Admin\BulkOrderController::class, 'update'])->name('bulk-orders.update');
         Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
