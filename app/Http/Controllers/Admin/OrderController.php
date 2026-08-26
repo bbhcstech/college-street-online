@@ -12,10 +12,63 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::with('customer')
-            ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
-            ->latest()->paginate(20)->withQueryString();
-        return view('admin.orders.index', compact('orders'));
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
+        $orders = $this->filteredQuery($request)->latest()->paginate($perPage)->withQueryString();
+
+        return view('admin.orders.index', [
+            'orders' => $orders,
+            'totalOrders' => Order::count(),
+            'pendingOrders' => Order::where('status', 'pending_payment')->count(),
+            'totalRevenue' => Order::whereHas('payment', fn ($query) => $query->where('verified_status', 'verified'))->sum('base_total_amount'),
+        ]);
+    }
+
+    public function export(Request $request, string $type)
+    {
+        abort_unless(in_array($type, ['csv', 'excel', 'print', 'pdf'], true), 404);
+        $orders = $this->filteredQuery($request)
+            ->when($request->filled('ids'), fn ($query) => $query->whereIn('orders.id', collect(explode(',', $request->query('ids')))->filter(fn ($id) => ctype_digit($id))))
+            ->latest()->get();
+
+        if ($type === 'csv') {
+            return response()->streamDownload(function () use ($orders) {
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['Order', 'Date', 'Customer', 'Email', 'Total', 'Currency', 'Payment', 'Status']);
+                foreach ($orders as $order) {
+                    fputcsv($output, ['CSO'.$order->id, $order->created_at->format('Y-m-d H:i'), $order->customer?->name, $order->customer?->email, $order->total_amount, $order->currency, $order->payment?->verified_status ?? 'No payment', $order->status]);
+                }
+                fclose($output);
+            }, 'orders-'.now()->format('Y-m-d').'.csv');
+        }
+
+        if ($type === 'excel') {
+            return response()->view('admin.orders.report', compact('orders') + ['mode' => 'excel'])
+                ->header('Content-Type', 'application/vnd.ms-excel')
+                ->header('Content-Disposition', 'attachment; filename="orders-'.now()->format('Y-m-d').'.xls"');
+        }
+
+        return view('admin.orders.report', compact('orders') + ['mode' => $type]);
+    }
+
+    private function filteredQuery(Request $request)
+    {
+        return Order::query()->with(['customer', 'payment'])
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $term = trim($request->query('q'));
+                $orderId = preg_replace('/\D/', '', $term);
+                $query->where(function ($search) use ($term, $orderId) {
+                    if ($orderId !== '') $search->orWhere('id', (int) $orderId);
+                    $search->orWhereHas('customer', fn ($customer) => $customer->where('name', 'like', "%{$term}%")->orWhere('email', 'like', "%{$term}%"));
+                });
+            })
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->query('status')))
+            ->when($request->filled('payment'), function ($query) use ($request) {
+                $request->payment === 'none'
+                    ? $query->whereDoesntHave('payment')
+                    : $query->whereHas('payment', fn ($payment) => $payment->where('verified_status', $request->payment));
+            })
+            ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->query('date_from')))
+            ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->query('date_to')));
     }
 
     public function show(Order $order)
