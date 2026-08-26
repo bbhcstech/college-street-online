@@ -72,7 +72,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [ProfileController::class, 'adminEdit'])->name('profile.edit');
-        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile', [ProfileController::class, 'updateAdmin'])->name('profile.update');
+        Route::delete('/profile/image', [ProfileController::class, 'destroyAdminImage'])->name('profile.image.destroy');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
