@@ -12,10 +12,66 @@ use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = auth()->user()->publisher->books()->with(['category', 'author', 'inventory'])->latest()->paginate(15);
-        return view('publisher.books.index', compact('books'));
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
+        $books = $this->filteredQuery($request)->latest()->paginate($perPage)->withQueryString();
+        return view('publisher.books.index', [
+            'books' => $books,
+            'categories' => Category::orderBy('name')->get(),
+            'activeCount' => auth()->user()->publisher->books()->where('status', 'active')->count(),
+            'lowStockCount' => auth()->user()->publisher->books()->whereHas('inventory', fn ($query) => $query->whereColumn('quantity', '<=', 'low_stock_threshold'))->count(),
+        ]);
+    }
+
+    public function export(Request $request, string $type)
+    {
+        abort_unless(in_array($type, ['csv', 'excel', 'print', 'pdf'], true), 404);
+        $books = $this->filteredQuery($request)
+            ->when($request->filled('ids'), fn ($query) => $query->whereIn('books.id', collect(explode(',', $request->query('ids')))->filter(fn ($id) => ctype_digit($id))))
+            ->orderBy('title')->get();
+
+        if ($type === 'csv') {
+            return response()->streamDownload(function () use ($books) {
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['Title', 'ISBN', 'Author', 'Category', 'Price INR', 'Stock', 'Status']);
+                foreach ($books as $book) fputcsv($output, [$book->title, $book->isbn, $book->author?->name, $book->category?->name, $book->price, $book->inventory?->quantity ?? 0, $book->status]);
+                fclose($output);
+            }, 'my-books-'.now()->format('Y-m-d').'.csv');
+        }
+
+        if ($type === 'excel') {
+            return response()->view('publisher.books.report', compact('books') + ['mode' => 'excel'])
+                ->header('Content-Type', 'application/vnd.ms-excel')
+                ->header('Content-Disposition', 'attachment; filename="my-books-'.now()->format('Y-m-d').'.xls"');
+        }
+
+        return view('publisher.books.report', compact('books') + ['mode' => $type]);
+    }
+
+    public function updateStatus(Request $request, Book $book)
+    {
+        abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
+        $data = $request->validate(['status' => 'required|in:active,inactive']);
+        $book->update($data);
+        return back()->with('success', 'Book status updated.');
+    }
+
+    private function filteredQuery(Request $request)
+    {
+        return auth()->user()->publisher->books()->with(['category', 'author', 'inventory'])
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $term = trim($request->query('q'));
+                $query->where(function ($search) use ($term) {
+                    $search->where('title', 'like', "%{$term}%")
+                        ->orWhere('isbn', 'like', "%{$term}%")
+                        ->orWhereHas('author', fn ($author) => $author->where('name', 'like', "%{$term}%"));
+                });
+            })
+            ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->query('category_id')))
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->query('status')))
+            ->when($request->stock === 'low', fn ($query) => $query->whereHas('inventory', fn ($inventory) => $inventory->whereColumn('quantity', '<=', 'low_stock_threshold')))
+            ->when($request->stock === 'out', fn ($query) => $query->whereHas('inventory', fn ($inventory) => $inventory->where('quantity', 0)));
     }
 
     public function create()

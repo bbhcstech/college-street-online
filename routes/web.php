@@ -53,6 +53,8 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'publisherEdit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+        Route::get('/books/export/{type}', [Pub\BookController::class, 'export'])->name('books.export');
+        Route::patch('/books/{book}/status', [Pub\BookController::class, 'updateStatus'])->name('books.status');
         Route::resource('books', Pub\BookController::class)->except('show');
         Route::get('/inventory', [Pub\InventoryController::class, 'index'])->name('inventory.index');
         Route::post('/inventory/{book}/restock', [Pub\InventoryController::class, 'restock'])->name('inventory.restock');
