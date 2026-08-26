@@ -6,10 +6,9 @@ use App\Models\Author;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Inventory;
-use App\Services\CloudinaryImageService;
+use App\Services\PublicImageStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -25,16 +24,15 @@ class BookController extends Controller
     }
 
     /** FR-2: ISBN validated for format/uniqueness; cover image validated by MIME/size before storage. */
-    public function store(Request $request, CloudinaryImageService $images)
+    public function store(Request $request, PublicImageStorageService $images)
     {
         $data = $this->validated($request);
         unset($data['cover_image']);
         $data['publisher_id'] = auth()->user()->publisher->id;
         $cover = null;
         if ($request->hasFile('cover_image')) {
-            $cover = $images->uploadBookCover($request->file('cover_image'));
-            $data['cover_image_url'] = $cover['url'];
-            $data['cover_image_public_id'] = $cover['public_id'];
+            $cover = $images->storeBookCover($request->file('cover_image'));
+            $data['cover_image_url'] = $cover;
         }
 
         try {
@@ -45,7 +43,7 @@ class BookController extends Controller
                 Inventory::create(['book_id' => $book->id, 'quantity' => (int) $request->input('initial_stock', 0)]);
             });
         } catch (\Throwable $exception) {
-            if ($cover) $images->delete($cover['public_id']);
+            if ($cover) $images->delete($cover);
             throw $exception;
         }
 
@@ -58,19 +56,17 @@ class BookController extends Controller
         return $this->formView($book);
     }
 
-    public function update(Request $request, Book $book, CloudinaryImageService $images)
+    public function update(Request $request, Book $book, PublicImageStorageService $images)
     {
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $this->validated($request, $book->id);
         unset($data['cover_image']);
         $oldUrl = $book->cover_image_url;
-        $oldPublicId = $book->cover_image_public_id;
         $cover = null;
 
         if ($request->hasFile('cover_image')) {
-            $cover = $images->uploadBookCover($request->file('cover_image'));
-            $data['cover_image_url'] = $cover['url'];
-            $data['cover_image_public_id'] = $cover['public_id'];
+            $cover = $images->storeBookCover($request->file('cover_image'));
+            $data['cover_image_url'] = $cover;
         }
 
         try {
@@ -80,17 +76,13 @@ class BookController extends Controller
                 $book->update($data);
             });
         } catch (\Throwable $exception) {
-            if ($cover) $images->delete($cover['public_id']);
+            if ($cover) $images->delete($cover);
             throw $exception;
         }
 
         if ($cover) {
             try {
-                if ($oldPublicId) {
-                    $images->delete($oldPublicId);
-                } elseif ($oldUrl && ! str_starts_with($oldUrl, 'http')) {
-                    Storage::disk('public')->delete($oldUrl);
-                }
+                $images->delete($oldUrl);
             } catch (\Throwable $exception) {
                 report($exception);
             }

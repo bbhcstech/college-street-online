@@ -9,10 +9,9 @@ use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\OrderItem;
 use App\Models\Publisher;
-use App\Services\CloudinaryImageService;
+use App\Services\PublicImageStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class BookController extends Controller
@@ -82,7 +81,7 @@ class BookController extends Controller
         ]);
     }
 
-    public function store(Request $request, CloudinaryImageService $images)
+    public function store(Request $request, PublicImageStorageService $images)
     {
         $data = $request->validate([
             'publisher_id' => ['required', Rule::exists('publishers', 'id')->where('approval_status', 'approved')],
@@ -101,9 +100,8 @@ class BookController extends Controller
 
         $cover = null;
         if ($request->hasFile('cover_image')) {
-            $cover = $images->uploadBookCover($request->file('cover_image'));
-            $data['cover_image_url'] = $cover['url'];
-            $data['cover_image_public_id'] = $cover['public_id'];
+            $cover = $images->storeBookCover($request->file('cover_image'));
+            $data['cover_image_url'] = $cover;
         }
 
         try {
@@ -116,7 +114,7 @@ class BookController extends Controller
                 Inventory::create(['book_id' => $book->id, 'quantity' => $initialStock]);
             });
         } catch (\Throwable $exception) {
-            if ($cover) $images->delete($cover['public_id']);
+            if ($cover) $images->delete($cover);
             throw $exception;
         }
 
@@ -169,7 +167,7 @@ class BookController extends Controller
         return back()->with('success', 'Book restored.');
     }
 
-    public function forceDestroy(int $id, CloudinaryImageService $images)
+    public function forceDestroy(int $id, PublicImageStorageService $images)
     {
         $book = Book::onlyTrashed()->findOrFail($id);
         $ongoingStatuses = [
@@ -190,15 +188,10 @@ class BookController extends Controller
         }
 
         $coverUrl = $book->cover_image_url;
-        $publicId = $book->cover_image_public_id;
         $book->forceDelete();
 
         try {
-            if ($publicId) {
-                $images->delete($publicId);
-            } elseif ($coverUrl && ! str_starts_with($coverUrl, 'http')) {
-                Storage::disk('public')->delete($coverUrl);
-            }
+            $images->delete($coverUrl);
         } catch (\Throwable $exception) {
             report($exception);
         }

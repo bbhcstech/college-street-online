@@ -9,8 +9,4 @@ return [
         'secret' => env('PAYMENT_GATEWAY_SECRET'),
     ],
 
-    'cloudinary' => [
-        'url' => env('CLOUDINARY_URL'),
-        'folder' => env('CLOUDINARY_FOLDER', 'college-street-online/books'),
-    ],
 ];

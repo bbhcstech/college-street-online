@@ -13,7 +13,7 @@ class Book extends Model
 
     protected $fillable = [
         'publisher_id', 'category_id', 'author_id', 'title', 'title_transliterated',
-        'isbn', 'price', 'mrp', 'description', 'cover_image_url', 'cover_image_public_id', 'status',
+        'isbn', 'price', 'mrp', 'description', 'cover_image_url', 'status',
     ];
     protected $casts = ['price' => 'decimal:2', 'mrp' => 'decimal:2'];
 

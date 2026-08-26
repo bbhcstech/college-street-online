@@ -3,7 +3,7 @@
 @section('title','Payment QR')
 @section('nav')@include('admin.partials.nav',['active'=>'payment-settings'])@endsection
 @section('content')
-<div class="publisher-page-head"><div><span class="analytics-eyebrow">Payment settings</span><h2>Checkout payment QR</h2><p>Manage the QR code customers use for manual payments.</p></div><span class="payment-live-pill"><i></i>{{ $qr?->value ? 'QR active' : 'Setup required' }}</span></div>
+<div class="publisher-page-head"><div><span class="analytics-eyebrow">Payment settings</span><h2>Checkout payment QR</h2><p>Manage the QR code customers use for manual payments.</p></div><span class="payment-live-pill"><i></i>{{ $qrUrl ? 'QR active' : 'Setup required' }}</span></div>
 
 <div class="payment-settings-grid">
     <section class="a-card payment-upload-card">
@@ -12,16 +12,16 @@
             <label for="payment-qr" class="payment-drop-zone" data-payment-drop><div class="payment-upload-icon">▣</div><strong>Choose a QR image</strong><span>PNG, JPG or WebP · Maximum 3 MB</span><input id="payment-qr" type="file" name="payment_qr" accept="image/png,image/jpeg,image/webp" required data-payment-input></label>
             <div class="payment-file-preview" data-payment-preview hidden><img alt="Selected QR preview" data-payment-preview-image><div><strong data-payment-file-name></strong><span>Ready to upload</span></div><button type="button" class="btn btn-outline btn-sm" data-payment-clear>Change</button></div>
             <div class="payment-warning"><strong>Before replacing</strong><p>Confirm the QR belongs to the correct payment account. The previous QR will be removed after a successful update.</p></div>
-            <button class="btn btn-primary payment-submit" data-payment-submit disabled>{{ $qr?->value ? 'Replace payment QR' : 'Upload payment QR' }}</button>
+            <button class="btn btn-primary payment-submit" data-payment-submit disabled>{{ $qrUrl ? 'Replace payment QR' : 'Upload payment QR' }}</button>
         </form>
     </section>
 
     <section class="a-card payment-preview-card">
         <div class="payment-card-head"><span>2</span><div><h3>Current customer preview</h3><p>This is the image shown on the checkout page.</p></div></div>
-        @if($qr?->value)
-            <div class="payment-qr-frame"><img src="{{ $qr->value }}" alt="Current checkout payment QR code"></div>
+        @if($qrUrl)
+            <div class="payment-qr-frame"><img src="{{ $qrUrl }}" alt="Current checkout payment QR code"></div>
             <div class="payment-current-meta"><div><span>Status</span><strong class="payment-status-active">Active</strong></div><div><span>Last updated</span><strong>{{ $qr->updated_at?->format('d M Y, h:i A') }}</strong></div><div><span>Storage</span><strong>{{ str_starts_with($qr->value,'http') ? 'Cloud image' : 'Public storage' }}</strong></div></div>
-            <a href="{{ $qr->value }}" target="_blank" rel="noopener" class="btn btn-outline payment-open-qr">Open full-size QR</a>
+            <a href="{{ $qrUrl }}" target="_blank" rel="noopener" class="btn btn-outline payment-open-qr">Open full-size QR</a>
         @else
             <div class="payment-empty"><span>▦</span><h4>No payment QR configured</h4><p>Upload a QR image so customers can complete checkout payments.</p></div>
         @endif

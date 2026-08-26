@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class SiteSetting extends Model
 {
@@ -11,6 +12,9 @@ class SiteSetting extends Model
 
     public static function valueFor(string $key): ?string
     {
-        return static::where('key', $key)->value('value');
+        $value = static::where('key', $key)->value('value');
+        if (! $value || str_starts_with($value, 'http')) return $value;
+
+        return Storage::disk('public')->url($value);
     }
 }
