@@ -24,8 +24,9 @@
                 @csrf
                 <div class="a-form-group"><label>Contact Name</label><input type="text" name="name"
                         value="{{ old('name') }}" class="a-input" required></div>
-                <div class="a-form-group"><label>Business Name</label><input type="text" name="business_name"
-                        value="{{ old('business_name') }}" class="a-input" required></div>
+                <div class="a-form-group">
+                    <label>Business Name</label>
+                    <input type="text" name="business_name" value="{{ old('business_name') }}" class="a-input" required></div>
                 <div class="a-form-group"><label>Email</label><input type="email" name="email"
                         value="{{ old('email') }}" class="a-input" required></div>
                 <div class="a-form-group"><label>Contact Details</label><textarea name="contact_details"

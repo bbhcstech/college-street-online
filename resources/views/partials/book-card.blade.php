@@ -2,9 +2,12 @@
 <div class="book-card reveal">
     <a href="{{ route('books.show', $book) }}">
         @if($book->cover_url)
-            <div class="book-cover book-cover-uploaded"><img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="book-cover-image"></div>
+            <div class="book-cover book-cover-uploaded"><img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover"
+                    class="book-cover-image"></div>
         @else
-            <div class="book-cover"><div class="spine"></div><span class="title-mark">{{ $book->title }}</span></div>
+            <div class="book-cover">
+                <div class="spine"></div><span class="title-mark">{{ $book->title }}</span>
+            </div>
         @endif
     </a>
     <div class="book-card-body">
