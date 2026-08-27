@@ -727,6 +727,25 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .tracking-history div { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; font-size: 0.82rem; }
 .tracking-history span { color: var(--text-secondary); }
 .tracking-notice { color: var(--danger); font-weight: 600; }
+.account-section { padding-top: 14px; }
+.site-pagination { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: 24px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.site-pagination-summary { color: var(--text-secondary); font-size: .76rem; }
+.site-pagination-links { display: flex; align-items: center; gap: 6px; }
+.pagination-button,.pagination-page { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); background: var(--surface); font-size: .74rem; font-weight: 700; }
+.pagination-page { min-width: 34px; }.pagination-page.active { color: #fff; border-color: var(--brand-primary); background: var(--brand-primary); }.pagination-button:hover,.pagination-page:hover { border-color: var(--brand-primary); color: var(--brand-primary); }.pagination-button.disabled { cursor: not-allowed; opacity: .45; }.pagination-ellipsis { padding: 0 3px; color: var(--text-secondary); }
+.account-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
+.account-summary-card { position: sticky; top: 105px; padding: 28px 20px; text-align: center; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-sm); }
+.account-avatar { width: 72px; height: 72px; margin: 0 auto 13px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(145deg, var(--brand-primary), var(--brand-secondary)); font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; }
+.account-summary-card h2 { margin: 0; font-size: 1.15rem; }.account-summary-card p { margin: 5px 0; color: var(--text-secondary); font-size: .78rem; overflow-wrap: anywhere; }
+.account-summary-card > span { display: inline-block; padding: 4px 8px; border-radius: 99px; color: var(--success); background: rgba(31,157,108,.1); font-size: .66rem; font-weight: 800; }
+.account-summary-card nav { display: grid; gap: 5px; margin-top: 22px; padding-top: 16px; text-align: left; border-top: 1px solid var(--border); }
+.account-summary-card nav a { padding: 10px 12px; border-radius: 8px; color: var(--text-secondary); font-size: .78rem; font-weight: 700; }.account-summary-card nav a.active,.account-summary-card nav a:hover { color: var(--brand-primary); background: var(--surface-alt); }
+.account-forms { display: grid; gap: 20px; }.account-form-card { padding: 26px; box-shadow: var(--shadow-sm); }
+.account-card-head { display: flex; gap: 12px; padding-bottom: 17px; margin-bottom: 19px; border-bottom: 1px solid var(--border); }.account-card-head > span { font-size: 1.25rem; }.account-card-head h3 { margin: 0; }.account-card-head p { margin-top: 3px; color: var(--text-secondary); font-size: .76rem; }
+.customer-order-card { margin-bottom: 18px; padding: 22px 24px; box-shadow: var(--shadow-sm); }
+.customer-order-card > .flex { padding-bottom: 4px; }.order-label { display: block; margin-bottom: 3px; color: var(--text-secondary); font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.customer-order-card .customer-tracking summary { display: flex; align-items: center; gap: 12px; }.customer-order-card .customer-tracking summary small { color: var(--text-secondary); font-family: var(--font-body); font-weight: 400; }
+@media (max-width: 760px) { .account-layout { grid-template-columns: 1fr; }.account-summary-card { position: static; }.account-form-card { padding: 18px; }.customer-order-card { padding: 18px 16px; }.customer-order-card .customer-tracking summary { align-items: flex-start; flex-direction: column; gap: 2px; }.site-pagination { align-items: flex-start; flex-direction: column; }.site-pagination-links { width: 100%; flex-wrap: wrap; } }
 .item-fulfillment-list { margin-top: 16px; min-width: 320px; }
 .item-fulfillment-list h4 { margin: 0 0 6px; }
 .item-fulfillment-list div { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }

@@ -1,14 +1,16 @@
 @extends('layouts.app')
 @section('title', 'My Profile | College Street Online')
 @section('content')
-    <section class="section">
+    <section class="section account-section">
         <div class="container" style="max-width:1000px;">
             <div class="breadcrumb-row"><a href="{{ route('home') }}">Home</a><span class="sep">/</span><span
                     class="current">My Profile</span></div>
-            <h1>My Profile</h1>
-            <div class="grid grid-2" style="align-items:start;gap:24px;">
-                <div class="card">
-                    <h3 style="margin-top:0;">Profile information</h3>
+            <div class="shopping-page-head"><div><span class="eyebrow"><span class="dot"></span> My account</span><h1>Profile &amp; Security</h1><p>Manage your personal details and password.</p></div><a class="btn btn-outline" href="{{ route('account.orders') }}">View my orders</a></div>
+            <div class="account-layout">
+                <aside class="account-summary-card"><div class="account-avatar">{{ strtoupper(substr($user->name, 0, 1)) }}</div><h2>{{ $user->name }}</h2><p>{{ $user->email }}</p><span>Customer account</span><nav><a class="active" href="{{ route('account.profile') }}">Profile settings</a><a href="{{ route('account.orders') }}">Orders &amp; tracking</a><a href="{{ route('books.index') }}">Browse books</a></nav></aside>
+                <div class="account-forms">
+                <div class="card account-form-card">
+                    <div class="account-card-head"><span>&#128100;</span><div><h3>Profile information</h3><p>Keep your contact details up to date.</p></div></div>
                     <form method="POST" action="{{ route('account.profile.update') }}">@csrf @method('PUT')
                         <div class="form-group"><label>Name</label><input name="name" class="form-control"
                                 value="{{ old('name', $user->name) }}" required></div>
@@ -17,8 +19,8 @@
                             class="btn btn-primary">Save profile</button>
                     </form>
                 </div>
-                <div class="card">
-                    <h3 style="margin-top:0;">Change password</h3>
+                <div class="card account-form-card">
+                    <div class="account-card-head"><span>&#128274;</span><div><h3>Change password</h3><p>Use at least eight characters for security.</p></div></div>
                     <form method="POST" action="{{ route('account.password.update') }}">@csrf @method('PUT')
                         <div class="form-group"><label>Current password</label><input type="password"
                                 name="current_password" class="form-control" required></div>
@@ -28,6 +30,7 @@
                                 name="password_confirmation" class="form-control" minlength="8" required></div><button
                             class="btn btn-primary">Change password</button>
                     </form>
+                </div>
                 </div>
             </div>
         </div>

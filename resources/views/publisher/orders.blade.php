@@ -264,7 +264,8 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                 placeholder="Search order, customer or book"></div><select name="status" class="a-select">
             <option value="">All order statuses</option>@foreach($statuses as $status)
                 <option value="{{ $status }}" @selected(request('status') === $status)>
-            {{ str($status)->replace('_', ' ')->title() }}</option>@endforeach
+                    {{ str($status)->replace('_', ' ')->title() }}
+            </option>@endforeach
         </select><select name="fulfillment" class="a-select">
             <option value="">All fulfillment</option>@foreach(['pending', 'processing', 'packed', 'shipped'] as $status)
                 <option value="{{ $status }}" @selected(request('fulfillment') === $status)>{{ ucfirst($status) }}</option>
@@ -349,7 +350,8 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                     @foreach(range(1, $items->lastPage()) as $page)<a href="{{ $items->url($page) }}"
                     class="{{ $items->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
                     @if($items->hasMorePages())<a href="{{ $items->nextPageUrl() }}">Next</a>@else<span
-            class="disabled">Next</span>@endif</nav>@endif
+                    class="disabled">Next</span>@endif
+            </nav>@endif
     </div>
 </div>
 <script>(() => { const root = document.querySelector('[data-publisher-orders]'), rows = [...root.querySelectorAll('[data-export-row]')], all = root.querySelector('[data-select-all]'), count = root.querySelector('[data-selection-count]'), selected = () => rows.filter(r => r.querySelector('[data-row-select]').checked), update = () => { const n = selected().length; count.textContent = `${n} selected`; if (all) { all.checked = n === rows.length && n > 0; all.indeterminate = n > 0 && n < rows.length } }; all?.addEventListener('change', () => { rows.forEach(r => r.querySelector('[data-row-select]').checked = all.checked); update() }); rows.forEach(r => r.querySelector('[data-row-select]').addEventListener('change', update)); root.querySelector('[data-copy]')?.addEventListener('click', async e => { const chosen = selected().length ? selected() : rows, text = chosen.map(r => [...r.querySelectorAll('[data-cell]')].map(c => c.textContent.trim()).join('\t')).join('\n'); await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1200) }); root.querySelectorAll('[data-export]').forEach(b => b.addEventListener('click', () => { const url = new URL(root.dataset.exportBase.replace(/csv$/, b.dataset.export), location.origin), params = new URLSearchParams(location.search); params.delete('page'); const ids = selected().map(r => r.dataset.id).join(','); if (ids) params.set('ids', ids); url.search = params; b.dataset.export === 'print' || b.dataset.export === 'pdf' ? window.open(url, '_blank') : location.href = url })); })();</script>

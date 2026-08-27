@@ -2,17 +2,17 @@
 @section('title', 'My Orders | College Street Online')
 @section('content')
 <div class="container" style="padding-top:24px;"><div class="breadcrumb-row"><a href="{{ route('home') }}">Home</a><span class="sep">/</span><span class="current">My Orders</span></div></div>
-<section class="section" style="padding-top:0;">
+<section class="section account-section">
     <div class="container">
-        <h1>My Orders</h1>
+        <div class="shopping-page-head"><div><span class="eyebrow"><span class="dot"></span> My account</span><h1>Orders &amp; Tracking</h1><p>Follow fulfillment progress and review your order history.</p></div><a class="btn btn-outline" href="{{ route('books.index') }}">Continue shopping</a></div>
         @forelse($orders as $order)
-        <div class="card" style="margin-bottom:20px;">
+        <div class="card customer-order-card">
             <div class="flex items-center" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                <div><strong>Order #CSO{{ $order->id }}</strong><div style="font-size:0.82rem;color:var(--text-secondary);">Placed {{ $order->created_at->format('d M Y') }} &middot; {{ $order->items->count() }} items &middot; {{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</div></div>
+                <div><span class="order-label">Order number</span><strong>#CSO{{ $order->id }}</strong><div style="font-size:0.82rem;color:var(--text-secondary);">Placed {{ $order->created_at->format('d M Y') }} &middot; {{ $order->items->count() }} items &middot; {{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</div></div>
                 <span class="badge {{ in_array($order->status, ['delivered','completed']) ? 'badge-muted' : 'badge-success' }}">{{ ucfirst(str_replace('_',' ',$order->status)) }}</span>
             </div>
             <details class="customer-tracking">
-                <summary>Track order</summary>
+                <summary><span>Track order</span><small>View fulfillment and status history</small></summary>
                 @php
                     $trackingSteps = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 'delivered'];
                     $currentStatus = $order->status === 'completed' ? 'delivered' : $order->status;
@@ -50,7 +50,7 @@
             </details>
         </div>
         @empty
-            <p>You haven't placed any orders yet. <a href="{{ route('books.index') }}" style="color:var(--brand-primary);font-weight:600;">Start browsing &rarr;</a></p>
+            <div class="shopping-empty"><span>&#128230;</span><h2>No orders yet</h2><p>Your placed orders and tracking updates will appear here.</p><a href="{{ route('books.index') }}" class="btn btn-primary">Start browsing</a></div>
         @endforelse
         <div style="margin-top:24px;">{{ $orders->links() }}</div>
     </div>
