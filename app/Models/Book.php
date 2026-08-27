@@ -46,14 +46,21 @@ class Book extends Model
 
     public function scopeActive($q) { return $q->where('status', 'active'); }
 
-    /** FR-4: keyword + Bengali-transliteration search across title fields. */
+    /** FR-4: search by book, ISBN, author, or publisher name. */
     public function scopeSearch($q, ?string $term)
     {
-        if (! $term) return $q;
+        $term = trim((string) $term);
+        if ($term === '') return $q;
+
         return $q->where(function ($sub) use ($term) {
             $sub->where('title', 'like', "%{$term}%")
                 ->orWhere('title_transliterated', 'like', "%{$term}%")
-                ->orWhere('isbn', $term);
+                ->orWhere('isbn', 'like', "%{$term}%")
+                ->orWhereHas('author', fn ($author) => $author->where('name', 'like', "%{$term}%"))
+                ->orWhereHas('publisher', function ($publisher) use ($term) {
+                    $publisher->where('business_name', 'like', "%{$term}%")
+                        ->orWhereHas('user', fn ($user) => $user->where('name', 'like', "%{$term}%"));
+                });
         });
     }
 }

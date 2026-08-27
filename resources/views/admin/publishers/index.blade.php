@@ -1,27 +1,120 @@
 @extends('layouts.dashboard')
-@php $homeRoute=route('admin.dashboard'); $brandLabel='Admin Console'; $crumb='Marketplace'; $logoutRoute=route('admin.logout'); @endphp
+@php $homeRoute = route('admin.dashboard');
+    $brandLabel = 'Admin Console';
+    $crumb = 'Marketplace';
+$logoutRoute = route('admin.logout'); @endphp
 @section('title', 'Publishers')
-@section('nav')@include('admin.partials.nav', ['active'=>'publishers'])@endsection
+@section('nav')@include('admin.partials.nav', ['active' => 'publishers'])@endsection
 @section('content')
-<div class="publisher-page-head"><div><span class="analytics-eyebrow">Marketplace partners</span><h2>Publisher management</h2><p>Search, review, approve, export, and manage publisher accounts.</p></div><a href="{{ route('admin.publishers.create') }}" class="btn btn-primary">+ Add publisher</a></div>
+    <div class="publisher-page-head">
+        <div><span class="analytics-eyebrow">Marketplace partners</span>
+            <h2>Publisher management</h2>
+            <p>Search, review, approve, export, and manage publisher accounts.</p>
+        </div><a href="{{ route('admin.publishers.create') }}" class="btn btn-primary">+ Add publisher</a>
+    </div>
 
-<div class="a-card publisher-table-card" data-publisher-table data-export-base="{{ route('admin.publishers.export','csv') }}">
-    <form method="GET" class="publisher-toolbar">
-        <div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}" placeholder="Search business, contact or email"></div>
-        <select name="status" class="a-select"><option value="">All statuses</option><option value="pending" @selected(request('status')==='pending')>Pending</option><option value="approved" @selected(request('status')==='approved')>Approved</option><option value="rejected" @selected(request('status')==='rejected')>Rejected</option></select>
-        <select name="per_page" class="a-select"><option value="10" @selected($publishers->perPage()===10)>10 entries</option><option value="25" @selected($publishers->perPage()===25)>25 entries</option><option value="50" @selected($publishers->perPage()===50)>50 entries</option><option value="100" @selected($publishers->perPage()===100)>100 entries</option></select>
-        <button class="btn btn-primary btn-sm">Apply</button>@if(request()->hasAny(['q','status','per_page']))<a href="{{ route('admin.publishers.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif
-    </form>
-    <div class="publisher-export-bar"><div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered rows when none are selected.</span></div><div class="publisher-export-buttons"><button type="button" class="btn btn-outline btn-sm" data-copy>Copy</button><button type="button" class="btn btn-outline btn-sm" data-export="excel">Excel</button><button type="button" class="btn btn-outline btn-sm" data-export="pdf">PDF</button><button type="button" class="btn btn-outline btn-sm" data-export="print">Print</button><button type="button" class="btn btn-outline btn-sm" data-export="csv">CSV</button></div></div>
-    <div class="publisher-table-scroll"><table class="a-table publisher-data-table"><thead><tr><th><input type="checkbox" data-select-all aria-label="Select all publishers"></th><th>Publisher</th><th>Contact</th><th>Books</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody>
-    @forelse($publishers as $publisher)<tr data-export-row data-id="{{ $publisher->id }}"><td><input type="checkbox" data-row-select aria-label="Select {{ $publisher->business_name }}"></td><td><div class="table-avatar-row"><div class="mini-avatar">{{ strtoupper(substr($publisher->business_name,0,1)) }}</div><div><strong data-cell>{{ $publisher->business_name }}</strong><small>{{ $publisher->contact_details ?: 'No contact details' }}</small></div></div></td><td><strong data-cell>{{ $publisher->user->name ?? '—' }}</strong><small data-cell>{{ $publisher->user->email ?? '—' }}</small></td><td data-cell>{{ number_format($publisher->books_count) }}</td><td data-cell>{{ $publisher->created_at->format('d M Y') }}</td><td>
-        <form method="POST" action="{{ route('admin.publishers.approval',$publisher) }}" data-status-form>@csrf @method('PATCH')<select name="approval_status" class="publisher-status-select status-{{ $publisher->approval_status }}" onchange="if(confirm('Change publisher status?')) this.form.submit(); else this.value=this.dataset.current" data-current="{{ $publisher->approval_status }}"><option value="pending" @selected($publisher->approval_status==='pending')>Pending</option><option value="approved" @selected($publisher->approval_status==='approved')>Approved</option><option value="rejected" @selected($publisher->approval_status==='rejected')>Rejected</option></select></form>
-    </td><td><div class="publisher-row-actions"><a href="{{ route('admin.publishers.edit',$publisher) }}" class="btn btn-outline btn-sm">Edit</a><form method="POST" action="{{ route('admin.publishers.destroy',$publisher) }}" onsubmit="return confirm('Remove this publisher?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm">Remove</button></form></div></td></tr>
-    @empty<tr><td colspan="7"><div class="analytics-empty">No publishers match your filters.</div></td></tr>@endforelse
-    </tbody></table></div>
-    <div class="publisher-table-footer"><span>Showing {{ $publishers->firstItem() ?? 0 }}–{{ $publishers->lastItem() ?? 0 }} of {{ $publishers->total() }} publishers</span>@if($publishers->hasPages())<nav class="order-pagination">@if($publishers->onFirstPage())<span class="disabled">Previous</span>@else<a href="{{ $publishers->previousPageUrl() }}">Previous</a>@endif @foreach(range(1,$publishers->lastPage()) as $page)<a href="{{ $publishers->url($page) }}" class="{{ $publishers->currentPage()===$page?'active':'' }}">{{ $page }}</a>@endforeach @if($publishers->hasMorePages())<a href="{{ $publishers->nextPageUrl() }}">Next</a>@else<span class="disabled">Next</span>@endif</nav>@endif</div>
-</div>
-<script>
-(()=>{const root=document.querySelector('[data-publisher-table]'),rows=[...root.querySelectorAll('[data-export-row]')],all=root.querySelector('[data-select-all]'),count=root.querySelector('[data-selection-count]');const selected=()=>rows.filter(r=>r.querySelector('[data-row-select]').checked);const update=()=>{const n=selected().length;count.textContent=`${n} selected`;all.checked=n===rows.length&&n>0;all.indeterminate=n>0&&n<rows.length};all?.addEventListener('change',()=>{rows.forEach(r=>r.querySelector('[data-row-select]').checked=all.checked);update()});rows.forEach(r=>r.querySelector('[data-row-select]').addEventListener('change',update));const ids=()=>selected().map(r=>r.dataset.id).join(',');root.querySelector('[data-copy]').addEventListener('click',async e=>{const chosen=selected().length?selected():rows,text=chosen.map(r=>[...r.querySelectorAll('[data-cell]')].map(c=>c.textContent.trim()).join('\t')).join('\n');await navigator.clipboard.writeText(text);e.target.textContent='Copied';setTimeout(()=>e.target.textContent='Copy',1200)});root.querySelectorAll('[data-export]').forEach(button=>button.addEventListener('click',()=>{const base=root.dataset.exportBase.replace(/csv$/,button.dataset.export),url=new URL(base,location.origin),params=new URLSearchParams(location.search);params.delete('page');if(ids())params.set('ids',ids());url.search=params;button.dataset.export==='print'||button.dataset.export==='pdf'?window.open(url,'_blank'):location.href=url}));})();
-</script>
+    <div class="a-card publisher-table-card" data-publisher-table
+        data-export-base="{{ route('admin.publishers.export', 'csv') }}">
+        <form method="GET" class="publisher-toolbar">
+            <div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}"
+                    placeholder="Search business, contact or email"></div>
+            <select name="status" class="a-select">
+                <option value="">All statuses</option>
+                <option value="pending" @selected(request('status') === 'pending')>Pending</option>
+                <option value="approved" @selected(request('status') === 'approved')>Approved</option>
+                <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
+            </select>
+            <select name="per_page" class="a-select">
+                <option value="10" @selected($publishers->perPage() === 10)>10 entries</option>
+                <option value="25" @selected($publishers->perPage() === 25)>25 entries</option>
+                <option value="50" @selected($publishers->perPage() === 50)>50 entries</option>
+                <option value="100" @selected($publishers->perPage() === 100)>100 entries</option>
+            </select>
+            <button class="btn btn-primary btn-sm">Apply</button>@if(request()->hasAny(['q', 'status', 'per_page']))<a
+            href="{{ route('admin.publishers.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif
+        </form>
+        <div class="publisher-export-bar">
+            <div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered rows when
+                    none are selected.</span></div>
+            <div class="publisher-export-buttons"><button type="button" class="btn btn-outline btn-sm"
+                    data-copy>Copy</button><button type="button" class="btn btn-outline btn-sm"
+                    data-export="excel">Excel</button><button type="button" class="btn btn-outline btn-sm"
+                    data-export="pdf">PDF</button><button type="button" class="btn btn-outline btn-sm"
+                    data-export="print">Print</button><button type="button" class="btn btn-outline btn-sm"
+                    data-export="csv">CSV</button></div>
+        </div>
+        <div class="publisher-table-scroll">
+            <table class="a-table publisher-data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" data-select-all aria-label="Select all publishers"></th>
+                        <th>Publisher</th>
+                        <th>Contact</th>
+                        <th>Books</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($publishers as $publisher)
+                        <tr data-export-row data-id="{{ $publisher->id }}">
+                            <td><input type="checkbox" data-row-select aria-label="Select {{ $publisher->business_name }}"></td>
+                            <td>
+                                <div class="table-avatar-row">
+                                    <div class="mini-avatar">{{ strtoupper(substr($publisher->business_name, 0, 1)) }}</div>
+                                    <div><strong
+                                            data-cell>{{ $publisher->business_name }}</strong><small>{{ $publisher->contact_details ?: 'No contact details' }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><strong data-cell>{{ $publisher->user->name ?? '—' }}</strong><small
+                                    data-cell>{{ $publisher->user->email ?? '—' }}</small></td>
+                            <td data-cell>{{ number_format($publisher->books_count) }}</td>
+                            <td data-cell>{{ $publisher->created_at->format('d M Y') }}</td>
+                            <td>
+                                <form method="POST" action="{{ route('admin.publishers.approval', $publisher) }}"
+                                    data-status-form>@csrf @method('PATCH')<select name="approval_status"
+                                        class="publisher-status-select status-{{ $publisher->approval_status }}"
+                                        onchange="if(confirm('Change publisher status?')) this.form.submit(); else this.value=this.dataset.current"
+                                        data-current="{{ $publisher->approval_status }}">
+                                        <option value="pending" @selected($publisher->approval_status === 'pending')>Pending
+                                        </option>
+                                        <option value="approved" @selected($publisher->approval_status === 'approved')>Approved
+                                        </option>
+                                        <option value="rejected" @selected($publisher->approval_status === 'rejected')>Rejected
+                                        </option>
+                                    </select></form>
+                            </td>
+                            <td>
+                                <div class="publisher-row-actions"><a href="{{ route('admin.publishers.edit', $publisher) }}"
+                                        class="btn btn-outline btn-sm">Edit</a>
+                                    <form method="POST" action="{{ route('admin.publishers.destroy', $publisher) }}"
+                                        onsubmit="return confirm('Remove this publisher?')">@csrf @method('DELETE')<button
+                                            class="btn btn-danger btn-sm">Remove</button></form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty<tr>
+                        <td colspan="7">
+                            <div class="analytics-empty">No publishers match your filters.</div>
+                        </td>
+                    </tr>@endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="publisher-table-footer"><span>Showing
+                {{ $publishers->firstItem() ?? 0 }}–{{ $publishers->lastItem() ?? 0 }} of {{ $publishers->total() }}
+                publishers</span>@if($publishers->hasPages())
+                    <nav class="order-pagination">@if($publishers->onFirstPage())<span class="disabled">Previous</span>@else<a
+                    href="{{ $publishers->previousPageUrl() }}">Previous</a>@endif
+                        @foreach(range(1, $publishers->lastPage()) as $page)<a href="{{ $publishers->url($page) }}"
+                        class="{{ $publishers->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
+                        @if($publishers->hasMorePages())<a href="{{ $publishers->nextPageUrl() }}">Next</a>@else<span
+                class="disabled">Next</span>@endif</nav>@endif
+        </div>
+    </div>
+    <script>
+        (() => { const root = document.querySelector('[data-publisher-table]'), rows = [...root.querySelectorAll('[data-export-row]')], all = root.querySelector('[data-select-all]'), count = root.querySelector('[data-selection-count]'); const selected = () => rows.filter(r => r.querySelector('[data-row-select]').checked); const update = () => { const n = selected().length; count.textContent = `${n} selected`; all.checked = n === rows.length && n > 0; all.indeterminate = n > 0 && n < rows.length }; all?.addEventListener('change', () => { rows.forEach(r => r.querySelector('[data-row-select]').checked = all.checked); update() }); rows.forEach(r => r.querySelector('[data-row-select]').addEventListener('change', update)); const ids = () => selected().map(r => r.dataset.id).join(','); root.querySelector('[data-copy]').addEventListener('click', async e => { const chosen = selected().length ? selected() : rows, text = chosen.map(r => [...r.querySelectorAll('[data-cell]')].map(c => c.textContent.trim()).join('\t')).join('\n'); await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1200) }); root.querySelectorAll('[data-export]').forEach(button => button.addEventListener('click', () => { const base = root.dataset.exportBase.replace(/csv$/, button.dataset.export), url = new URL(base, location.origin), params = new URLSearchParams(location.search); params.delete('page'); if (ids()) params.set('ids', ids()); url.search = params; button.dataset.export === 'print' || button.dataset.export === 'pdf' ? window.open(url, '_blank') : location.href = url })); })();
+    </script>
 @endsection
