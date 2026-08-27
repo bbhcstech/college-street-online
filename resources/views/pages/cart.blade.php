@@ -2,11 +2,11 @@
 @section('title', 'Your Cart | College Street Online')
 @section('content')
 <div class="container" style="padding-top:24px;"><div class="breadcrumb-row"><a href="{{ route('home') }}">Home</a><span class="sep">/</span><span class="current">Cart</span></div></div>
-<section class="section" style="padding-top:0;">
+<section class="section shopping-section">
     <div class="container">
-        <h1>Your Cart <span style="color:var(--text-secondary);font-size:1rem;font-weight:400;">({{ $items->count() }} items)</span></h1>
+        <div class="shopping-page-head"><div><span class="eyebrow"><span class="dot"></span> Shopping bag</span><h1>Your Cart</h1><p>{{ $items->count() }} {{ Str::plural('book', $items->count()) }} selected</p></div><a href="{{ route('books.index') }}" class="btn btn-outline">Continue shopping</a></div>
         @if($items->isEmpty())
-            <p>Your cart is empty. <a href="{{ route('books.index') }}" style="color:var(--brand-primary);font-weight:600;">Browse books &rarr;</a></p>
+            <div class="shopping-empty"><span>&#128722;</span><h2>Your cart is empty</h2><p>Explore the catalogue and add books you would like to order.</p><a href="{{ route('books.index') }}" class="btn btn-primary">Browse books</a></div>
         @else
         <div class="grid grid-2 cart-layout">
             <div class="card cart-items-card">
@@ -19,7 +19,7 @@
                             @else
                                 <div class="cart-thumb" aria-hidden="true"></div>
                             @endif
-                            <div><strong>{{ $item->book->title }}</strong><div style="font-size:0.8rem;color:var(--text-secondary);">{{ $item->book->author->name ?? '' }}</div></div>
+                            <div><a href="{{ route('books.show', $item->book) }}"><strong>{{ $item->book->title }}</strong></a><div class="cart-book-meta">by {{ $item->book->author->name ?? 'Unknown author' }}</div><span class="stock-pill in">&#9679; In stock</span></div>
                         </div></td>
                         <td>
                             <form method="POST" action="{{ route('cart.update', $item) }}" class="qty-stepper" data-cart-quantity-form>
@@ -36,12 +36,13 @@
                 </table>
             </div>
             <div class="order-summary-card">
-                <h3 style="margin-top:0;">Order Summary</h3>
+                <div class="summary-heading"><span>Order summary</span><small>{{ $items->count() }} {{ Str::plural('title', $items->count()) }}</small></div>
                 <div class="summary-line"><span>Subtotal</span><span data-cart-subtotal>&#8377;{{ number_format($quote['subtotal'], 0) }}</span></div>
                 <div class="summary-line"><span>Shipping</span><span data-cart-shipping>{{ $quote['shipping'] == 0 ? 'Free' : '₹'.number_format($quote['shipping'],0) }}</span></div>
                 <div class="summary-line"><span>Platform Fee</span><span data-cart-platform-fee>&#8377;{{ number_format($quote['platformFee'], 0) }}</span></div>
                 <div class="summary-line total"><span>Total</span><span data-cart-total>&#8377;{{ number_format($quote['total'], 0) }}</span></div>
                 <a href="{{ route('checkout.index') }}" class="btn btn-primary" style="width:100%;margin-top:16px;">Proceed to Checkout</a>
+                <div class="summary-assurance">&#128274; Secure checkout &middot; Login protected</div>
             </div>
         </div>
         @endif

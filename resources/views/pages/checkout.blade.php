@@ -6,14 +6,14 @@
                 href="{{ route('cart.index') }}">Cart</a><span class="sep">/</span><span class="current">Checkout</span>
         </div>
     </div>
-    <section class="section" style="padding-top:0;">
+    <section class="section shopping-section">
         <div class="container">
-            <h1>Checkout</h1>
+            <div class="shopping-page-head"><div><span class="eyebrow"><span class="dot"></span> Final step</span><h1>Secure Checkout</h1><p>Confirm delivery and payment details before placing your order.</p></div><div class="checkout-progress"><span class="done">1</span><i></i><span class="current">2</span><small>Cart</small><small>Checkout</small></div></div>
             <form method="POST" action="{{ route('checkout.store') }}" enctype="multipart/form-data">@csrf
                 <div class="grid grid-2" style="grid-template-columns:1.6fr 1fr;align-items:start;gap:32px;">
                     <div>
-                        <div class="card" style="margin-bottom:20px;">
-                            <h3 style="margin-top:0;">Shipping Address</h3>
+                        <div class="card checkout-card" style="margin-bottom:20px;">
+                            <div class="checkout-card-head"><span>1</span><div><h3>Shipping Address</h3><p>Where should we deliver your books?</p></div></div>
                             <div class="form-group"><label>Address</label><textarea name="shipping_address" required
                                     class="form-control" style="min-height:80px;">{{ old('shipping_address') }}</textarea>
                             </div>
@@ -29,7 +29,7 @@
                                     </select></div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card checkout-card">
                             <h3 style="margin-top:0;">Payment — Manual Bank Transfer</h3>
                             <p style="font-size:.88rem;">Transfer the order total, then enter your UTR so our team can
                                 verify and confirm your order.</p>
@@ -57,8 +57,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="order-summary-card">
-                        <h3 style="margin-top:0;">Order Summary</h3>
+                    <div class="order-summary-card checkout-summary">
+                        <div class="summary-heading"><span>Order summary</span><small>Review totals</small></div>
                         <div class="summary-line"><span>Subtotal</span><span
                                 data-checkout-subtotal>{{ $quote['symbol'] }}{{ number_format($quote['subtotal'], 2) }}</span>
                         </div>
@@ -83,7 +83,7 @@
                                     data-apply-coupon data-url="{{ route('checkout.coupon') }}">Apply</button></div><small
                                 data-coupon-message style="display:block;margin-top:8px;"></small>
                         </div><button class="btn btn-primary" style="width:100%;margin-top:16px;">Place Order</button>
-                        <p style="font-size:.74rem;color:var(--text-secondary);">Your order stays Pending Payment until the
+                        <div class="summary-assurance">&#128274; Your information is protected</div><p style="font-size:.74rem;color:var(--text-secondary);">Your order stays Pending Payment until the
                             UTR is verified.</p>
                     </div>
                 </div>

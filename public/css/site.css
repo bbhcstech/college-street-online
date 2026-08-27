@@ -683,10 +683,32 @@ html.dark .product-price { color: var(--accent-gold-light); }
 .order-summary-card { background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; position: sticky; top: 100px; }
 .summary-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.92rem; color: var(--text-secondary); }
 .summary-line.total { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 14px; font-family: var(--font-heading); font-weight: 700; font-size: 1.05rem; color: var(--text-primary); }
+.shopping-section { padding-top: 14px; }
+.shopping-page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 28px; }
+.shopping-page-head h1 { margin: 6px 0 4px; }.shopping-page-head p { color: var(--text-secondary); }
+.shopping-empty { padding: 70px 24px; text-align: center; border: 1px dashed var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+.shopping-empty > span { display: block; margin-bottom: 10px; font-size: 2.8rem; }.shopping-empty p { margin: 8px 0 22px; }
+.cart-items-card { box-shadow: var(--shadow-sm); }.cart-row-book strong { display: block; margin-bottom: 4px; }
+.cart-book-meta { margin-bottom: 8px; color: var(--text-secondary); font-size: .78rem; }
+.cart-table [data-line-total] { white-space: nowrap; font-size: 1.05rem; color: var(--brand-primary); }
+.summary-heading { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; margin-bottom: 10px; border-bottom: 1px solid var(--border); font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; }
+.summary-heading small { color: var(--text-secondary); font-family: var(--font-body); font-size: .7rem; font-weight: 500; }
+.summary-assurance { margin-top: 14px; padding: 10px; text-align: center; border-radius: 8px; color: var(--success); background: rgba(31,157,108,.08); font-size: .72rem; font-weight: 700; }
+.checkout-progress { min-width: 150px; display: grid; grid-template-columns: 28px 1fr 28px; align-items: center; text-align: center; }
+.checkout-progress span { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--text-secondary); background: var(--surface-alt); border: 1px solid var(--border); font-size: .75rem; font-weight: 800; }
+.checkout-progress span.done { color: #fff; background: var(--success); border-color: var(--success); }.checkout-progress span.current { color: #fff; background: var(--brand-primary); border-color: var(--brand-primary); }
+.checkout-progress i { height: 2px; background: var(--success); }.checkout-progress small { margin-top: 5px; color: var(--text-secondary); font-size: .65rem; }
+.checkout-progress small:first-of-type { grid-column: 1; }.checkout-progress small:last-of-type { grid-column: 3; }
+.checkout-card { padding: 26px; box-shadow: var(--shadow-sm); }
+.checkout-card-head { display: flex; gap: 13px; align-items: flex-start; padding-bottom: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.checkout-card-head > span { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 8px; color: #fff; background: var(--brand-primary); font-weight: 800; }
+.checkout-card-head h3 { margin: 0; }.checkout-card-head p { margin-top: 3px; color: var(--text-secondary); font-size: .78rem; }
+.checkout-summary { box-shadow: var(--shadow-md); }
 @media (max-width: 900px) {
     .cart-layout { grid-template-columns: 1fr !important; }
     .order-summary-card { position: static; }
 }
+@media (max-width: 620px) { .shopping-page-head { align-items: flex-start; flex-direction: column; } .cart-items-card { padding: 4px 12px; } .cart-table tr { display: grid; grid-template-columns: 1fr auto; padding: 14px 0; border-bottom: 1px solid var(--border); } .cart-table td { padding: 7px 4px; border: 0; } .checkout-card { padding: 18px; } }
 
 /* Order status timeline */
 .status-timeline { display: flex; justify-content: space-between; position: relative; margin: 32px 0; }
