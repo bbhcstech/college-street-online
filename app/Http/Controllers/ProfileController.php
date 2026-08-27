@@ -31,19 +31,36 @@ class ProfileController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:150',
             'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'business_name' => Rule::when($user->isPublisher(), ['required', 'string', 'max:200'], ['nullable']),
             'contact_details' => Rule::when($user->isPublisher(), ['nullable', 'string', 'max:1000'], ['nullable']),
         ]);
 
-        DB::transaction(function () use ($user, $data) {
-            $user->update(['name' => trim($data['name']), 'email' => strtolower(trim($data['email']))]);
-            if ($user->isPublisher()) {
-                $user->publisher->update([
-                    'business_name' => trim($data['business_name']),
-                    'contact_details' => $data['contact_details'] ?? null,
+        $newPath = $request->hasFile('profile_image')
+            ? $request->file('profile_image')->store('profile-images', 'public')
+            : null;
+        $oldPath = $user->profile_image_path;
+
+        try {
+            DB::transaction(function () use ($user, $data, $newPath, $oldPath) {
+                $user->update([
+                    'name' => trim($data['name']),
+                    'email' => strtolower(trim($data['email'])),
+                    'profile_image_path' => $newPath ?: $oldPath,
                 ]);
-            }
-        });
+                if ($user->isPublisher()) {
+                    $user->publisher->update([
+                        'business_name' => trim($data['business_name']),
+                        'contact_details' => $data['contact_details'] ?? null,
+                    ]);
+                }
+            });
+        } catch (\Throwable $exception) {
+            if ($newPath) Storage::disk('public')->delete($newPath);
+            throw $exception;
+        }
+
+        if ($newPath && $oldPath) Storage::disk('public')->delete($oldPath);
 
         return back()->with('success', 'Profile updated successfully.');
     }

@@ -367,6 +367,7 @@ textarea.form-control { min-height: 140px; resize: vertical; }
 .hp-field { position: absolute; left: -9999px; top: -9999px; opacity: 0; height: 0; width: 0; overflow: hidden; }
 .alert { padding: 16px 18px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 0.92rem; }
 .alert-success { background: rgba(31,157,108,0.12); color: var(--success); border: 1px solid rgba(31,157,108,0.3); }
+.alert-info { background: rgba(37,99,235,.1); color: #2563eb; border: 1px solid rgba(37,99,235,.25); }
 
 /* ---------------- FAQ ---------------- */
 .faq-item { border-bottom: 1px solid var(--border); }
@@ -735,7 +736,8 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .pagination-page { min-width: 34px; }.pagination-page.active { color: #fff; border-color: var(--brand-primary); background: var(--brand-primary); }.pagination-button:hover,.pagination-page:hover { border-color: var(--brand-primary); color: var(--brand-primary); }.pagination-button.disabled { cursor: not-allowed; opacity: .45; }.pagination-ellipsis { padding: 0 3px; color: var(--text-secondary); }
 .account-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
 .account-summary-card { position: sticky; top: 105px; padding: 28px 20px; text-align: center; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-sm); }
-.account-avatar { width: 72px; height: 72px; margin: 0 auto 13px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(145deg, var(--brand-primary), var(--brand-secondary)); font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; }
+.account-avatar { width: 88px; height: 88px; min-width: 88px; min-height: 88px; max-width: 88px; max-height: 88px; margin: 0 auto 18px; display: grid; place-items: center; overflow: hidden; border: 3px solid var(--surface); border-radius: 50%; color: #fff; background: linear-gradient(145deg, var(--brand-primary), var(--brand-secondary)); box-shadow: 0 0 0 1px var(--border); font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; }
+.account-avatar img { width: 88px !important; height: 88px !important; min-width: 88px; min-height: 88px; max-width: none; display: block; border-radius: 50%; object-fit: cover; object-position: center; }
 .account-summary-card h2 { margin: 0; font-size: 1.15rem; }.account-summary-card p { margin: 5px 0; color: var(--text-secondary); font-size: .78rem; overflow-wrap: anywhere; }
 .account-summary-card > span { display: inline-block; padding: 4px 8px; border-radius: 99px; color: var(--success); background: rgba(31,157,108,.1); font-size: .66rem; font-weight: 800; }
 .account-summary-card nav { display: grid; gap: 5px; margin-top: 22px; padding-top: 16px; text-align: left; border-top: 1px solid var(--border); }

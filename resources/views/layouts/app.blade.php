@@ -22,6 +22,9 @@
     @if (session('success'))
         <div class="container" style="padding-top:20px;"><div class="alert alert-success">{{ session('success') }}</div></div>
     @endif
+    @if (session('info'))
+        <div class="container" style="padding-top:20px;"><div class="alert alert-info">{{ session('info') }}</div></div>
+    @endif
     @if ($errors->any())
         <div class="container" style="padding-top:20px;"><div class="alert alert-danger">{{ $errors->first() }}</div></div>
     @endif
