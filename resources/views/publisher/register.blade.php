@@ -20,7 +20,8 @@
                 Submit your details. An admin must approve your account before you cansign in.
             </p>
             @if($errors->any())
-            <div class="alert alert-danger">{{ $errors->first() }}</div>@endif
+                <div class="alert alert-danger">{{ $errors->first() }}</div>
+            @endif
             <form method="POST" action="{{ route('publisher.register.submit') }}">
                 @csrf
                 <div class="a-form-group"><label>Contact Name</label><input type="text" name="name"

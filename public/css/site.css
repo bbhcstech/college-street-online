@@ -613,6 +613,60 @@ html.dark .book-card-action { color: var(--accent-gold-light); }
     .catalogue-grid .book-card-body { padding: 12px; }
 }
 
+/* Customer book details */
+.book-detail-section { padding-top: 18px; }
+.product-layout { display: grid; grid-template-columns: minmax(300px, 42%) minmax(0, 1fr); gap: clamp(34px, 6vw, 78px); align-items: start; }
+.product-visual { position: sticky; top: 112px; }
+.product-cover-frame { max-width: 420px; margin: 0 auto; padding: 26px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-md); }
+.product-cover-frame .book-cover { width: 100%; aspect-ratio: 3/4; border-radius: 12px; box-shadow: 0 16px 28px rgba(8, 35, 59, .18); }
+.product-cover-frame .title-mark { font-size: 1.4rem; }
+.product-visual-note { max-width: 420px; margin: 14px auto 0; text-align: center; color: var(--text-secondary); font-size: .78rem; }
+.product-visual-note span { color: var(--success); font-weight: 900; }
+.product-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.product-heading-row .badge-tag-outline { margin: 0; }
+.product-discount { color: var(--success); font-size: .74rem; font-weight: 900; letter-spacing: .04em; }
+.product-information h1 { margin: 14px 0 8px; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1.05; }
+.product-byline { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--text-secondary); }
+.product-byline > span { width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
+.product-rating-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-size: .82rem; }
+.product-rating-row a { color: var(--brand-primary); font-weight: 700; }
+html.dark .product-rating-row a { color: var(--accent-gold-light); }
+.rating-chip { padding: 5px 9px; border-radius: 7px; color: #fff; background: var(--success); font-weight: 800; }
+.product-price-block { display: flex; align-items: baseline; flex-wrap: wrap; gap: 9px 12px; padding: 20px 0 10px; }
+.product-price { font-family: var(--font-display); font-size: 2.15rem; font-style: italic; font-weight: 700; color: var(--brand-primary); }
+html.dark .product-price { color: var(--accent-gold-light); }
+.product-mrp { color: var(--text-secondary); font-size: .86rem; text-decoration: line-through; }
+.product-saving { color: var(--success); font-size: .84rem; font-weight: 800; }
+.product-price-block small { flex-basis: 100%; color: var(--text-secondary); }
+.product-stock-row { margin: 7px 0 22px; }
+.product-description { padding: 20px 0; border-top: 1px solid var(--border); }
+.product-description h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.product-description p { line-height: 1.75; }
+.product-purchase-box { padding: 18px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-alt); }
+.product-cart-form { display: grid; grid-template-columns: auto 78px minmax(160px, 1fr); gap: 10px; align-items: center; }
+.product-cart-form label { font-size: .78rem; font-weight: 800; }
+.product-cart-form .form-control { min-height: 48px; text-align: center; }
+.product-cart-form .btn { min-height: 48px; justify-content: center; }
+.product-cart-form button:disabled { cursor: not-allowed; opacity: .55; }
+.purchase-login-note { margin: 12px 0 0; color: var(--text-secondary); font-size: .78rem; }
+.purchase-login-note a { color: var(--brand-primary); font-weight: 800; }
+.product-assurances { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.product-assurances > div { display: grid; justify-items: center; gap: 3px; padding: 15px 9px; text-align: center; border-right: 1px solid var(--border); }
+.product-assurances > div:last-child { border-right: 0; }
+.product-assurances span { color: var(--accent-gold); font-size: 1.2rem; font-weight: 900; }
+.product-assurances strong { font-size: .74rem; }
+.product-assurances small { color: var(--text-secondary); font-size: .66rem; }
+@media (max-width: 850px) { .product-layout { grid-template-columns: 1fr; } .product-visual { position: static; } .product-cover-frame { max-width: 360px; } }
+@media (max-width: 520px) {
+    .product-cover-frame { padding: 16px; }
+    .product-cart-form { grid-template-columns: auto 1fr; }
+    .product-cart-form .btn { grid-column: 1/-1; }
+    .product-assurances { grid-template-columns: 1fr; }
+    .product-assurances > div { grid-template-columns: auto 1fr; justify-items: start; text-align: left; border-right: 0; border-bottom: 1px solid var(--border); }
+    .product-assurances > div:last-child { border-bottom: 0; }
+    .product-assurances small { grid-column: 2; }
+}
+
 /* Cart table */
 .cart-layout { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); align-items: start; gap: 32px; }
 .cart-items-card { padding: 8px 24px; overflow-x: auto; }
