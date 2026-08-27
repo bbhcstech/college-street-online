@@ -11,13 +11,14 @@
 
 <body>
     <div class="login-shell"
-        style="min-height:100vh;display:flex;align-items:center;justify-content:center;background-color:var(--a-bg);padding:24px;">
+        style="min-height:100vh; display:flex; align-items:center; justify-content:center; background-color:var(--a-bg);padding:24px;">
         <div class="a-card" style="max-width:520px;width:100%;">
             <img src="{{ asset('images/logo-square.jpg') }}" alt="College Street Online"
                 style="height:48px;border-radius:10px;margin-bottom:16px;">
             <h2 style="margin-top:0;">Publisher Application</h2>
-            <p style="color:var(--a-text-muted);">Submit your details. An admin must approve your account before you can
-                sign in.</p>
+            <p style="color:var(--a-text-muted);">
+                Submit your details. An admin must approve your account before you cansign in.
+            </p>
             @if($errors->any())
             <div class="alert alert-danger">{{ $errors->first() }}</div>@endif
             <form method="POST" action="{{ route('publisher.register.submit') }}">

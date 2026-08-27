@@ -558,6 +558,61 @@ html.dark .book-card-body .price { color: var(--accent-gold-light); }
 .stock-pill.low { background-color: rgba(237,161,58,0.15); color: #B8791E; }
 html.dark .stock-pill.low { color: var(--accent-gold-light); }
 
+/* Customer catalogue */
+.catalogue-hero { padding: 46px 0 34px; }
+.catalogue-hero h1 { font-size: clamp(2rem, 4vw, 3rem); }
+.catalogue-hero .lead { margin-top: 10px; }
+.catalogue-section { padding-top: 0; }
+.catalogue-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 26px; align-items: start; }
+.catalogue-filters { position: sticky; top: 112px; padding: 22px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-sm); }
+.filter-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.filter-heading h2 { font-size: 1.35rem; margin: 2px 0 0; }
+.filter-heading a { color: var(--brand-primary); font-size: .78rem; font-weight: 700; }
+.filter-kicker { color: var(--text-secondary); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.catalogue-label { display: block; margin: 16px 0 7px; color: var(--text-primary); font-family: var(--font-heading); font-size: .78rem; font-weight: 700; }
+.catalogue-input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 9px; color: var(--text-primary); background: var(--surface); font: inherit; }
+.catalogue-input:focus { outline: 2px solid color-mix(in srgb, var(--brand-primary) 24%, transparent); border-color: var(--brand-primary); }
+.price-filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.catalogue-filter-button { width: 100%; margin-top: 18px; justify-content: center; }
+.catalogue-results { min-width: 0; }
+.catalogue-toolbar { min-height: 62px; margin-bottom: 18px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.catalogue-toolbar > div { color: var(--text-secondary); font-size: .84rem; }
+.catalogue-toolbar strong { color: var(--text-primary); font-size: .95rem; }
+.catalogue-toolbar form { display: flex; align-items: center; gap: 9px; }
+.catalogue-toolbar label { white-space: nowrap; color: var(--text-secondary); font-size: .78rem; font-weight: 700; }
+.catalogue-toolbar .catalogue-input { min-width: 165px; }
+.catalogue-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.catalogue-grid .book-card { border-radius: 12px; }
+.catalogue-grid .book-card:hover { transform: translateY(-3px); }
+.catalogue-grid .book-cover { aspect-ratio: 4/5; }
+.book-card-meta { min-height: 23px; display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+.book-card-meta .badge-tag-outline { max-width: 70%; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.discount-badge { flex: none; color: var(--success); font-size: .68rem; font-weight: 800; }
+.book-card-action { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); color: var(--brand-primary); font-family: var(--font-heading); font-size: .78rem; font-weight: 800; }
+html.dark .book-card-action { color: var(--accent-gold-light); }
+.catalogue-empty { grid-column: 1/-1; padding: 72px 24px; text-align: center; border: 1px dashed var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.catalogue-empty > span { display: block; margin-bottom: 8px; font-size: 2.4rem; color: var(--text-secondary); }
+.catalogue-empty p { margin: 7px 0 20px; }
+.catalogue-pagination { margin-top: 28px; }
+@media (max-width: 1180px) { .catalogue-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+    .catalogue-layout { grid-template-columns: 1fr; }
+    .catalogue-filters { position: static; }
+    .catalogue-filters form { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; align-items: end; }
+    .catalogue-filters .catalogue-label { margin-top: 0; }
+    .catalogue-filters .price-filter-grid { grid-column: auto; }
+    .catalogue-filter-button { margin-top: 0; }
+}
+@media (max-width: 680px) {
+    .catalogue-filters form { display: block; }
+    .catalogue-filters .catalogue-label { margin-top: 14px; }
+    .catalogue-filter-button { margin-top: 18px; }
+    .catalogue-toolbar { align-items: flex-start; flex-direction: column; }
+    .catalogue-toolbar form, .catalogue-toolbar .catalogue-input { width: 100%; }
+    .catalogue-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .catalogue-grid .book-card-body { padding: 12px; }
+}
+
 /* Cart table */
 .cart-layout { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); align-items: start; gap: 32px; }
 .cart-items-card { padding: 8px 24px; overflow-x: auto; }
