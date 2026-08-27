@@ -610,4 +610,26 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .review-card-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
 .review-card-head div { display: grid; gap: 3px; }
 .review-card p { margin-bottom: 8px; }
+
+/* Customer authentication */
+.customer-auth-section { padding-top: 42px; }
+.customer-auth-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 470px); gap: 56px; align-items: center; max-width: 1080px; }
+.customer-auth-intro { padding: 32px 0; }
+.customer-auth-intro .eyebrow { display: inline-block; margin-bottom: 16px; color: var(--accent-gold); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.customer-auth-intro h1 { max-width: 540px; margin: 0 0 18px; font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.02; }
+.customer-auth-intro p { max-width: 520px; margin-bottom: 24px; color: var(--text-secondary); font-size: 1rem; line-height: 1.75; }
+.customer-auth-intro a { color: var(--brand-primary); font-weight: 800; }
+.customer-auth-card { padding: 34px; border-top: 4px solid var(--accent-gold); box-shadow: var(--shadow-md); }
+.customer-auth-heading { margin-bottom: 25px; }
+.customer-auth-heading span { color: var(--brand-primary); font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.customer-auth-heading h2 { margin: 6px 0; font-size: 1.8rem; }
+.customer-auth-heading p { color: var(--text-secondary); font-size: .82rem; }
+.customer-auth-card .form-group { margin-bottom: 18px; }
+.customer-auth-card .form-control { min-height: 50px; }
+.customer-auth-card .btn { min-height: 50px; justify-content: center; }
+.customer-auth-switch { margin: 22px 0 0; padding-top: 18px; text-align: center; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: .84rem; }
+.customer-auth-switch a { color: var(--brand-primary); font-weight: 800; }
+.auth-field-help { display: block; margin-top: 6px; color: var(--text-secondary); font-size: .7rem; }
+@media (max-width: 800px) { .customer-auth-shell { grid-template-columns: 1fr; gap: 18px; max-width: 560px; }.customer-auth-intro { padding: 0; }.customer-auth-intro h1 { font-size: 2.5rem; } }
+@media (max-width: 520px) { .customer-auth-section { padding-top: 24px; }.customer-auth-card { padding: 24px 20px; } }
 @media (max-width: 767px) { .status-timeline { flex-direction: column; gap: 20px; align-items: flex-start; } .status-timeline::before { display: none; } .status-step { display: flex; align-items: center; gap: 12px; text-align: left; } .status-step .dot { margin: 0; } }
