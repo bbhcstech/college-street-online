@@ -14,7 +14,7 @@
             <div class="account-layout">
                 <aside class="account-summary-card">
                     <div class="account-avatar">@if($user->profile_image_url)<img src="{{ $user->profile_image_url }}"
-                    alt="{{ $us   r->name }}">@else{{ strtoupper(substr($user->name, 0, 1)) }}@endif</div>
+                    alt="{{ $user->name }}">@else{{ strtoupper(substr($user->name, 0, 1)) }}@endif</div>
                     <h2>{{ $user->name }}</h2>
                     <p>{{ $user->email }}</p><span>Customer account</span>
                     <nav><a class="active" href="{{ route('account.profile') }}">Profile settings</a><a
