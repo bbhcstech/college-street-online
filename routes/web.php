@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController};
+use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController, SupportController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
@@ -39,6 +39,8 @@ Route::middleware('role:customer')->group(function () {
     Route::put('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
     Route::put('/account/password', [ProfileController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/books/{book}/reviews', [BookReviewController::class, 'store'])->name('books.reviews.store');
+    Route::get('/account/support', [SupportController::class, 'index'])->name('account.support');
+    Route::post('/account/support', [SupportController::class, 'store'])->middleware('throttle:5,1')->name('account.support.store');
 });
 
 //PUBLISHER ROUTES
@@ -144,5 +146,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
         Route::post('/newsletter/send', [Admin\NewsletterController::class, 'send'])->name('newsletter.send');
         Route::get('/newsletter/export', [Admin\NewsletterController::class, 'export'])->name('newsletter.export');
+        Route::get('/support', [Admin\SupportController::class, 'index'])->name('support.index');
+        Route::get('/support/{supportTicket}', [Admin\SupportController::class, 'show'])->name('support.show');
+        Route::put('/support/{supportTicket}', [Admin\SupportController::class, 'update'])->name('support.update');
     });
 });

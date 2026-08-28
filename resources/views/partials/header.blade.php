@@ -36,7 +36,10 @@
                 <div class="auth-portal-menu">
                     @auth
                     <a href="{{ $profileRoute }}">My Profile</a>
-                    @if(auth()->user()->isCustomer())<a href="{{ route('account.orders') }}">My Orders</a>@endif
+                        @if(auth()->user()->isCustomer())
+                            <a href="{{ route('account.orders') }}">My Orders</a>
+                            <a href="{{ route('account.support') }}">Contact Support</a>
+                        @endif
                     <form method="POST" action="{{ route('account.logout') }}">
                         @csrf
                         <button type="submit">Logout</button>
@@ -79,6 +82,7 @@
     @auth
         <a href="{{ $profileRoute }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">My Profile</a>
         @if(auth()->user()->isCustomer())<a href="{{ route('account.orders') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">My Orders</a>@endif
+        @if(auth()->user()->isCustomer())<a href="{{ route('account.support') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Contact Support</a>@endif
         <form method="POST" action="{{ route('account.logout') }}" class="mobile-logout-form">@csrf<button type="submit" class="btn btn-outline">Logout</button></form>
     @else
         <a href="{{ route('account.login') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Customer Login</a>

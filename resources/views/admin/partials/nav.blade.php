@@ -28,6 +28,7 @@
     <a href="{{ route('admin.payment-settings.edit') }}"
         class="nav-link {{ $active === 'payment-settings' ? 'active' : '' }}"><span
             class="nav-icon">&#9638;</span><span>Payment QR</span></a>
+    <a href="{{ route('admin.support.index') }}" class="nav-link {{ $active === 'support' ? 'active' : '' }}"><span class="nav-icon">?</span><span>Customer Support</span></a>
 </div>
 <div class="nav-group">
     <div class="nav-group-title">Growth</div>

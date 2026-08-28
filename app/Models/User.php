@@ -16,6 +16,7 @@ class User extends Authenticatable
     public function publisher() { return $this->hasOne(Publisher::class); }
     public function orders() { return $this->hasMany(Order::class, 'customer_id'); }
     public function cart() { return $this->hasMany(Cart::class, 'customer_id'); }
+    public function supportTickets() { return $this->hasMany(SupportTicket::class); }
 
     public function isAdmin(): bool { return $this->role === 'admin'; }
     public function isPublisher(): bool { return $this->role === 'publisher'; }
