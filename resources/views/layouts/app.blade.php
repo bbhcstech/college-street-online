@@ -25,7 +25,7 @@
     @if (session('info'))
         <div class="container" style="padding-top:20px;"><div class="alert alert-info">{{ session('info') }}</div></div>
     @endif
-    @if ($errors->any())
+    @if ($errors->any() && ! View::hasSection('errors-inside-content'))
         <div class="container" style="padding-top:20px;"><div class="alert alert-danger">{{ $errors->first() }}</div></div>
     @endif
     @yield('content')

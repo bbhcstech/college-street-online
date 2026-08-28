@@ -19,6 +19,10 @@
     <aside class="admin-sidebar">
         <a href="{{ $homeRoute ?? '#' }}" class="brand"><img src="{{ asset('images/logo-square.jpg') }}" alt="CSO" style="height:32px;width:32px;border-radius:7px;object-fit:cover;"> {{ $brandLabel ?? 'Panel' }}</a>
         @yield('nav')
+        <form method="POST" action="{{ $logoutRoute }}" class="sidebar-logout-form">
+            @csrf
+            <button type="submit" class="sidebar-logout-button"><span class="nav-icon">&#8594;</span><span>Logout</span></button>
+        </form>
     </aside>
     <div class="admin-main">
         <div class="admin-topbar">

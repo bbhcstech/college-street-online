@@ -806,6 +806,7 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .customer-auth-card .form-group { margin-bottom: 18px; }
 .customer-auth-card .form-control { min-height: 50px; }
 .customer-auth-card .btn { min-height: 50px; justify-content: center; }
+.customer-login-error { color: #b42318; background: #fff1f0; border-color: #fda29b; font-weight: 700; }
 .customer-auth-switch { margin: 22px 0 0; padding-top: 18px; text-align: center; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: .84rem; }
 .customer-auth-switch a { color: var(--brand-primary); font-weight: 800; }
 .auth-field-help { display: block; margin-top: 6px; color: var(--text-secondary); font-size: .7rem; }

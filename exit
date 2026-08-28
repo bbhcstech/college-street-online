@@ -1,0 +1,390 @@
+[33mcommit e692ae540f730c5c0faf1b1ddc76d62d5481679a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mkaran[m[33m, [m[1;31morigin/karan[m[33m)[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 28 12:21:45 2026 +0530
+
+    publisher login page improved
+
+[33mcommit 8b9693379c0919f7da4b22e23d2f7024da196233[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 28 11:09:52 2026 +0530
+
+    customer contact support implemented
+
+[33mcommit 32f5a8bfb7435dfdf3af556d8dd35554d68d2c8d[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 28 10:53:33 2026 +0530
+
+    navbar is responsive now
+
+[33mcommit a9d7aa9a18aa77176d3c83a0ce0f8ade22882eac[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 28 10:33:03 2026 +0530
+
+    user profile picture blank page issue fixed
+
+[33mcommit aa7300cbe2b2459ec085fc46c5f1c97a9badc419[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 16:51:27 2026 +0530
+
+    fix: admin layout issue fixed
+
+[33mcommit dad59c0658ab74d1f467425c87e824b03785688c[m
+Merge: 35605d9 b064116
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 13:32:23 2026 +0530
+
+    Merge branch 'main' into karan
+
+[33mcommit 35605d9560f1a8d2b3639c947114c7b15d41bffa[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 13:20:57 2026 +0530
+
+    feat: improve customer login and registration UI
+
+[33mcommit b0641162e9a6cac6dd29d3a813730b44c3da8467[m[33m ([m[1;32mmain[m[33m)[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 13:20:57 2026 +0530
+
+    feat: improve customer login and registration UI
+
+[33mcommit c08394a62f16c8b656813750554fd8a993e7ce5c[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 13:11:55 2026 +0530
+
+    feat: improve customer profile tracking and pagination UI
+
+[33mcommit 3cbbe8db0a461fecdd6e595dfe2e8bc8c22857f0[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 12:59:38 2026 +0530
+
+    feat: improve customer cart and checkout UI
+
+[33mcommit f7aa41a47e8c0dd212518366de24aeefd20b301b[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 12:50:17 2026 +0530
+
+    feat: improve customer book details UI
+
+[33mcommit 3b4c37b335c600b0a45804aad736defd5157ad65[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 12:40:25 2026 +0530
+
+    feat: improve customer catalogue UI and filtering
+
+[33mcommit d58042361484c928394443d58bf37d6eaf30fec0[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Thu Aug 27 12:32:06 2026 +0530
+
+    feat: expand book search to authors and publishers
+
+[33mcommit fdd8e9c3d5d534723947994bc182f1fecaa63fd2[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 17:02:01 2026 +0530
+
+    all publish features tested
+
+[33mcommit 9f731888728f88ea0dec8eafbb5e1851b4a6b027[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 16:57:19 2026 +0530
+
+    feat: upgrade publisher orders with filters, exports, pagination, and responsive table UI
+
+[33mcommit 2f61d5fc4cdbcb9ed320323de9ac8e1aa62eed31[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 16:43:24 2026 +0530
+
+    feat: add publisher payments, invoices, and admin-managed commission deductions
+
+[33mcommit f031f2ec65039b73380062e53ad071de37ec74ab[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 16:12:41 2026 +0530
+
+    fix: publisher analytic and report theme toggler issue fixed
+
+[33mcommit a443890365d92898bceb05b9954199a1507de050[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 16:07:51 2026 +0530
+
+    fix publisher analytics charts, table layout, and sidebar placement
+
+[33mcommit b0e66a4d9c6b39d255f099ce481326b5f93a2b57[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 15:48:45 2026 +0530
+
+    feat: add publisher coupon request and admin approval workflow
+
+[33mcommit d2c9726125f31e48050b30d4379ed947cf5062af[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 15:36:47 2026 +0530
+
+    feat: improve publisher inventory with filters exports and stock controls
+
+[33mcommit aa63d2e782a35e2ab9f5ff381e57ea22795ee03e[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 15:29:14 2026 +0530
+
+    feat: redesign publisher dashboard with sales charts orders and inventory insights
+
+[33mcommit 29be1a6d9c66af71857b2895d50b832f8ca57f9e[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 15:11:23 2026 +0530
+
+    feat: improve publisher book management table and exports
+
+[33mcommit a47a8916c1e95ba10c97d65dcbd422a7628295de[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 14:42:42 2026 +0530
+
+    refactor: replace Cloudinary uploads with Laravel public storage
+
+[33mcommit 4b33cde2f05e4429a25ffb078bf7ca10d669200b[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 14:34:28 2026 +0530
+
+    feat: redesign newsletter management and subscriber UI
+
+[33mcommit 2fc33dc85598594b4ad6ed5140f7e2d70591b236[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 14:28:03 2026 +0530
+
+    feat: improve payment QR management and verification UI
+
+[33mcommit ade08d91f099c30b7de16d8cbcb79602cec4be2d[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 14:20:50 2026 +0530
+
+    feat: improve admin bulk requests table with filters exports and status updates
+
+[33mcommit 75129c797ea70988c8e47278057b637e8730de13[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 14:15:43 2026 +0530
+
+    feat: improve admin orders table with filters exports and status management
+
+[33mcommit 6c73077510531491dc0bf9eabe63659df61bbcf8[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 13:40:44 2026 +0530
+
+    feat: add publisher-specific coupons and improve admin offers UI
+
+[33mcommit 8bbedad754fce12c2200bc7bf188c7f84dcb6134[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 13:26:33 2026 +0530
+
+    feat: add safe permanent deletion for unused categories and authors
+
+[33mcommit d1bfa89f106990c959a2a6a654b093df4e50440c[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 13:09:10 2026 +0530
+
+    feat: redesign admin book creation and editing pages
+
+[33mcommit 148862d107338169b60c6c1778e50bb165b8d612[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 12:55:47 2026 +0530
+
+    feat(admin): add advanced book table with exports and inline status controls
+
+[33mcommit 960b3de58458e0bd7887ac6b706cf69c9f8cdb24[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 12:45:45 2026 +0530
+
+    feat(admin): add advanced publisher table with exports and inline status management
+
+[33mcommit 19a4e9e9aa12e311cf59aa0cd4d944f50d11ba8a[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 12:35:58 2026 +0530
+
+    feat(admin): redesign profile and add public-storage avatar upload
+
+[33mcommit 9d58f0b5ae2dffd00ebe0d73425c0a1e59a45c8f[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 12:20:01 2026 +0530
+
+    feat(admin): redesign analytics reports with enhanced charts and health metrics
+
+[33mcommit f46f24b02b549a62bd24258bd50d3521bfcb838d[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Wed Aug 26 12:04:32 2026 +0530
+
+    feat(admin): redesign login and dashboard with charts and operational summaries
+
+[33mcommit 1bb3f343269131c7968f85c10db57a29e30775a8[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 17:02:09 2026 +0530
+
+    currency conversion to selected country implemented
+
+[33mcommit 055bc80c7018ceff39541829a066932443746958[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 16:48:51 2026 +0530
+
+    bulk order implemented
+
+[33mcommit e1bd078a83a5af7022478eab3d0dda8062ec7c7b[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 16:37:43 2026 +0530
+
+    card image issue fixed
+
+[33mcommit 40ac2282e59f8d36f6dba35e85facf80575ae1bb[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 16:33:18 2026 +0530
+
+    all profile section is implemented
+
+[33mcommit 7cd5e5c6171a2cee385c9aab5e191ff7b7021d52[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 16:24:38 2026 +0530
+
+    qr code for payment added in checkout and that qr is managed by admin
+
+[33mcommit 037a1994174f99ad35ecabd35784176d16a44849[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 16:16:55 2026 +0530
+
+    admin analytics and report implemented
+
+[33mcommit 34b2814a2c3b3fe31fd13e07e1d166858744d6ad[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 15:50:25 2026 +0530
+
+    author and category creation and deletion works fine
+
+[33mcommit c92f7c7ba496e02a0874e12fe81e32797164dd54[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 15:22:33 2026 +0530
+
+    admin book creation is implemented
+
+[33mcommit 04677eeed23619b52436adea4a0bfc4c3c5a03c3[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 15:08:26 2026 +0530
+
+    admin soft deletion implemented for book
+
+[33mcommit fe8a162684241baed18b06fe53c5c7d120045197[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 14:55:31 2026 +0530
+
+    publisher author section is implemented for book creation
+
+[33mcommit d5ec33dfac7e3eb64fbdc1e26ae344d1846d767b[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 14:36:22 2026 +0530
+
+    admin order status color improved
+
+[33mcommit 143506a703d85b2994e660c95b3463a5bba15e26[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 14:21:37 2026 +0530
+
+    publisher stock reduction implemented
+
+[33mcommit f74f58141db818623dde8c4abe364e8657e81ab5[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 14:05:14 2026 +0530
+
+    order status management for publisher implemneted
+
+[33mcommit 336a6c99d20c6421bbe8e51e717e9c10c6fb03f6[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 13:50:51 2026 +0530
+
+    publisher orer status management implemented
+
+[33mcommit 6807897a67e555c266b45f22d0354a3f324bdf6a[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 12:51:21 2026 +0530
+
+    image upload feature updated with cloudinary
+
+[33mcommit 0a8446619af5f6a8b1e78254cf6b4088945dcb3a[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 11:45:03 2026 +0530
+
+    verified user review and newsletter subscription implemented successfully
+
+[33mcommit e8801cd9d6f47e96391887da768986209cc37b93[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 10:51:31 2026 +0530
+
+    detailed order status tracking implemented
+
+[33mcommit ce5ec790d44937a8614db6569b4d86bb0ae79336[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 10:44:54 2026 +0530
+
+    when apply coupon whole page loading fixed
+
+[33mcommit a0780c8ccfd630110d99cee9eecbeb20e6ab508c[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 10:38:36 2026 +0530
+
+    user book update quantity page reloading issue fixed
+
+[33mcommit 76d1c4b19d3c66e7845680137cd313a9c03f533d[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Tue Aug 25 09:55:54 2026 +0530
+
+    header hardcoded login removed and dynamic implemented
+
+[33mcommit 6becc70627348ce7bc55f47af1744449eb303654[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Mon Aug 24 17:55:31 2026 +0530
+
+    admin: book soft delete added
+
+[33mcommit 554158645f316572b84f828c68a4b793f12bf574[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Mon Aug 24 17:47:56 2026 +0530
+
+    admin: querry exception added for deleting the publisher
+
+[33mcommit 73d067d9598f06d364e9c2fead26d37fdfc9a016[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Mon Aug 24 17:35:04 2026 +0530
+
+    footer login link highlights
+
+[33mcommit dd4213cca29981c87d2bb4d0db83af6d5fdcd6ad[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 14:57:18 2026 +0530
+
+    admin/publisher: publisher to admin flow works properly
+
+[33mcommit 106676bde48a63ae6814970c8c047e5e5b3882bc[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 14:43:40 2026 +0530
+
+    admin: publisher CRUD operation completed
+
+[33mcommit b4e7e8a8d8ad0cb92875b942b0ff0049832038e7[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 14:36:50 2026 +0530
+
+    fix: user coupon functionality used properly
+
+[33mcommit 2a5cab61ac753df85073b77debbbf63ce75e47eb[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 13:09:07 2026 +0530
+
+    fix: sidebar scrolling issue fixed
+
+[33mcommit fb7da85b6db4597c1074aa23fb81386857ccdc2e[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 12:35:26 2026 +0530
+
+    user checkout flow issue fix
+
+[33mcommit e8c757fa5627833819c5203ec6e29bd63af06196[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 12:10:04 2026 +0530
+
+    fix: login and register page separated
+
+[33mcommit 103719a339706817f1ae5be3a10991b736d0078e[m
+Author: bbhcstech <karanmahilang05@gmail.com>
+Date:   Fri Aug 21 11:21:45 2026 +0530
+
+    college-street-online setup completed

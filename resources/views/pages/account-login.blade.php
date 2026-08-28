@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('title', 'My Account | College Street Online')
+@section('errors-inside-content', 'true')
 @section('content')
 <section class="section customer-auth-section">
     <div class="container customer-auth-shell">
@@ -15,6 +16,9 @@
                     <h2>Login</h2>
                     <p>Enter the details used when you registered.</p>
                 </div>
+                @if($errors->any())
+                    <div class="alert alert-danger customer-login-error">{{ $errors->first() }}</div>
+                @endif
                 <form method="POST" action="{{ route('account.login.submit') }}">
                     @csrf
                     <div class="form-group"><label for="login-email">Email address</label><input id="login-email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="you@example.com" class="form-control"></div>
