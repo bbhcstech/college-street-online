@@ -18,6 +18,11 @@
             <a href="{{ route('books.index') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">Browse Books</a>
             <a href="{{ route('bulk-orders') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">Bulk Orders</a>
             <a href="{{ route('about') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">About Us</a>
+            @auth
+                @if(auth()->user()->isCustomer())
+                    <a href="{{ route('account.support') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">Support</a>
+                @endif
+            @endauth
         </nav>
         <div class="header-actions">
             <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span class="knob"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></span></button>
