@@ -12,13 +12,22 @@ class BookController extends Controller
     /** FR-4: keyword + Bengali-transliteration search, with category/price filters (planned improvements from the SRS). */
     public function index(Request $request)
     {
+        $sort = $request->query('sort', 'title');
         $books = Book::active()
             ->with(['author', 'category'])
             ->search($request->query('q'))
             ->when($request->query('category'), fn ($q, $cat) => $q->whereHas('category', fn ($c) => $c->where('slug', $cat)))
             ->when($request->query('min_price'), fn ($q, $v) => $q->where('price', '>=', $v))
-            ->when($request->query('max_price'), fn ($q, $v) => $q->where('price', '<=', $v))
-            ->orderBy('title')
+            ->when($request->query('max_price'), fn ($q, $v) => $q->where('price', '<=', $v));
+
+        match ($sort) {
+            'price_low' => $books->orderBy('price'),
+            'price_high' => $books->orderByDesc('price'),
+            'newest' => $books->latest(),
+            default => $books->orderBy('title'),
+        };
+
+        $books = $books
             ->paginate(16)
             ->withQueryString();
 

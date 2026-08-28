@@ -58,12 +58,20 @@
     const hamburger = document.querySelector('[data-hamburger]');
     const mobileNav = document.querySelector('.mobile-nav');
     if (hamburger && mobileNav) {
-        hamburger.addEventListener('click', () => mobileNav.classList.toggle('open'));
+        const setMobileNav = (open) => {
+            mobileNav.classList.toggle('open', open);
+            document.body.classList.toggle('mobile-nav-open', open);
+            hamburger.setAttribute('aria-expanded', String(open));
+        };
+        hamburger.addEventListener('click', () => setMobileNav(!mobileNav.classList.contains('open')));
         mobileNav.querySelectorAll('a').forEach((link) => {
-            link.addEventListener('click', () => mobileNav.classList.remove('open'));
+            link.addEventListener('click', () => setMobileNav(false));
         });
         const closeBtn = mobileNav.querySelector('[data-close-nav]');
-        if (closeBtn) closeBtn.addEventListener('click', () => mobileNav.classList.remove('open'));
+        if (closeBtn) closeBtn.addEventListener('click', () => setMobileNav(false));
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') setMobileNav(false);
+        });
     }
 
     /* ---------------- Scroll-spy nav highlight ---------------- */

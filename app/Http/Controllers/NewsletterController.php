@@ -12,17 +12,20 @@ class NewsletterController extends Controller
     public function subscribe(Request $request)
     {
         $data = $request->validate(['email' => 'required|email']);
+        $email = strtolower(trim($data['email']));
         $subscriber = NewsletterSubscriber::firstOrCreate(
-            ['email' => $data['email']],
+            ['email' => $email],
             ['unsubscribe_token' => Str::random(48)]
         );
 
-        if ($subscriber->wasRecentlyCreated) {
-            try {
-                Mail::to($subscriber->email)->queue(new NewsletterWelcomeMail($subscriber));
-            } catch (\Throwable $exception) {
-                report($exception);
-            }
+        if (! $subscriber->wasRecentlyCreated) {
+            return back()->with('info', 'This email is already subscribed.');
+        }
+
+        try {
+            Mail::to($subscriber->email)->queue(new NewsletterWelcomeMail($subscriber));
+        } catch (\Throwable $exception) {
+            report($exception);
         }
 
         return back()->with('success', 'Subscribed! Check your inbox for updates.');

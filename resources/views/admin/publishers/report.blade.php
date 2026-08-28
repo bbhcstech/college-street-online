@@ -1,1 +1,94 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Publisher Report</title><style>body{font-family:Arial,sans-serif;color:#172033;padding:24px}h1{margin-bottom:4px}p{color:#667085;margin-top:0}table{width:100%;border-collapse:collapse;margin-top:24px}th,td{border:1px solid #ccd3df;padding:9px;text-align:left;font-size:12px}th{background:#eef2f7;text-transform:uppercase}.meta{display:flex;justify-content:space-between}@media print{button{display:none}body{padding:0}}</style></head><body><div class="meta"><div><h1>Publisher Report</h1><p>College Street Online · Generated {{ now()->format('d M Y, h:i A') }}</p></div>@if($mode!=='excel')<button onclick="window.print()">{{ $mode==='pdf'?'Save as PDF':'Print report' }}</button>@endif</div><table><thead><tr><th>Business</th><th>Contact</th><th>Email</th><th>Details</th><th>Books</th><th>Status</th><th>Joined</th></tr></thead><tbody>@foreach($publishers as $publisher)<tr><td>{{ $publisher->business_name }}</td><td>{{ $publisher->user?->name }}</td><td>{{ $publisher->user?->email }}</td><td>{{ $publisher->contact_details }}</td><td>{{ $publisher->books_count }}</td><td>{{ ucfirst($publisher->approval_status) }}</td><td>{{ $publisher->created_at->format('d M Y') }}</td></tr>@endforeach</tbody></table>@if(in_array($mode,['print','pdf']))<script>window.addEventListener('load',()=>window.print())</script>@endif</body></html>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Publisher Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #172033;
+            padding: 24px
+        }
+
+        h1 {
+            margin-bottom: 4px
+        }
+
+        p {
+            color: #667085;
+            margin-top: 0
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px
+        }
+
+        th,
+        td {
+            border: 1px solid #ccd3df;
+            padding: 9px;
+            text-align: left;
+            font-size: 12px
+        }
+
+        th {
+            background: #eef2f7;
+            text-transform: uppercase
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between
+        }
+
+        @media print {
+            button {
+                display: none
+            }
+
+            body {
+                padding: 0
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="meta">
+        <div>
+            <h1>Publisher Report</h1>
+            <p>College Street Online · Generated {{ now()->format('d M Y, h:i A') }}</p>
+        </div>@if($mode !== 'excel')<button
+        onclick="window.print()">{{ $mode === 'pdf' ? 'Save as PDF' : 'Print report' }}</button>@endif
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Business</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Details</th>
+                <th>Books</th>
+                <th>Status</th>
+                <th>Joined</th>
+            </tr>
+        </thead>
+        <tbody>@foreach($publishers as $publisher)
+            <tr>
+                <td>{{ $publisher->business_name }}</td>
+                <td>{{ $publisher->user?->name }}</td>
+                <td>{{ $publisher->user?->email }}</td>
+                <td>{{ $publisher->contact_details }}</td>
+                <td>{{ $publisher->books_count }}</td>
+                <td>{{ ucfirst($publisher->approval_status) }}</td>
+                <td>{{ $publisher->created_at->format('d M Y') }}</td>
+        </tr>@endforeach
+        </tbody>
+    </table>@if(in_array($mode, ['print', 'pdf']))
+    <script>window.addEventListener('load', () => window.print())</script>@endif
+</body>
+
+</html>
