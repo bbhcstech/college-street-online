@@ -3,11 +3,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\InventoryTransaction;
 use App\Models\Payment;
 use App\Models\SiteSetting;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -82,7 +84,27 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $data = $request->validate(['status' => 'required|in:pending_payment,confirmed,processing,packed,shipped,delivered,completed,cancelled,return_requested,returned']);
-        $order->transitionTo($data['status'], auth()->id());
+
+        DB::transaction(function () use ($order, $data) {
+            if ($data['status'] === 'cancelled') {
+                $order->load('items.book');
+                $inventory = app(InventoryService::class);
+
+                foreach ($order->items as $item) {
+                    $alreadyRestored = InventoryTransaction::where('order_id', $order->id)
+                        ->where('book_id', $item->book_id)
+                        ->where('transaction_type', 'cancel')
+                        ->exists();
+
+                    if (! $alreadyRestored && $item->book) {
+                        $inventory->recordCancel($item->book, $item->quantity, $order->id);
+                    }
+                }
+            }
+
+            $order->transitionTo($data['status'], auth()->id());
+        });
+
         return back()->with('success', 'Order status updated.');
     }
 

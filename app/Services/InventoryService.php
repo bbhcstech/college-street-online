@@ -50,8 +50,12 @@ class InventoryService
                 ?? Inventory::create(['book_id' => $book->id, 'quantity' => 0]);
 
             if ($inventory->quantity + $signedQty < 0) {
+                $message = $type === 'sale'
+                    ? "Only {$inventory->quantity} copies of {$book->title} are available."
+                    : 'Stock cannot be reduced below zero.';
+
                 throw ValidationException::withMessages([
-                    'quantity' => 'Stock cannot be reduced below zero.',
+                    'quantity' => $message,
                 ]);
             }
 
