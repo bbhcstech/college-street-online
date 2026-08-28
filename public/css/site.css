@@ -212,6 +212,10 @@ html.dark .dropdown-panel a:hover { color: var(--accent-gold-light); }
 .auth-portal summary { list-style: none; }
 .auth-portal summary::-webkit-details-marker { display: none; }
 .auth-portal-button { background-color: var(--brand-primary); color: #fff; white-space: nowrap; }
+.auth-portal-button { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 7px; }
+.header-profile-avatar { width: 32px; height: 32px; flex: 0 0 32px; display: grid; place-items: center; overflow: hidden; border-radius: 50%; color: var(--brand-primary); background: #fff; font-size: .74rem; font-weight: 900; }
+.header-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.header-profile-name { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
 .auth-portal-button:hover { background-color: var(--brand-primary-light); transform: translateY(-1px); }
 .auth-portal-menu {
     position: absolute; right: 0; top: calc(100% + 10px); z-index: 50;
@@ -236,15 +240,38 @@ html.dark .theme-toggle .knob { transform: translateX(24px); background-color: v
 .hamburger { display: none; }
 @media (max-width: 991px) {
     .main-nav { display: none; }
+    .auth-portal, .header-cta { display: none; }
     .hamburger { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: var(--radius-sm); border: 1px solid var(--border); background-color: var(--surface); cursor: pointer; }
 }
-.mobile-nav { position: fixed; inset: 0; z-index: 200; background-color: var(--bg); transform: translateX(100%); transition: transform 300ms ease; padding: 24px; overflow-y: auto; }
+.mobile-nav { position: fixed; top: 0; right: 0; bottom: 0; z-index: 200; width: min(88vw, 390px); background-color: var(--bg); transform: translateX(105%); transition: transform 300ms ease; padding: 24px; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .mobile-nav.open { transform: translateX(0); }
+.mobile-cart-link, .mobile-logout-form .btn { width: 100%; margin-top: 20px; justify-content: center; }
+.mobile-profile-summary { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.mobile-profile-summary .header-profile-avatar { width: 46px; height: 46px; flex-basis: 46px; color: #fff; background: var(--brand-primary); }
+.mobile-profile-summary strong, .mobile-profile-summary small { display: block; }
+.mobile-profile-summary small { max-width: 240px; margin-top: 3px; overflow: hidden; color: var(--text-secondary); font-size: .7rem; text-overflow: ellipsis; }
+body.mobile-nav-open { overflow: hidden; }
 .mobile-nav .nav-group-mobile { border-bottom: 1px solid var(--border); }
 .mobile-nav .nav-group-mobile > button { width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 17px 4px; font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); cursor: pointer; }
 .mobile-nav .nav-submenu { max-height: 0; overflow: hidden; transition: max-height 280ms ease; }
 .mobile-nav .nav-group-mobile.open .nav-submenu { max-height: 600px; }
 .mobile-nav .nav-submenu a { display: block; padding: 11px 4px 11px 16px; font-size: 0.96rem; font-weight: 500; color: var(--text-secondary); }
+@media (max-width: 640px) {
+    .header-inner { height: 66px; }
+    .brand { gap: 7px; font-size: .92rem; }
+    .brand img { height: 34px; }
+    .header-actions { gap: 7px; }
+    .theme-toggle { width: 44px; height: 28px; }
+    .theme-toggle .knob { width: 22px; height: 22px; }
+    html.dark .theme-toggle .knob { transform: translateX(16px); }
+    .icon-btn-nav { width: 38px; height: 38px; }
+    .header-actions > .icon-btn-nav[aria-label="Account"] { display: none; }
+    .hamburger { width: 38px; height: 38px; }
+    .search-strip { padding: 10px 0; }
+    .search-box { gap: 7px; padding: 5px 6px 5px 12px; }
+    .search-box input { min-width: 0; font-size: .78rem; }
+    .search-box .btn { padding: 9px 13px; }
+}
 
 .marquee-strip { background-color: var(--ink); overflow: hidden; padding: 14px 0; border-bottom: 1px solid var(--border); }
 .marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; }

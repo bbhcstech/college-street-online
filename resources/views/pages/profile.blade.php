@@ -17,7 +17,7 @@
                     alt="{{ $user->name }}">@else{{ strtoupper(substr($user->name, 0, 1)) }}@endif</div>
                     <h2>{{ $user->name }}</h2>
                     <p>{{ $user->email }}</p><span>Customer account</span>
-                    <nav><a class="active" href="{{ route('account.profile') }}">Profile settings</a><a
+                        <nav><a class="active" href="{{ route('account.profile') }}">Profile settings</a><a
                             href="{{ route('account.orders') }}">Orders &amp; tracking</a><a
                             href="{{ route('books.index') }}">Browse books</a></nav>
                 </aside>

@@ -25,7 +25,14 @@
             <a href="{{ route('cart.index') }}" class="icon-btn-nav" aria-label="Cart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>@if($cartCount)<span class="cart-count">{{ $cartCount }}</span>@endif</a>
             <a href="{{ route('books.index') }}" class="btn btn-gold header-cta">Shop Now</a>
             <details class="auth-portal">
-                <summary class="btn auth-portal-button">{{ auth()->check() ? auth()->user()->name : 'Login Portal' }}</summary>
+                <summary class="btn auth-portal-button">
+                    @auth
+                        <span class="header-profile-avatar">@if(auth()->user()->profile_image_url)<img src="{{ auth()->user()->profile_image_url }}" alt="">@else{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}@endif</span>
+                        <span class="header-profile-name">{{ Illuminate\Support\Str::limit(auth()->user()->name, 14) }}</span>
+                    @else
+                        Login Portal
+                    @endauth
+                </summary>
                 <div class="auth-portal-menu">
                     @auth
                     <a href="{{ $profileRoute }}">My Profile</a>
@@ -41,7 +48,7 @@
                     @endauth
                 </div>
             </details>
-            <button type="button" class="hamburger" data-hamburger aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <button type="button" class="hamburger" data-hamburger aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         </div>
     </div>
     <div class="search-strip">
@@ -60,8 +67,23 @@
         <a href="{{ route('home') }}" class="brand"><img src="{{ asset('images/logo-square.jpg') }}" alt="College Street Online" style="height:32px;border-radius:6px;"></a>
         <button type="button" data-close-nav aria-label="Close menu" style="background:none;border:none;cursor:pointer;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
+    @auth
+        <div class="mobile-profile-summary">
+            <span class="header-profile-avatar">@if(auth()->user()->profile_image_url)<img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}">@else{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}@endif</span>
+            <div><strong>{{ auth()->user()->name }}</strong><small>{{ auth()->user()->email }}</small></div>
+        </div>
+    @endauth
     <a href="{{ route('books.index') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Browse Books</a>
     <a href="{{ route('bulk-orders') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Bulk Orders</a>
     <a href="{{ route('about') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">About Us</a>
-    <a href="{{ route('cart.index') }}" class="btn btn-primary" style="margin-top:20px;width:100%;">View Cart</a>
+    @auth
+        <a href="{{ $profileRoute }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">My Profile</a>
+        @if(auth()->user()->isCustomer())<a href="{{ route('account.orders') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">My Orders</a>@endif
+        <form method="POST" action="{{ route('account.logout') }}" class="mobile-logout-form">@csrf<button type="submit" class="btn btn-outline">Logout</button></form>
+    @else
+        <a href="{{ route('account.login') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Customer Login</a>
+        <a href="{{ route('publisher.login') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Publisher Login</a>
+        <a href="{{ route('admin.login') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">Admin Login</a>
+    @endauth
+    <a href="{{ route('cart.index') }}" class="btn btn-primary mobile-cart-link">View Cart @if($cartCount)({{ $cartCount }})@endif</a>
 </div>
