@@ -6,26 +6,46 @@ $logoutRoute = route('publisher.logout'); @endphp
 @section('title', 'Payments & Invoices')
 @section('nav')
     <div class="nav-group">
-        <div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span
-                class="nav-icon">&#9635;</span><span>Dashboard</span></a>
+        <div class="nav-group-title">Overview</div>
+        <a href="{{ route('publisher.dashboard') }}" class="nav-link">
+            <span class="nav-icon">&#9635;</span>
+            <span>Dashboard</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span
-                class="nav-icon">&#128214;</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}"
-            class="nav-link"><span class="nav-icon">&#128230;</span><span>Inventory</span></a>
+        <div class="nav-group-title">Catalogue</div>
+        <a href="{{ route('publisher.books.index') }}" class="nav-link">
+            <span class="nav-icon">&#128214;</span>
+            <span>My Books</span>
+        </a>
+        <a href="{{ route('publisher.inventory.index') }}" class="nav-link">
+            <span class="nav-icon">&#128230;</span>
+            <span>Inventory</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span
-                class="nav-icon">&#127991;</span><span>Coupons & Offers</span></a>
+        <div class="nav-group-title">Marketing</div>
+        <a href="{{ route('publisher.coupons.index') }}" class="nav-link">
+            <span class="nav-icon">&#127991;</span>
+            <span>Coupons & Offers</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span
-                class="nav-icon">&#128666;</span><span>Orders</span></a><a href="{{ route('publisher.payments.index') }}"
-            class="nav-link active"><span class="nav-icon">&#8377;</span><span>Payments & Invoices</span></a>
+        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link">
+            <span class="nav-icon">&#128666;</span>
+            <span>Orders</span>
+        </a>
+        <a href="{{ route('publisher.payments.index') }}" class="nav-link active">
+            <span class="nav-icon">&#8377;</span>
+            <span>Payments & Invoices</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span
-                class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a>
+        <div class="nav-group-title">Reports</div>
+        <a href="{{ route('publisher.analytics.index') }}" class="nav-link">
+            <span class="nav-icon">&#128200;</span>
+            <span>Analytics & Reports</span>
+        </a>
     </div>
 @endsection
 @section('content')
@@ -140,35 +160,53 @@ $logoutRoute = route('publisher.logout'); @endphp
         }
     }
 </style>
+
 <div class="payment-page-head">
-    <div><span class="analytics-eyebrow">Manual payment records</span>
+    <div>
+        <span class="analytics-eyebrow">Manual payment records</span>
         <h2>Payments and invoices</h2>
         <p>Amounts appear after the administrator verifies the customer's UTR payment.</p>
-    </div><span class="payment-manual-note">No payment gateway connected</span>
+    </div>
+    <span class="payment-manual-note">No payment gateway connected</span>
 </div>
 <div class="payment-summary-grid">
-    <div><span>Net verified
-            earnings</span><strong>₹{{ number_format(($totals->verified ?? 0) - ($totals->deductions ?? 0), 2) }}</strong><small>Gross
-            sales minus deductions</small></div>
-    <div><span>Pending verification</span><strong>₹{{ number_format($totals->pending ?? 0, 2) }}</strong><small>Awaiting
-            admin review</small></div>
-    <div><span>Verified orders</span><strong>{{ number_format($totals->paid_orders ?? 0) }}</strong><small>Orders
-            containing your books</small></div>
-    <div><span>Publisher deductions</span><strong>₹{{ number_format($totals->deductions ?? 0, 2) }}</strong><small>Saved
-            when payments are verified</small></div>
+    <div>
+        <span>Net verified earnings</span>
+        <strong>₹{{ number_format(($totals->verified ?? 0) - ($totals->deductions ?? 0), 2) }}</strong>
+        <small>Gross sales minus deductions</small>
+    </div>
+    <div>
+        <span>Pending verification</span>
+        <strong>₹{{ number_format($totals->pending ?? 0, 2) }}</strong>
+        <small>Awaiting admin review</small>
+    </div>
+    <div>
+        <span>Verified orders</span>
+        <strong>{{ number_format($totals->paid_orders ?? 0) }}</strong>
+        <small>Orders containing your books</small>
+    </div>
+    <div>
+        <span>Publisher deductions</span>
+        <strong>₹{{ number_format($totals->deductions ?? 0, 2) }}</strong>
+        <small>Saved when payments are verified</small>
+    </div>
 </div>
 <section class="a-card publisher-payment-card">
-    <form method="GET" class="publisher-payment-toolbar"><select name="period" class="a-select">
+    <form method="GET" class="publisher-payment-toolbar">
+        <select name="period" class="a-select">
             <option value="month" @selected($period === 'month')>This month</option>
             <option value="year" @selected($period === 'year')>This year</option>
             <option value="all" @selected($period === 'all')>All time</option>
-        </select><select name="payment" class="a-select">
+        </select>
+        <select name="payment" class="a-select">
             <option value="">All payments</option>
             <option value="pending" @selected($paymentStatus === 'pending')>Pending</option>
             <option value="verified" @selected($paymentStatus === 'verified')>Verified</option>
             <option value="rejected" @selected($paymentStatus === 'rejected')>Rejected</option>
-        </select><button class="btn btn-primary">Filter</button><a href="{{ route('publisher.payments.index') }}"
-            class="btn btn-outline">Reset</a></form>
+        </select>
+        <button class="btn btn-primary">Filter</button>
+        <a href="{{ route('publisher.payments.index') }}" class="btn btn-outline">Reset</a>
+    </form>
     <div class="publisher-table-scroll">
         <table class="a-table publisher-payment-table">
             <thead>
@@ -206,12 +244,24 @@ $logoutRoute = route('publisher.logout'); @endphp
             </tbody>
         </table>
     </div>
-    <div class="publisher-table-footer"><span>Showing {{ $orders->firstItem() ?? 0 }}–{{ $orders->lastItem() ?? 0 }} of
-            {{ $orders->total() }}</span>
-        <div class="order-pagination">@if($orders->previousPageUrl())<a
-        href="{{ $orders->previousPageUrl() }}">Previous</a>@else<span class="disabled">Previous</span>@endif
-            @if($orders->nextPageUrl())<a href="{{ $orders->nextPageUrl() }}">Next</a>@else<span
-            class="disabled">Next</span>@endif</div>
+    <div class="publisher-table-footer">
+        <span>
+            Showing {{ $orders->firstItem() ?? 0 }}–{{ $orders->lastItem() ?? 0 }} of
+            {{ $orders->total() }}
+        </span>
+        <div class="order-pagination">
+            @if($orders->previousPageUrl())
+                <a href="{{ $orders->previousPageUrl() }}">Previous</a>
+            @else
+                <span class="disabled">Previous</span>
+            @endif
+            
+            @if($orders->nextPageUrl())
+                <a href="{{ $orders->nextPageUrl() }}">Next</a>
+            @else
+                <span class="disabled">Next</span>
+            @endif
+        </div>
     </div>
 </section>
 @endsection

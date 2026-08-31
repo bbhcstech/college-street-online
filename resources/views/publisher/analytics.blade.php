@@ -19,38 +19,93 @@
 @section('title', 'Analytics & Reports')
 @section('nav')
     <div class="nav-group">
-        <div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span
-                class="nav-icon">▣</span><span>Dashboard</span></a>
+        <div class="nav-group-title">Overview</div>
+        <a href="{{ route('publisher.dashboard') }}" class="nav-link">
+            <span class="nav-icon">▣</span>
+            <span>Dashboard</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span
-                class="nav-icon">📖</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}"
-            class="nav-link"><span class="nav-icon">📦</span><span>Inventory</span></a>
+        <div class="nav-group-title">Catalogue</div>
+        <a href="{{ route('publisher.books.index') }}" class="nav-link">
+            <span class="nav-icon">📖</span>
+            <span>My Books</span>
+        </a>
+        <a href="{{ route('publisher.inventory.index') }}" class="nav-link">
+            <span class="nav-icon">📦</span>
+            <span>Inventory</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span
-                class="nav-icon">🏷</span><span>Coupons & Offers</span></a>
+        <div class="nav-group-title">Marketing</div>
+        <a href="{{ route('publisher.coupons.index') }}" class="nav-link">
+            <span class="nav-icon">🏷</span>
+            <span>Coupons & Offers</span>
+        </a>
     </div>
     <div class="nav-group">
-        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link"><span
-                class="nav-icon">🚚</span><span>Orders</span></a><a href="{{ route('publisher.payments.index') }}" class="nav-link"><span class="nav-icon">&#8377;</span><span>Payments & Invoices</span></a>
+        <div class="nav-group-title">Sales</div>
+        <a href="{{ route('publisher.orders.index') }}" class="nav-link">
+            <span class="nav-icon">🚚</span>
+            <span>Orders</span>
+        </a>
+        <a href="{{ route('publisher.payments.index') }}" class="nav-link">
+            <span class="nav-icon">&#8377;</span>
+            <span>Payments & Invoices</span>
+        </a>
     </div>
-    <div class="nav-group"><div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link active"><span class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a></div>
+    <div class="nav-group">
+        <div class="nav-group-title">Reports</div>
+        <a href="{{ route('publisher.analytics.index') }}" class="nav-link active">
+            <span class="nav-icon">&#128200;</span>\
+            <span>Analytics & Reports</span>
+        </a>
+    </div>
 @endsection
 @section('content')
     <style>
-        html.dark .dashboard-card { background: var(--a-surface); color: var(--a-text); border-color: var(--a-border); }
-        html.dark .analytics-toolbar { background: var(--a-surface); border-color: var(--a-border); }
+        html.dark .dashboard-card {
+            background: var(--a-surface);
+            color: var(--a-text);
+            border-color: var(--a-border);
+        }
+
+        html.dark .analytics-toolbar {
+            background: var(--a-surface);
+            border-color: var(--a-border);
+        }
+
         html.dark .analytics-toolbar p,
         html.dark .card-heading p,
         html.dark .chart-legend,
-        html.dark .analytics-bar-group small { color: var(--a-text-muted); }
-        html.dark .analytics-actions select { background: var(--a-surface-alt); color: var(--a-text); border-color: var(--a-border); }
-        html.dark .status-donut::before { background: var(--a-surface); }
-        html.dark .analytics-chart { border-color: var(--a-border); }
+        html.dark .analytics-bar-group small {
+            color: var(--a-text-muted);
+        }
+
+        html.dark .analytics-actions select {
+            background: var(--a-surface-alt);
+            color: var(--a-text);
+            border-color: var(--a-border);
+        }
+
+        html.dark .status-donut::before {
+            background: var(--a-surface);
+        }
+
+        html.dark .analytics-chart {
+            border-color: var(--a-border);
+        }
+
         html.dark .publisher-analytics-table th,
-        html.dark .publisher-analytics-table td { color: var(--a-text); border-color: var(--a-border); }
-        html.dark .rank-pill { background: rgba(237, 161, 58, .18); color: #f1ad4d; }
+        html.dark .publisher-analytics-table td {
+            color: var(--a-text);
+            border-color: var(--a-border);
+        }
+
+        html.dark .rank-pill {
+            background: rgba(237, 161, 58, .18);
+            color: #f1ad4d;
+        }
     </style>
     <div class="analytics-toolbar">
         <div>
@@ -58,17 +113,16 @@
             <p>Only orders and books from your publisher account are included.</p>
         </div>
         <div class="analytics-actions">
-            <form method="GET"><select name="period" onchange="this.form.submit()">
+            <form method="GET">
+                <select name="period" onchange="this.form.submit()">
                     <option value="week" @selected($period === 'week')>Weekly</option>
                     <option value="month" @selected($period === 'month')>Monthly</option>
                     <option value="year" @selected($period === 'year')>Yearly</option>
-                </select></form>
-            <a class="btn btn-secondary"
-                href="{{ route('publisher.analytics.export', ['type' => 'csv', 'period' => $period]) }}">CSV</a>
-            <a class="btn btn-secondary"
-                href="{{ route('publisher.analytics.export', ['type' => 'excel', 'period' => $period]) }}">Excel</a>
-            <a class="btn btn-secondary" target="_blank"
-                href="{{ route('publisher.analytics.export', ['type' => 'print', 'period' => $period]) }}">Print / PDF</a>
+                </select>
+            </form>
+            <a class="btn btn-secondary" href="{{ route('publisher.analytics.export', ['type' => 'csv', 'period' => $period]) }}">CSV</a>
+            <a class="btn btn-secondary" href="{{ route('publisher.analytics.export', ['type' => 'excel', 'period' => $period]) }}">Excel</a>
+            <a class="btn btn-secondary" target="_blank" href="{{ route('publisher.analytics.export', ['type' => 'print', 'period' => $period]) }}">Print / PDF</a>
         </div>
     </div>
     <div class="analytics-summary-grid">
@@ -96,16 +150,17 @@
                     <h3>Sales performance</h3>
                     <p>Units and revenue for the selected period</p>
                 </div>
-                <div class="chart-legend"><span class="navy-dot"></span> Units <span class="gold-dot"></span> Revenue</div>
+                <div class="chart-legend">
+                    <span class="navy-dot"></span> Units <span class="gold-dot"></span> Revenue</div>
             </div>
             <div class="analytics-chart-scroll">
                 <div class="analytics-chart" style="--points:{{ $series->count() }}">
                     @foreach($series as $point)
                         <div class="analytics-bar-group">
-                            <div class="analytics-bars"><i class="revenue"
-                                    style="height:{{ $point['revenue'] ? max(4, $point['revenue'] / $maxRevenue * 100) : 0 }}%"></i><i
-                                    class="units"
-                                    style="height:{{ $point['units'] ? max(4, $point['units'] / $maxUnits * 100) : 0 }}%"></i></div>
+                            <div class="analytics-bars">
+                                <i class="revenue" style="height:{{ $point['revenue'] ? max(4, $point['revenue'] / $maxRevenue * 100) : 0 }}%"></i>
+                                <i class="units" style="height:{{ $point['units'] ? max(4, $point['units'] / $maxUnits * 100) : 0 }}%"></i>
+                            </div>
                             <strong>{{ $point['units'] }}</strong><small>{{ $point['label'] }}</small>
                     </div>@endforeach
                 </div>
@@ -119,13 +174,19 @@
                 </div>
             </div>
             <div class="analytics-donut-wrap">
-                <div class="status-donut"
-                    style="background:conic-gradient({{ implode(',', $gradient) ?: '#e6ebf2 0 100%' }})">
-                    <span><b>{{ $statusMix->sum() }}</b>Orders</span></div>
-                <div class="analytics-status-list">@forelse($statusMix as $status => $count)
-                    <div><i
-                            style="background:{{ $colors[$status] ?? '#8a96a8' }}"></i><span>{{ str($status)->replace('_', ' ')->title() }}</span><b>{{ $count }}</b>
-                </div>@empty<p>No orders in this period.</p>@endforelse
+                <div class="status-donut" style="background:conic-gradient({{ implode(',', $gradient) ?: '#e6ebf2 0 100%' }})">
+                    <span><b>{{ $statusMix->sum() }}</b>Orders</span>
+                </div>
+                <div class="analytics-status-list">
+                    @forelse($statusMix as $status => $count)
+                        <div>
+                            <i style="background:{{ $colors[$status] ?? '#8a96a8' }}"></i>
+                            <span>{{ str($status)->replace('_', ' ')->title() }}</span>
+                            <b>{{ $count }}</b>
+                        </div>
+                        @empty
+                        <p>No orders in this period.</p>
+                    @endforelse
                 </div>
             </div>
         </section>
@@ -149,17 +210,19 @@
                         <th>Gross sales</th>
                     </tr>
                 </thead>
-                <tbody>@forelse($topBooks as $book)
-                    <tr>
-                        <td><span class="rank-pill">{{ $loop->iteration }}</span></td>
-                        <td><strong>{{ $book->title }}</strong></td>
-                        <td>{{ $book->isbn ?: '—' }}</td>
-                        <td>{{ $book->orders }}</td>
-                        <td>{{ $book->units }}</td>
-                        <td>₹{{ number_format($book->revenue, 0) }}</td>
-                </tr>@empty<tr>
+                <tbody>
+                    @forelse($topBooks as $book)
+                        <tr>
+                            <td><span class="rank-pill">{{ $loop->iteration }}</span></td>
+                            <td><strong>{{ $book->title }}</strong></td>
+                            <td>{{ $book->isbn ?: '—' }}</td>
+                            <td>{{ $book->orders }}</td>
+                            <td>{{ $book->units }}</td>
+                            <td>₹{{ number_format($book->revenue, 0) }}</td>
+                        </tr>@empty<tr>
                         <td colspan="6" class="empty-state">No completed sales in this period.</td>
-                    </tr>@endforelse
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

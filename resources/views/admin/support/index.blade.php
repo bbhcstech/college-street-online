@@ -1,8 +1,55 @@
 @extends('layouts.dashboard')
-@php $homeRoute=route('admin.dashboard');$brandLabel='Admin Console';$crumb='Operations';$logoutRoute=route('admin.logout'); @endphp
-@section('title','Customer Support')
-@section('nav')@include('admin.partials.nav',['active'=>'support'])@endsection
+@php $homeRoute = route('admin.dashboard');
+    $brandLabel = 'Admin Console';
+    $crumb = 'Operations';
+    $logoutRoute = route('admin.logout'); @endphp
+@section('title', 'Customer Support')
+@section('nav')@include('admin.partials.nav', ['active' => 'support'])@endsection
 @section('content')
-<div class="profile-page-head"><div><span class="analytics-eyebrow">Operations</span><h2>Customer support</h2><p>Review and respond to customer queries.</p></div></div>
-<div class="a-card" style="padding:0;overflow:hidden;"><form method="GET" style="padding:16px;display:flex;gap:10px;"><select name="status" class="a-input"><option value="">All statuses</option>@foreach(['open','in_progress','resolved','closed'] as $status)<option value="{{ $status }}" @selected(request('status')===$status)>{{ ucfirst(str_replace('_',' ',$status)) }}</option>@endforeach</select><button class="btn btn-primary">Filter</button></form><div style="overflow-x:auto;"><table class="a-table"><thead><tr><th>Ticket</th><th>Customer</th><th>Subject</th><th>Status</th><th>Created</th><th>Action</th></tr></thead><tbody>@forelse($tickets as $ticket)<tr><td>#SUP{{ str_pad($ticket->id,4,'0',STR_PAD_LEFT) }}</td><td>{{ $ticket->user->name }}<small style="display:block">{{ $ticket->user->email }}</small></td><td>{{ $ticket->subject }}</td><td>{{ ucfirst(str_replace('_',' ',$ticket->status)) }}</td><td>{{ $ticket->created_at->format('d M Y') }}</td><td><a class="btn btn-outline btn-sm" href="{{ route('admin.support.show',$ticket) }}">View</a></td></tr>@empty<tr><td colspan="6">No support tickets found.</td></tr>@endforelse</tbody></table></div></div>{{ $tickets->links() }}
+    <div class="profile-page-head">
+        <div>
+            <span class="analytics-eyebrow">Operations</span>
+            <h2>Customer support</h2>
+            <p>Review and respond to customer queries.</p>
+        </div>
+    </div>
+    <div class="a-card" style="padding:0;overflow:hidden;">
+        <form method="GET" style="padding:16px;display:flex;gap:10px;">
+            <select name="status" class="a-input">
+                <option value="">All statuses</option>
+                @foreach(['open', 'in_progress', 'resolved', 'closed'] as $status)
+                    <option value="{{ $status }}" @selected(request('status') === $status)>
+                        {{ ucfirst(str_replace('_', ' ', $status)) }}
+                    </option>
+                @endforeach
+            </select>
+            <button class="btn btn-primary">Filter</button>
+        </form>
+        <div style="overflow-x:auto;">
+            <table class="a-table">
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Customer</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>@forelse($tickets as $ticket)
+                    <tr>
+                        <td>#SUP{{ str_pad($ticket->id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td>{{ $ticket->user->name }}<small style="display:block">{{ $ticket->user->email }}</small></td>
+                        <td>{{ $ticket->subject }}</td>
+                        <td>{{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</td>
+                        <td>{{ $ticket->created_at->format('d M Y') }}</td>
+                        <td><a class="btn btn-outline btn-sm" href="{{ route('admin.support.show', $ticket) }}">View</a></td>
+                        </tr>@empty<tr>
+                        <td colspan="6">No support tickets found.</td>
+                    </tr>@endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>{{ $tickets->links() }}
 @endsection

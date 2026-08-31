@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +8,7 @@
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
+
 <body>
     <main class="admin-login-page">
         <section class="admin-login-brand">
@@ -17,7 +19,8 @@
             <div class="admin-login-copy">
                 <span class="admin-login-eyebrow">Publisher workspace</span>
                 <h1>Grow your catalogue and reach more readers.</h1>
-                <p>Manage books, inventory, customer orders, offers, payments, and sales reports from one secure dashboard.</p>
+                <p>Manage books, inventory, customer orders, offers, payments, and sales reports from one secure
+                    dashboard.</p>
                 <div class="admin-login-features">
                     <span>Catalogue management</span><span>Order fulfilment</span><span>Sales insights</span>
                 </div>
@@ -27,13 +30,16 @@
 
         <section class="admin-login-form-panel">
             <div class="admin-login-form-wrap">
-                <div class="admin-login-mobile-logo"><img src="{{ asset('images/logo-square.jpg') }}" alt="College Street Online"></div>
+                <div class="admin-login-mobile-logo"><img src="{{ asset('images/logo-square.jpg') }}"
+                        alt="College Street Online"></div>
                 <span class="admin-login-kicker">Publisher Panel</span>
                 <h2>Welcome back</h2>
                 <p class="admin-login-subtitle">Sign in to manage your publishing business.</p>
 
-                @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-                @if($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif
+                @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>@endif
+                @if($errors->any())
+                <div class="alert alert-danger">{{ $errors->first() }}</div>@endif
 
                 <form method="POST" action="{{ route('publisher.login.submit') }}">
                     @csrf
@@ -54,7 +60,8 @@
                 </form>
 
                 <div class="security-note">Your account is protected with secure sessions and login rate limiting.</div>
-                <p class="admin-back-link">New publisher? <a href="{{ route('publisher.register') }}">Apply to join</a></p>
+                <p class="admin-back-link">New publisher? <a href="{{ route('publisher.register') }}">Apply to join</a>
+                </p>
                 <a href="{{ route('home') }}" class="admin-back-link">Return to website</a>
             </div>
         </section>
@@ -68,4 +75,5 @@
         });
     </script>
 </body>
+
 </html>
