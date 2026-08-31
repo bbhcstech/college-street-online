@@ -13,10 +13,18 @@ $logoutRoute = route('admin.logout'); @endphp
         </div><a href="{{ route('admin.books.create') }}" class="btn btn-primary">+ Add book</a>
     </div>
     <div class="a-card publisher-table-card" data-book-table data-export-base="{{ route('admin.books.export', 'csv') }}">
-        <form method="GET" class="book-table-toolbar">
-            <div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}"
-                    placeholder="Search title, ISBN, author or publisher"></div><select name="publisher_id"
-                class="a-select">
+        <form method="GET" class="book-table-toolbar book-filter-form">
+            <div class="book-filter-main">
+                <div class="publisher-search"><span aria-hidden="true">⌕</span><input name="q"
+                        value="{{ request('q') }}" placeholder="Search title, ISBN, author or publisher"></div>
+                <button class="btn btn-primary btn-sm">Search</button>
+                @if(request()->query())<a href="{{ route('admin.books.index') }}"
+                        class="btn btn-outline btn-sm">Reset</a>@endif
+            </div>
+            <details class="book-filter-more" @if(request()->except(['q', 'page']) !== []) open @endif>
+                <summary>More filters</summary>
+                <div class="book-filter-options">
+            <select name="publisher_id" class="a-select">
                 <option value="">All publishers</option>@foreach($publishers as $publisher)
                     <option value="{{ $publisher->id }}" @selected((string) request('publisher_id') === (string) $publisher->id)>
                 {{ $publisher->business_name }}</option>@endforeach
@@ -37,8 +45,9 @@ $logoutRoute = route('admin.logout'); @endphp
                 <option value="25" @selected($books->perPage() === 25)>25 entries</option>
                 <option value="50" @selected($books->perPage() === 50)>50 entries</option>
                 <option value="100" @selected($books->perPage() === 100)>100 entries</option>
-            </select><button class="btn btn-primary btn-sm">Apply</button>@if(request()->query())<a
-            href="{{ route('admin.books.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif
+            </select><button class="btn btn-primary btn-sm">Apply filters</button>
+                </div>
+            </details>
         </form>
         <div class="publisher-export-bar">
             <div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered books when
