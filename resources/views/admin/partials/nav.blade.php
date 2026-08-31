@@ -4,6 +4,8 @@
             class="nav-icon">&#9635;</span><span>Dashboard</span></a>
     <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ $active === 'analytics' ? 'active' : '' }}"><span
             class="nav-icon">&#128200;</span><span>Analytics &amp; Reports</span></a>
+    <a href="{{ route('admin.administrators.index') }}" class="nav-link {{ $active === 'administrators' ? 'active' : '' }}"><span
+            class="nav-icon">&#128101;</span><span>Administrators</span></a>
 </div>
 <div class="nav-group">
     <div class="nav-group-title">Marketplace</div>

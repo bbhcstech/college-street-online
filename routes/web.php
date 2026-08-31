@@ -88,6 +88,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/profile', [ProfileController::class, 'updateAdmin'])->name('profile.update');
         Route::delete('/profile/image', [ProfileController::class, 'destroyAdminImage'])->name('profile.image.destroy');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+        Route::get('/administrators', [Admin\AdministratorController::class, 'index'])->name('administrators.index');
+        Route::get('/administrators/create', [Admin\AdministratorController::class, 'create'])->name('administrators.create');
+        Route::post('/administrators', [Admin\AdministratorController::class, 'store'])->name('administrators.store');
+        Route::get('/administrators/{administrator}/edit', [Admin\AdministratorController::class, 'edit'])->name('administrators.edit');
+        Route::put('/administrators/{administrator}', [Admin\AdministratorController::class, 'update'])->name('administrators.update');
+        Route::patch('/administrators/{administrator}/status', [Admin\AdministratorController::class, 'updateStatus'])->name('administrators.status');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
