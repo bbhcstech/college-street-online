@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController};
+use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController, SupportController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
@@ -39,6 +39,8 @@ Route::middleware('role:customer')->group(function () {
     Route::put('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
     Route::put('/account/password', [ProfileController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/books/{book}/reviews', [BookReviewController::class, 'store'])->name('books.reviews.store');
+    Route::get('/account/support', [SupportController::class, 'index'])->name('account.support');
+    Route::post('/account/support', [SupportController::class, 'store'])->middleware('throttle:5,1')->name('account.support.store');
 });
 
 //PUBLISHER ROUTES
@@ -86,6 +88,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/profile', [ProfileController::class, 'updateAdmin'])->name('profile.update');
         Route::delete('/profile/image', [ProfileController::class, 'destroyAdminImage'])->name('profile.image.destroy');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+        Route::get('/administrators', [Admin\AdministratorController::class, 'index'])->name('administrators.index');
+        Route::get('/administrators/create', [Admin\AdministratorController::class, 'create'])->name('administrators.create');
+        Route::post('/administrators', [Admin\AdministratorController::class, 'store'])->name('administrators.store');
+        Route::get('/administrators/{administrator}/edit', [Admin\AdministratorController::class, 'edit'])->name('administrators.edit');
+        Route::put('/administrators/{administrator}', [Admin\AdministratorController::class, 'update'])->name('administrators.update');
+        Route::patch('/administrators/{administrator}/status', [Admin\AdministratorController::class, 'updateStatus'])->name('administrators.status');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
@@ -144,5 +152,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
         Route::post('/newsletter/send', [Admin\NewsletterController::class, 'send'])->name('newsletter.send');
         Route::get('/newsletter/export', [Admin\NewsletterController::class, 'export'])->name('newsletter.export');
+        Route::get('/support', [Admin\SupportController::class, 'index'])->name('support.index');
+        Route::get('/support/{supportTicket}', [Admin\SupportController::class, 'show'])->name('support.show');
+        Route::put('/support/{supportTicket}', [Admin\SupportController::class, 'update'])->name('support.update');
     });
 });

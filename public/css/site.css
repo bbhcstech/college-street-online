@@ -806,9 +806,11 @@ html.dark .status-step.current .dot { background-color: var(--accent-gold); bord
 .customer-auth-card .form-group { margin-bottom: 18px; }
 .customer-auth-card .form-control { min-height: 50px; }
 .customer-auth-card .btn { min-height: 50px; justify-content: center; }
+.customer-login-error { color: #b42318; background: #fff1f0; border-color: #fda29b; font-weight: 700; }
 .customer-auth-switch { margin: 22px 0 0; padding-top: 18px; text-align: center; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: .84rem; }
 .customer-auth-switch a { color: var(--brand-primary); font-weight: 800; }
 .auth-field-help { display: block; margin-top: 6px; color: var(--text-secondary); font-size: .7rem; }
+.support-layout{display:grid;grid-template-columns:minmax(300px,.8fr) minmax(0,1.2fr);gap:24px;align-items:start}.support-ticket{padding:20px;margin:12px 0}.support-ticket-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.support-ticket>p{margin:12px 0;white-space:pre-wrap}.support-status{padding:5px 9px;border-radius:99px;font-size:.65rem;font-weight:800}.support-open{background:#fff1d9;color:#a86208}.support-in_progress{background:#e8f0f7;color:#174a70}.support-resolved{background:#e4f7ee;color:#078657}.support-closed{background:var(--surface-alt);color:var(--text-secondary)}.support-reply{margin-top:14px;padding:14px;border-left:3px solid var(--success);border-radius:8px;background:rgba(31,157,108,.08)}.support-reply p{margin:7px 0;white-space:pre-wrap}.support-reply small{color:var(--text-secondary)}.support-empty{margin-top:12px;padding:30px;text-align:center;color:var(--text-secondary)}@media(max-width:800px){.support-layout{grid-template-columns:1fr}}
 @media (max-width: 800px) { .customer-auth-shell { grid-template-columns: 1fr; gap: 18px; max-width: 560px; }.customer-auth-intro { padding: 0; }.customer-auth-intro h1 { font-size: 2.5rem; } }
 @media (max-width: 520px) { .customer-auth-section { padding-top: 24px; }.customer-auth-card { padding: 24px 20px; } }
 @media (max-width: 767px) { .status-timeline { flex-direction: column; gap: 20px; align-items: flex-start; } .status-timeline::before { display: none; } .status-step { display: flex; align-items: center; gap: 12px; text-align: left; } .status-step .dot { margin: 0; } }

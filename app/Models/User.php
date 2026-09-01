@@ -9,13 +9,14 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'profile_image_path', 'password', 'role', 'status'];
+    protected $fillable = ['name', 'email', 'profile_image_path', 'password', 'role', 'status', 'created_by', 'updated_by'];
     protected $hidden = ['password', 'remember_token'];
     protected $casts = ['email_verified_at' => 'datetime', 'password' => 'hashed'];
 
     public function publisher() { return $this->hasOne(Publisher::class); }
     public function orders() { return $this->hasMany(Order::class, 'customer_id'); }
     public function cart() { return $this->hasMany(Cart::class, 'customer_id'); }
+    public function supportTickets() { return $this->hasMany(SupportTicket::class); }
 
     public function isAdmin(): bool { return $this->role === 'admin'; }
     public function isPublisher(): bool { return $this->role === 'publisher'; }

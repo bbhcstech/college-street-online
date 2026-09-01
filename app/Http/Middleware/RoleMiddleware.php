@@ -18,8 +18,9 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, string $role): Response
     {
+        $guardRoute = $role === 'admin' ? 'admin.login' : ($role === 'publisher' ? 'publisher.login' : 'account.login');
+
         if (! Auth::check() || Auth::user()->role !== $role) {
-            $guardRoute = $role === 'admin' ? 'admin.login' : ($role === 'publisher' ? 'publisher.login' : 'account.login');
             return redirect()->route($guardRoute);
         }
         if (Auth::user()->status !== 'active') {

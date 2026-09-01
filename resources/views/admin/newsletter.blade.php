@@ -7,19 +7,28 @@ $logoutRoute = route('admin.logout'); @endphp
 @section('nav')@include('admin.partials.nav', ['active' => 'newsletter'])@endsection
 @section('content')
     <div class="publisher-page-head">
-        <div><span class="analytics-eyebrow">Audience growth</span>
+        <div>
+            <span class="analytics-eyebrow">Audience growth</span>
             <h2>Newsletter centre</h2>
             <p>Create updates and manage your subscriber audience.</p>
-        </div><a href="{{ route('admin.newsletter.export') }}" class="btn btn-outline">↓ Export subscribers</a>
+        </div>
+        <a href="{{ route('admin.newsletter.export') }}" class="btn btn-outline">↓ Export subscribers</a>
     </div>
     <div class="newsletter-summary">
-        <div><span>Total subscribers</span><strong>{{ number_format($totalSubscribers) }}</strong><small>Active mailing
-                list</small></div>
-        <div><span>New this
-                month</span><strong>{{ number_format($newThisMonth) }}</strong><small>{{ now()->format('F Y') }}</small>
+        <div>
+            <span>Total subscribers</span>
+            <strong>{{ number_format($totalSubscribers) }}</strong>
+            <small>Active mailinglist</small>
         </div>
-        <div><span>Latest
-                subscription</span><strong>{{ $latestSubscription ? \Carbon\Carbon::parse($latestSubscription)->format('d M') : '—' }}</strong><small>{{ $latestSubscription ? \Carbon\Carbon::parse($latestSubscription)->diffForHumans() : 'No subscribers yet' }}</small>
+        <div>
+            <span>New this month</span>
+            <strong>{{ number_format($newThisMonth) }}</strong>
+            <small>{{ now()->format('F Y') }}</small>
+        </div>
+        <div>
+            <span>Latest subscription</span>
+            <strong>{{ $latestSubscription ? \Carbon\Carbon::parse($latestSubscription)->format('d M') : '—' }}</strong>
+            <small>{{ $latestSubscription ? \Carbon\Carbon::parse($latestSubscription)->diffForHumans() : 'No subscribers yet' }}</small>
         </div>
     </div>
 
@@ -30,30 +39,40 @@ $logoutRoute = route('admin.logout'); @endphp
                 <div>
                     <h3>Compose newsletter</h3>
                     <p>Send one message to {{ number_format($totalSubscribers) }}
-                        {{ Str::plural('subscriber', $totalSubscribers) }}.</p>
-                </div><span>Campaign</span>
+                        {{ Str::plural('subscriber', $totalSubscribers) }}.
+                    </p>
+                </div>
+                <span>Campaign</span>
             </div>
             <form method="POST" action="{{ route('admin.newsletter.send') }}" data-newsletter-form>@csrf
-                <div class="a-form-group"><label for="newsletter-subject">Email subject</label><input
-                        id="newsletter-subject" name="subject" value="{{ old('subject') }}" maxlength="150" required
+                <div class="a-form-group">
+                    <label for="newsletter-subject">Email subject</label>
+                    <input id="newsletter-subject" name="subject" value="{{ old('subject') }}" maxlength="150" required
                         class="a-input" placeholder="Example: New books have arrived" data-newsletter-subject>
-                    <div class="newsletter-field-meta"><span>Clear subjects improve engagement</span><b data-subject-count>0
-                            / 150</b></div>
+                    <div class="newsletter-field-meta">
+                        <span>Clear subjects improve engagement</span>
+                        <b data-subject-count>0 / 150</b>
+                    </div>
                 </div>
-                <div class="a-form-group"><label for="newsletter-message">Message</label><textarea id="newsletter-message"
-                        name="message" maxlength="10000" required class="a-textarea newsletter-message"
-                        placeholder="Write your subscriber update..."
+                <div class="a-form-group">
+                    <label for="newsletter-message">Message</label>
+                    <textarea id="newsletter-message" name="message" maxlength="10000" required
+                        class="a-textarea newsletter-message" placeholder="Write your subscriber update..."
                         data-newsletter-message>{{ old('message') }}</textarea>
-                    <div class="newsletter-field-meta"><span>Plain text is used for safe, consistent delivery</span><b
-                            data-message-count>0 / 10,000</b></div>
+                    <div class="newsletter-field-meta">
+                        <span>Plain text is used for safe, consistent delivery</span>
+                        <b data-message-count>0 / 10,000</b>
+                    </div>
                 </div>
-                <div class="newsletter-send-note"><span>i</span>
+                <div class="newsletter-send-note">
+                    <span>i</span>
                     <p>This campaign will be queued for every current subscriber. Each email includes an unsubscribe link.
                     </p>
                 </div>
                 <button class="btn btn-primary newsletter-send" @disabled($totalSubscribers === 0)
-                    onclick="return confirm('Queue this newsletter for all {{ $totalSubscribers }} subscribers?')">✉ Send to
-                    all subscribers</button>
+                    onclick="return confirm('Queue this newsletter for all {{ $totalSubscribers }} subscribers?')">
+                    ✉ Send toall subscribers
+                </button>
             </form>
         </section>
 
@@ -66,11 +85,13 @@ $logoutRoute = route('admin.logout'); @endphp
                 </div>
             </div>
             <div class="newsletter-email-preview">
-                <div class="newsletter-preview-brand">College Street Online</div><small>NEWSLETTER UPDATE</small>
+                <div class="newsletter-preview-brand">College Street Online</div>
+                <small>NEWSLETTER UPDATE</small>
                 <h4 data-preview-subject>Your subject appears here</h4>
                 <p data-preview-message>Your newsletter message will appear here as you type.</p>
-                <div class="newsletter-preview-footer">You are receiving this because you subscribed to College Street
-                    Online.<br><u>Unsubscribe</u></div>
+                <div class="newsletter-preview-footer">
+                    You are receiving this because you subscribed to College StreetnOnline.<br><u>Unsubscribe</u>
+                </div>
             </div>
         </aside>
     </div>
@@ -81,17 +102,24 @@ $logoutRoute = route('admin.logout'); @endphp
             <div>
                 <h3>Subscriber directory</h3>
                 <p>{{ number_format($subscribers->total()) }} matching subscribers</p>
-            </div><span class="newsletter-active-pill">● Active list</span>
+            </div>
+            <span class="newsletter-active-pill">● Active list</span>
         </div>
         <form method="GET" class="newsletter-toolbar">
-            <div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}"
-                    placeholder="Search email address"></div><select name="per_page" class="a-select">
+            <div class="publisher-search">
+                <span>⌕</span>
+                <input name="q" value="{{ request('q') }}" placeholder="Search email address">
+            </div>
+            <select name="per_page" class="a-select">
                 <option value="10" @selected($subscribers->perPage() === 10)>10 entries</option>
                 <option value="25" @selected($subscribers->perPage() === 25)>25 entries</option>
                 <option value="50" @selected($subscribers->perPage() === 50)>50 entries</option>
                 <option value="100" @selected($subscribers->perPage() === 100)>100 entries</option>
-            </select><button class="btn btn-primary btn-sm">Apply</button>@if(request()->query())<a
-            href="{{ route('admin.newsletter.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif
+            </select>
+            <button class="btn btn-primary btn-sm">Apply</button>
+            @if(request()->query())
+                <a href="{{ route('admin.newsletter.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            @endif
         </form>
         <div class="newsletter-table-wrap">
             <table class="a-table newsletter-table">
@@ -103,30 +131,72 @@ $logoutRoute = route('admin.logout'); @endphp
                         <th>List status</th>
                     </tr>
                 </thead>
-                <tbody>@forelse($subscribers as $subscriber)
-                    <tr>
-                        <td>{{ ($subscribers->firstItem() ?? 1) + $loop->index }}</td>
-                        <td><strong>{{ $subscriber->email }}</strong></td>
-                        <td>{{ $subscriber->subscribed_at->format('d M Y') }}<small>{{ $subscriber->subscribed_at->format('h:i A') }}</small>
-                        </td>
-                        <td><span class="status-pill status-success">Subscribed</span></td>
-                </tr>@empty<tr>
+                <tbody>
+                    @forelse($subscribers as $subscriber)
+                        <tr>
+                            <td>{{ ($subscribers->firstItem() ?? 1) + $loop->index }}</td>
+                            <td>
+                                <strong>{{ $subscriber->email }}</strong>
+                            </td>
+                            <td>{{ $subscriber->subscribed_at->format('d M Y') }}
+                                <small>{{ $subscriber->subscribed_at->format('h:i A') }}</small>
+                            </td>
+                            <td>
+                                <span class="status-pill status-success">Subscribed</span>
+                            </td>
+                    </tr>@empty<tr>
                         <td colspan="4" class="taxonomy-empty">No subscribers match your search.</td>
                     </tr>@endforelse
                 </tbody>
             </table>
         </div>
-        <div class="publisher-table-footer"><span>Showing
-                {{ $subscribers->firstItem() ?? 0 }}–{{ $subscribers->lastItem() ?? 0 }} of {{ $subscribers->total() }}
-                subscribers</span>@if($subscribers->hasPages())
-                    <nav class="order-pagination">@if($subscribers->onFirstPage())<span class="disabled">Previous</span>@else<a
-                    href="{{ $subscribers->previousPageUrl() }}">Previous</a>@endif
-                        @foreach(range(1, $subscribers->lastPage()) as $page)<a href="{{ $subscribers->url($page) }}"
-                        class="{{ $subscribers->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
-                        @if($subscribers->hasMorePages())<a href="{{ $subscribers->nextPageUrl() }}">Next</a>@else<span
-                class="disabled">Next</span>@endif</nav>@endif
+        <div class="publisher-table-footer">
+            <span>Showing {{ $subscribers->firstItem() ?? 0 }}–{{ $subscribers->lastItem() ?? 0 }} of
+                {{ $subscribers->total() }}
+                subscribers
+            </span>
+            @if($subscribers->hasPages())
+                <nav class="order-pagination">@if($subscribers->onFirstPage())
+                    <span class="disabled">Previous</span>
+                @else
+                        <a href="{{ $subscribers->previousPageUrl() }}">Previous</a>
+                    @endif
+                    @foreach(range(1, $subscribers->lastPage()) as $page)
+                        <a href="{{ $subscribers->url($page) }}"
+                            class="{{ $subscribers->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>
+                    @endforeach
+                    @if($subscribers->hasMorePages())
+                        <a href="{{ $subscribers->nextPageUrl() }}">Next</a>
+                    @else
+                        <span class="disabled">Next</span>
+                    @endif
+                </nav>
+            @endif
         </div>
     </section>
 
-    <script>(() => { const subject = document.querySelector('[data-newsletter-subject]'), message = document.querySelector('[data-newsletter-message]'), subjectCount = document.querySelector('[data-subject-count]'), messageCount = document.querySelector('[data-message-count]'), previewSubject = document.querySelector('[data-preview-subject]'), previewMessage = document.querySelector('[data-preview-message]'); const update = () => { subjectCount.textContent = `${subject.value.length} / 150`; messageCount.textContent = `${message.value.length.toLocaleString()} / 10,000`; previewSubject.textContent = subject.value || 'Your subject appears here'; previewMessage.textContent = message.value || 'Your newsletter message will appear here as you type.' }; subject.addEventListener('input', update); message.addEventListener('input', update); update() })();</script>
+    <script>
+        (() => {
+            const subject = document.querySelector('[data-newsletter-subject]');
+            const message = document.querySelector('[data-newsletter-message]');
+            const subjectCount = document.querySelector('[data-subject-count]');
+            const messageCount = document.querySelector('[data-message-count]');
+            const previewSubject = document.querySelector('[data-preview-subject]');
+            const previewMessage = document.querySelector('[data-preview-message]');
+            const update = () => {
+                subjectCount.textContent = `${subject.value.length} / 150`;
+                messageCount.textContent = `${message.value.length.toLocaleString()} / 10,000`;
+
+                previewSubject.textContent =
+                    subject.value || 'Your subject appears here';
+
+                previewMessage.textContent =
+                    message.value ||
+                    'Your newsletter message will appear here as you type.';
+            };
+            subject.addEventListener('input', update);
+            message.addEventListener('input', update);
+            update();
+        })();
+    </script>
 @endsection
