@@ -12,7 +12,17 @@ class ProfileController extends Controller
 {
     public function customerEdit(Request $request)
     {
-        return view('pages.profile', ['user' => $request->user()]);
+        $recentOrders = \App\Models\Order::where('customer_id', $request->user()->id)
+            ->withCount('items')
+            ->with(['items.book'])
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        return view('pages.profile', [
+            'user' => $request->user(),
+            'recentOrders' => $recentOrders,
+        ]);
     }
 
     public function adminEdit(Request $request)
@@ -60,42 +70,14 @@ class ProfileController extends Controller
             throw $exception;
         }
 
-        if ($newPath && $oldPath) Storage::disk('public')->delete($oldPath);
-
-        return back()->with('success', 'Profile updated successfully.');
-    }
-
-    public function updateAdmin(Request $request)
-    {
-        $user = $request->user();
-        abort_unless($user->isAdmin(), 403);
-        $data = $request->validate([
-            'name' => 'required|string|max:150',
-            'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        $newPath = $request->hasFile('profile_image')
-            ? $request->file('profile_image')->store('profile-images', 'public')
-            : null;
-        $oldPath = $user->profile_image_path;
-
-        try {
-            $user->update([
-                'name' => trim($data['name']),
-                'email' => strtolower(trim($data['email'])),
-                'profile_image_path' => $newPath ?: $oldPath,
-            ]);
-        } catch (\Throwable $exception) {
-            if ($newPath) Storage::disk('public')->delete($newPath);
-            throw $exception;
+        if ($newPath && $oldPath) {
+            Storage::disk('public')->delete($oldPath);
         }
 
-        if ($newPath && $oldPath) Storage::disk('public')->delete($oldPath);
-        return back()->with('success', 'Admin profile updated successfully.');
+        return back()->with('success', 'Profile details updated.');
     }
 
-    public function destroyAdminImage(Request $request)
+    public function destroyImage(Request $request)
     {
         $user = $request->user();
         abort_unless($user->isAdmin(), 403);

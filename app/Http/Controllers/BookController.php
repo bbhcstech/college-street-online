@@ -58,6 +58,11 @@ class BookController extends Controller
 
     public function show(Book $book)
     {
+        $recent = session()->get('recently_viewed_books', []);
+        $recent = array_values(array_diff($recent, [$book->id]));
+        array_unshift($recent, $book->id);
+        session()->put('recently_viewed_books', array_slice($recent, 0, 8));
+
         $book->load(['author', 'category', 'publisher', 'inventory', 'reviews.customer']);
         $related = Book::active()->where('category_id', $book->category_id)->where('id', '!=', $book->id)->limit(4)->get();
         $eligibleOrder = null;

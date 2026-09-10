@@ -440,3 +440,83 @@ textarea.form-control { min-height: 140px; resize: vertical; }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
 
 .badge-tag { display: inline-block; background-color: var(--accent-gold); color: #241147; font-family: var(--font-heading); font-size: 0.72rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; margin-bottom: 12px; }
+
+/* Customer Coupons & Offers Bar */
+.customer-coupons-bar {
+    padding: 20px 0 28px;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.coupons-dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.coupon-dash-card {
+    background: var(--surface);
+    border: 1.5px dashed color-mix(in srgb, var(--accent-gold) 60%, var(--border));
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.coupon-dash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent-gold);
+}
+
+.coupon-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.coupon-badge-discount {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--brand-primary);
+}
+
+html.dark .coupon-badge-discount {
+    color: var(--accent-gold-light);
+}
+
+.coupon-code-pill {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--accent-gold) 15%, transparent);
+    color: var(--text-primary);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 40%, transparent);
+    text-transform: uppercase;
+}
+
+.coupon-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.coupon-condition {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.coupon-expiry {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+

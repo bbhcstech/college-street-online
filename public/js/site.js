@@ -46,6 +46,20 @@
         btn.addEventListener('click', toggleTheme);
     });
 
+    /* ---------------- Profile menu hover ---------------- */
+    if (window.matchMedia('(hover: hover)').matches) {
+        document.querySelectorAll('details.auth-portal').forEach((portal) => {
+            let closeTimer;
+            portal.addEventListener('mouseenter', () => {
+                clearTimeout(closeTimer);
+                portal.open = true;
+            });
+            portal.addEventListener('mouseleave', () => {
+                closeTimer = setTimeout(() => { portal.open = false; }, 120);
+            });
+        });
+    }
+
     /* ---------------- Search suggestions ---------------- */
     document.querySelectorAll('[data-search-form]').forEach((form) => {
         const input = form.querySelector('input[name="q"]');
