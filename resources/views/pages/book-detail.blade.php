@@ -5,8 +5,10 @@
         $averageRating = $book->reviews->avg('rating');
         $reviewCount = $book->reviews->count();
         $stock = $book->inventory?->quantity ?? 0;
-        $discount = $book->mrp && $book->mrp > $book->price
-            ? (int) round((($book->mrp - $book->price) / $book->mrp) * 100)
+        $currencyService = app(\App\Services\CurrencyService::class);
+        $priceData = $currencyService->resolveBookPrice($book);
+        $discount = $priceData['mrp'] && $priceData['mrp'] > $priceData['price']
+            ? (int) round((($priceData['mrp'] - $priceData['price']) / $priceData['mrp']) * 100)
             : null;
     @endphp
 
@@ -50,11 +52,11 @@
                     </div>
 
                     <div class="product-price-block">
-                        <span class="product-price">&#8377;{{ number_format($book->price, 0) }}</span>
-                        @if($book->mrp)<span class="product-mrp">M.R.P.
-                        &#8377;{{ number_format($book->mrp, 0) }}</span>@endif
+                        <span class="product-price">{{ $priceData['symbol'] }}{{ number_format($priceData['price'], $priceData['currency'] === 'INR' ? 0 : 2) }}</span>
+                        @if($priceData['mrp'])<span class="product-mrp">M.R.P.
+                        {{ $priceData['symbol'] }}{{ number_format($priceData['mrp'], $priceData['currency'] === 'INR' ? 0 : 2) }}</span>@endif
                         @if($discount)<span class="product-saving">You save
-                        &#8377;{{ number_format($book->mrp - $book->price, 0) }}</span>@endif
+                        {{ $priceData['symbol'] }}{{ number_format($priceData['mrp'] - $priceData['price'], $priceData['currency'] === 'INR' ? 0 : 2) }}</span>@endif
                         <small>Inclusive of applicable taxes</small>
                     </div>
 

@@ -21,19 +21,22 @@
             class="nav-icon">&#127991;</span><span>Coupons &amp; Offers</span></a>
 </div>
 <div class="nav-group">
-    <div class="nav-group-title">Operations</div>
+    <div class="nav-group-title">Operations &amp; Settings</div>
     <a href="{{ route('admin.orders.index') }}" class="nav-link {{ $active === 'orders' ? 'active' : '' }}"><span
             class="nav-icon">&#128666;</span><span>All Orders</span></a>
     <a href="{{ route('admin.bulk-orders.index') }}"
         class="nav-link {{ $active === 'bulk-orders' ? 'active' : '' }}"><span
             class="nav-icon">&#128203;</span><span>Bulk Requests</span></a>
+    <a href="{{ route('admin.currencies.index') }}"
+        class="nav-link {{ $active === 'currencies' ? 'active' : '' }}"><span
+            class="nav-icon">&#128178;</span><span>Currencies &amp; Rates</span></a>
+    <a href="{{ route('admin.countries.index') }}"
+        class="nav-link {{ $active === 'countries' ? 'active' : '' }}"><span
+            class="nav-icon">&#127758;</span><span>Countries &amp; Shipping</span></a>
     <a href="{{ route('admin.payment-settings.edit') }}"
         class="nav-link {{ $active === 'payment-settings' ? 'active' : '' }}"><span
-            class="nav-icon">&#9638;</span><span>Payment QR</span></a>
+            class="nav-icon">&#9638;</span><span>Payment &amp; Bank Settings</span></a>
     <a href="{{ route('admin.support.index') }}" class="nav-link {{ $active === 'support' ? 'active' : '' }}"><span class="nav-icon">?</span><span>Customer Support</span></a>
-</div>
-<div class="nav-group">
-    <div class="nav-group-title">Growth</div>
     <a href="{{ route('admin.newsletter.index') }}"
         class="nav-link {{ $active === 'newsletter' ? 'active' : '' }}"><span
             class="nav-icon">&#9993;</span><span>Newsletter</span></a>

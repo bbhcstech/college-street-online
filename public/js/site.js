@@ -139,6 +139,34 @@
         });
     }
 
+    /* ---------------- Customer sidebar drawer ---------------- */
+    const custTriggers = document.querySelectorAll('[data-customer-sidebar-toggle]');
+    const custSidebar = document.querySelector('[data-customer-sidebar]');
+    const custOverlay = document.querySelector('.customer-sidebar-overlay');
+    const custCloseBtns = document.querySelectorAll('[data-customer-sidebar-close]');
+
+    if (custSidebar) {
+        const toggleCustSidebar = (open) => {
+            custSidebar.classList.toggle('open', open);
+            if (custOverlay) custOverlay.classList.toggle('open', open);
+            document.body.classList.toggle('customer-sidebar-open', open);
+        };
+
+        custTriggers.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                toggleCustSidebar(!custSidebar.classList.contains('open'));
+            });
+        });
+
+        custCloseBtns.forEach((btn) => {
+            btn.addEventListener('click', () => toggleCustSidebar(false));
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleCustSidebar(false);
+        });
+    }
+
     /* ---------------- Scroll-spy nav highlight ---------------- */
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.main-nav a[href*="#"]');

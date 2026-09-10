@@ -8,6 +8,9 @@
         default => route('account.profile'),
     };
     $searchCategories = \App\Models\Category::orderBy('name')->get(['name', 'slug']);
+    $headerCountries = \App\Models\Country::where('is_active', true)->orderBy('name')->get();
+    $currentCountryCode = session('customer_country', 'IN');
+    $currentCountry = $headerCountries->firstWhere('code', $currentCountryCode) ?? $headerCountries->first();
 @endphp
 <header class="site-header">
     <div class="container header-inner">
@@ -63,38 +66,59 @@
             <div class="search-suggestions" data-search-suggestions hidden></div>
         </form>
         <div class="header-actions">
-            <details class="auth-portal">
-                <summary class="btn auth-portal-button">
-                    @auth
+            @if($headerCountries->isNotEmpty())
+                <form method="POST" action="{{ route('country.switch') }}" style="display:inline-block;">
+                    @csrf
+                    <select name="country" onchange="this.form.submit()" aria-label="Select Country & Currency" style="padding:6px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-primary);font-size:0.8rem;font-weight:600;cursor:pointer;">
+                        @foreach($headerCountries as $cnt)
+                            <option value="{{ $cnt->code }}" @selected($cnt->code === $currentCountry?->code)>
+                                {{ $cnt->name }} ({{ $cnt->symbol }} {{ $cnt->currency_code }})
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            @endif
+            @auth
+                @if(auth()->user()->isCustomer())
+                    <button type="button" class="btn auth-portal-button customer-profile-trigger" data-customer-sidebar-toggle aria-label="Open Profile Menu">
                         <span class="header-profile-avatar">
                             @if(auth()->user()->profile_image_url)
-                                <img src="{{ auth()->user()->profile_image_url }}" alt="">
+                                <img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}">
                             @else{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             @endif
                         </span>
                         <span class="header-profile-name">{{ Illuminate\Support\Str::limit(auth()->user()->name, 14) }}</span>
-                    @else
-                        Login Portal
-                    @endauth
-                </summary>
-                <div class="auth-portal-menu">
-                    @auth
-                        <a href="{{ $profileRoute }}">My Profile</a>
-                        @if(auth()->user()->isCustomer())
-                            <a href="{{ route('account.orders') }}">My Orders</a>
-                            <a href="{{ route('account.support') }}">Contact Support</a>
-                        @endif
-                        <form method="POST" action="{{ route('account.logout') }}">
-                            @csrf
-                            <button type="submit">Logout</button>
-                        </form>
-                    @else
+                    </button>
+                @else
+                    <details class="auth-portal">
+                        <summary class="btn auth-portal-button">
+                            <span class="header-profile-avatar">
+                                @if(auth()->user()->profile_image_url)
+                                    <img src="{{ auth()->user()->profile_image_url }}" alt="">
+                                @else{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                @endif
+                            </span>
+                            <span class="header-profile-name">{{ Illuminate\Support\Str::limit(auth()->user()->name, 14) }}</span>
+                        </summary>
+                        <div class="auth-portal-menu">
+                            <a href="{{ $profileRoute }}">My Profile</a>
+                            <form method="POST" action="{{ route('account.logout') }}">
+                                @csrf
+                                <button type="submit">Logout</button>
+                            </form>
+                        </div>
+                    </details>
+                @endif
+            @else
+                <details class="auth-portal">
+                    <summary class="btn auth-portal-button">Login Portal</summary>
+                    <div class="auth-portal-menu">
                         <a href="{{ route('account.login') }}">Customer Login</a>
                         <a href="{{ route('publisher.login') }}">Publisher Login</a>
                         <a href="{{ route('admin.login') }}">Admin Login</a>
-                    @endauth
-                </div>
-            </details>
+                    </div>
+                </details>
+            @endauth
             <a href="{{ route('cart.index') }}" class="icon-btn-nav" aria-label="Cart">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="9" cy="21" r="1" />
@@ -121,6 +145,8 @@
         </div>
     </div>
 </header>
+
+@include('partials.customer-sidebar')
 
 <div class="mobile-nav">
     <div class="flex items-center" style="justify-content:space-between;margin-bottom:24px;">

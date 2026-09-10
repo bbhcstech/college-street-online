@@ -1,15 +1,16 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Models\InventoryTransaction;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\SiteSetting;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -80,12 +81,18 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    /** FR-8 fix: writes to order_status_history via Order::transitionTo(), not just the column. */
     public function updateStatus(Request $request, Order $order)
     {
-        $data = $request->validate(['status' => 'required|in:pending_payment,confirmed,processing,packed,shipped,delivered,completed,cancelled,return_requested,returned']);
+        $data = $request->validate([
+            'status' => 'required|in:pending_payment,confirmed,processing,packed,shipped,delivered,completed,cancelled,return_requested,returned',
+            'tracking_number' => 'nullable|string|max:100',
+        ]);
 
         DB::transaction(function () use ($order, $data) {
+            if (!empty($data['tracking_number'])) {
+                $order->tracking_number = $data['tracking_number'];
+            }
+
             if ($data['status'] === 'cancelled') {
                 $order->load('items.book');
                 $inventory = app(InventoryService::class);
@@ -105,14 +112,25 @@ class OrderController extends Controller
             $order->transitionTo($data['status'], auth()->id());
         });
 
-        return back()->with('success', 'Order status updated.');
+        return back()->with('success', 'Order status updated successfully.');
     }
 
-    /** FR-7: manual UTR verification — this is the confirmation gate until a payment gateway is integrated (Section 10.2). */
     public function verifyPayment(Request $request, Payment $payment)
     {
-        $data = $request->validate(['decision' => 'required|in:verified,rejected']);
-        $payment->update(['verified_status' => $data['decision'], 'verified_by' => auth()->id(), 'verified_at' => now()]);
+        $data = $request->validate([
+            'decision' => 'required|in:verified,rejected',
+            'rejection_reason' => 'nullable|string|max:500',
+            'admin_notes' => 'nullable|string|max:500',
+        ]);
+
+        $payment->update([
+            'verified_status' => $data['decision'],
+            'rejection_reason' => $data['rejection_reason'] ?? null,
+            'admin_notes' => $data['admin_notes'] ?? null,
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
         if ($data['decision'] === 'verified') {
             $commissionRate = (float) (SiteSetting::where('key', 'publisher_commission_rate')->value('value') ?? 0);
             foreach ($payment->order->items as $item) {
@@ -124,7 +142,8 @@ class OrderController extends Controller
             }
             $payment->order->transitionTo('confirmed', auth()->id());
         }
-        return back()->with('success', 'Payment ' . $data['decision'] . '.');
+
+        return back()->with('success', 'Payment status updated to ' . $data['decision'] . '.');
     }
 
     public function paymentProof(Payment $payment)

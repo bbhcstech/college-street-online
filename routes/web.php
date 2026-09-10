@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController, SupportController};
+use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController, SupportController, CountryCurrencyController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 //CUSTOMER ROUTES
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/country/switch', [CountryCurrencyController::class, 'switchCountry'])->name('country.switch');
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/suggestions', [BookController::class, 'suggestions']);
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
@@ -96,8 +97,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/administrators/{administrator}', [Admin\AdministratorController::class, 'update'])->name('administrators.update');
         Route::patch('/administrators/{administrator}/status', [Admin\AdministratorController::class, 'updateStatus'])->name('administrators.status');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
+
+        // Admin Currency & Country Management
+        Route::get('/currencies', [Admin\CurrencyController::class, 'index'])->name('currencies.index');
+        Route::post('/currencies', [Admin\CurrencyController::class, 'store'])->name('currencies.store');
+        Route::put('/currencies/{currency}', [Admin\CurrencyController::class, 'update'])->name('currencies.update');
+        Route::delete('/currencies/{currency}', [Admin\CurrencyController::class, 'destroy'])->name('currencies.destroy');
+
+        Route::get('/countries', [Admin\CountryController::class, 'index'])->name('countries.index');
+        Route::post('/countries', [Admin\CountryController::class, 'store'])->name('countries.store');
+        Route::put('/countries/{country}', [Admin\CountryController::class, 'update'])->name('countries.update');
+        Route::delete('/countries/{country}', [Admin\CountryController::class, 'destroy'])->name('countries.destroy');
+
+        // Admin Payment Settings
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
+        Route::put('/payment-settings/bank', [Admin\PaymentSettingController::class, 'updateBankDetails'])->name('payment-settings.bank');
         Route::put('/payment-settings/commission', [Admin\PaymentSettingController::class, 'updateCommission'])->name('payment-settings.commission');
 
         Route::get('/publishers', [Admin\PublisherController::class, 'index'])->name('publishers.index');

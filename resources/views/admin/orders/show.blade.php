@@ -33,7 +33,7 @@
         </div>
         <div class="a-card">
             <h3 style="margin-top:0;">Update Status</h3>
-            <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="flex gap-2">
+            <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="flex gap-2 flex-wrap">
                 @csrf @method('PATCH')
                 <select name="status" class="a-select">
                     @foreach(['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 'delivered', 'completed', 'cancelled', 'return_requested', 'returned'] as $s)
@@ -41,8 +41,12 @@
                             {{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                     @endforeach
                 </select>
+                <input type="text" name="tracking_number" class="a-input" placeholder="Tracking Number (optional)" value="{{ old('tracking_number', $order->tracking_number) }}" style="max-width:220px;">
                 <button class="btn btn-primary">Update</button>
             </form>
+            @if($order->tracking_number)
+                <p style="margin:8px 0 0 0;font-size:0.85rem;color:var(--a-text-muted);">Courier Tracking #: <strong>{{ $order->tracking_number }}</strong></p>
+            @endif
         </div>
         <div class="a-card">
             <h3 style="margin-top:0;">Status History</h3>
@@ -81,11 +85,18 @@
         @if($order->payment)
         <div class="a-card order-payment-review">
             <h3 style="margin-top:0;">Payment</h3>
+            <p style="margin:0 0 6px 0;"><strong>Method:</strong> {{ strtoupper(str_replace('_', ' ', $order->payment->payment_method ?? 'Manual')) }}</p>
             <div class="payment-review-utr"><span>Transaction reference
-                    (UTR)</span><strong>{{ $order->payment->utr_number }}</strong></div>
-            <p>Status: <span
-                    class="badge {{ $order->payment->verified_status === 'verified' ? 'badge-success' : 'badge-gold' }}">{{ ucfirst($order->payment->verified_status) }}</span>
+                    (UTR)</span><strong>{{ $order->payment->utr_number ?? 'N/A' }}</strong></div>
+            <p style="margin-top:8px;">Status: <span
+                    class="badge {{ $order->payment->verified_status === 'verified' ? 'badge-success' : ($order->payment->verified_status === 'rejected' ? 'badge-danger' : 'badge-gold') }}">{{ ucfirst($order->payment->verified_status) }}</span>
             </p>
+            @if($order->payment->rejection_reason)
+                <p style="color:#e53e3e;font-size:0.85rem;margin:4px 0;"><strong>Rejection Reason:</strong> {{ $order->payment->rejection_reason }}</p>
+            @endif
+            @if($order->payment->admin_notes)
+                <p style="color:var(--a-text-muted);font-size:0.85rem;margin:4px 0;"><strong>Admin Notes:</strong> {{ $order->payment->admin_notes }}</p>
+            @endif
             @if($order->payment->proof_url)
             @php($proofExtension = strtolower(pathinfo($order->payment->proof_url, PATHINFO_EXTENSION)))
                 <div style="margin:14px 0;max-width:100%;overflow:hidden;">
@@ -104,15 +115,19 @@
             <p style="color:var(--a-text-muted);">No payment proof uploaded.</p>
             @endif
             @if($order->payment->verified_status === 'pending')
-                <div class="payment-review-actions">
-                    <form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}">
+                <div class="payment-review-actions" style="margin-top:12px;border-top:1px solid var(--a-border);padding-top:12px;">
+                    <form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}" style="margin-bottom:8px;">
                         @csrf @method('PATCH')
-                        <input type="hidden" name="decision" value="verified"><button class="btn btn-primary btn-sm">Verify
-                            payment</button>
+                        <input type="hidden" name="decision" value="verified">
+                        <input type="text" name="admin_notes" class="a-input" placeholder="Admin notes (optional)" style="margin-bottom:6px;font-size:0.85rem;">
+                        <button class="btn btn-primary btn-sm">Verify Payment</button>
                     </form>
                     <form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}"
-                        onsubmit="return confirm('Reject this payment proof?')">@csrf @method('PATCH')<input type="hidden"
-                            name="decision" value="rejected"><button class="btn btn-danger-outline btn-sm">Reject</button>
+                        onsubmit="return confirm('Reject this payment proof?')">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="decision" value="rejected">
+                        <input type="text" name="rejection_reason" class="a-input" placeholder="Rejection reason (required for reject)" style="margin-bottom:6px;font-size:0.85rem;" required>
+                        <button class="btn btn-danger-outline btn-sm">Reject Payment</button>
                     </form>
                 </div>
             @endif
