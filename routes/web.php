@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 //CUSTOMER ROUTES
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
+Route::get('/books/suggestions', [BookController::class, 'suggestions']);
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/bulk-orders', [PageController::class, 'bulkOrders'])->name('bulk-orders');

@@ -46,6 +46,57 @@
         btn.addEventListener('click', toggleTheme);
     });
 
+    /* ---------------- Search suggestions ---------------- */
+    document.querySelectorAll('[data-search-form]').forEach((form) => {
+        const input = form.querySelector('input[name="q"]');
+        const category = form.querySelector('[data-search-category]');
+        const panel = form.querySelector('[data-search-suggestions]');
+        let timer;
+
+        async function loadSuggestions() {
+            clearTimeout(timer);
+            if (input.value.trim().length < 2) {
+                panel.hidden = true;
+                return;
+            }
+            timer = setTimeout(async () => {
+                const url = new URL(form.dataset.suggestionsUrl, window.location.origin);
+                url.searchParams.set('q', input.value.trim());
+                if (category.value) url.searchParams.set('category', category.value);
+                const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                if (!response.ok) return;
+                const books = await response.json();
+                panel.replaceChildren();
+                books.forEach((book) => {
+                    const link = document.createElement('a');
+                    link.href = book.url;
+                    if (book.cover) {
+                        const image = document.createElement('img');
+                        image.src = book.cover;
+                        image.alt = '';
+                        link.append(image);
+                    }
+                    const text = document.createElement('span');
+                    const title = document.createElement('strong');
+                    const meta = document.createElement('small');
+                    title.textContent = book.title;
+                    meta.textContent = book.meta;
+                    text.append(title, meta);
+                    link.append(text);
+                    panel.append(link);
+                });
+                if (!books.length) panel.textContent = 'No matching books found';
+                panel.hidden = false;
+            }, 250);
+        }
+
+        input.addEventListener('input', loadSuggestions);
+        category.addEventListener('change', loadSuggestions);
+        document.addEventListener('click', (event) => {
+            if (!form.contains(event.target)) panel.hidden = true;
+        });
+    });
+
     /* ---------------- Sticky/compact header ---------------- */
     const header = document.querySelector('.site-header');
     if (header) {

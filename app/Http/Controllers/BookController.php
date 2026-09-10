@@ -37,6 +37,25 @@ class BookController extends Controller
         ]);
     }
 
+    public function suggestions(Request $request)
+    {
+        $term = trim((string) $request->query('q'));
+        if (mb_strlen($term) < 2) return response()->json([]);
+
+        return response()->json(
+            Book::active()->with(['author', 'category'])->search($term)
+                ->when($request->query('category'), fn ($query, $category) =>
+                    $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category))
+                )
+                ->limit(6)->get()->map(fn ($book) => [
+                    'title' => $book->title,
+                    'meta' => ($book->author?->name ?? 'Unknown author') . ' · ' . ($book->isbn ?? 'No ISBN'),
+                    'url' => route('books.show', $book),
+                    'cover' => $book->cover_url,
+                ])
+        );
+    }
+
     public function show(Book $book)
     {
         $book->load(['author', 'category', 'publisher', 'inventory', 'reviews.customer']);

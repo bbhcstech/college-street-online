@@ -7,6 +7,7 @@
         'publisher' => route('publisher.profile.edit'),
         default => route('account.profile'),
     };
+    $searchCategories = \App\Models\Category::orderBy('name')->get(['name', 'slug']);
 @endphp
 <header class="site-header">
     <div class="container header-inner">
@@ -100,13 +101,21 @@
     </div>
     <div class="search-strip">
         <div class="container">
-            <form class="search-box" action="{{ route('books.index') }}" method="GET">
+            <form class="search-box" action="{{ route('books.index') }}" method="GET" data-search-form
+                data-suggestions-url="{{ url('/books/suggestions') }}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8" />
                     <path d="M21 21l-4.3-4.3" />
                 </svg>
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search by title, author, or ISBN — try Bengali script too">
+                <select name="category" aria-label="Filter by category" data-search-category>
+                    <option value="">All categories</option>
+                    @foreach($searchCategories as $category)
+                        <option value="{{ $category->slug }}" @selected(request('category') === $category->slug)>{{ $category->name }}</option>
+                    @endforeach
+                </select>
                 <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                <div class="search-suggestions" data-search-suggestions hidden></div>
             </form>
         </div>
     </div>
