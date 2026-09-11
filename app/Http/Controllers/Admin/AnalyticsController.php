@@ -11,10 +11,38 @@ use App\Models\Publisher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnalyticsController extends Controller
 {
     public function index(Request $request)
+    {
+        return view('admin.analytics', $this->reportData($request));
+    }
+
+    public function export(Request $request, string $type)
+    {
+        abort_unless(in_array($type, ['csv', 'excel', 'pdf'], true), 404);
+        $data = $this->reportData($request);
+        $filename = 'admin-analytics-' . $data['period'] . '-' . now()->format('Y-m-d');
+
+        if ($type === 'csv') {
+            return new StreamedResponse(function () use ($data) {
+                $handle = fopen('php://output', 'w');
+                fputcsv($handle, ['Book', 'Units sold', 'Sales (INR)']);
+                foreach ($data['topBooks'] as $book) {
+                    fputcsv($handle, [$book->title, $book->units, number_format($book->sales, 2, '.', '')]);
+                }
+                fclose($handle);
+            }, 200, ['Content-Type' => 'text/csv', 'Content-Disposition' => 'attachment; filename="' . $filename . '.csv"']);
+        }
+
+        return response()->view('admin.analytics-report', $data + ['exportType' => $type])
+            ->header('Content-Disposition', $type === 'excel' ? 'attachment; filename="' . $filename . '.xls"' : 'inline')
+            ->header('Content-Type', $type === 'excel' ? 'application/vnd.ms-excel' : 'text/html; charset=UTF-8');
+    }
+
+    private function reportData(Request $request): array
     {
         $period = in_array($request->query('period'), ['7', '30', '90', '365', 'all', 'custom'], true)
             ? $request->query('period')
@@ -65,7 +93,7 @@ class AnalyticsController extends Controller
             ->selectRaw("COALESCE(NULLIF(country, ''), 'India') as country_name, SUM(base_total_amount) as sales, COUNT(*) as orders")
             ->groupBy('country_name')->orderByDesc('sales')->limit(6)->get();
 
-        return view('admin.analytics', [
+        return [
             'period' => $period,
             'dateFrom' => $request->query('date_from'),
             'dateTo' => $request->query('date_to'),
@@ -86,6 +114,6 @@ class AnalyticsController extends Controller
                 'Pending payments' => Payment::where('verified_status', 'pending')->count(),
                 'Low-stock books' => DB::table('inventories')->whereColumn('quantity', '<=', 'low_stock_threshold')->count(),
             ],
-        ]);
+        ];
     }
 }

@@ -29,6 +29,7 @@
         <h2>Marketplace intelligence</h2>
         <p>Track verified revenue, order behaviour, book performance, and operational health.</p>
     </div>
+    <div style="display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap;">
     <form method="GET" class="analytics-period-form" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
         <label for="analytics-period">Reporting period</label>
         <select id="analytics-period" name="period" class="a-select" onchange="this.form.submit()">
@@ -46,6 +47,10 @@
             <button class="btn btn-primary btn-sm" style="height: 34px; padding: 0 12px;">Apply</button>
         @endif
     </form>
+        <a class="btn btn-outline btn-sm" href="{{ route('admin.analytics.export', ['type' => 'csv'] + request()->only('period', 'date_from', 'date_to')) }}">CSV</a>
+        <a class="btn btn-outline btn-sm" href="{{ route('admin.analytics.export', ['type' => 'excel'] + request()->only('period', 'date_from', 'date_to')) }}">Excel</a>
+        <a class="btn btn-outline btn-sm" target="_blank" href="{{ route('admin.analytics.export', ['type' => 'pdf'] + request()->only('period', 'date_from', 'date_to')) }}">PDF</a>
+    </div>
 </div>
 
 <div class="a-grid a-grid-4 analytics-kpis">

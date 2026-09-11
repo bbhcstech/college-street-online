@@ -22,7 +22,7 @@ $logoutRoute = route('admin.logout'); @endphp
                         class="btn btn-outline btn-sm">Reset</a>@endif
             </div>
             <details class="book-filter-more" @if(request()->except(['q', 'page']) !== []) open @endif>
-                <summary>More filters</summary>
+                <summary>Apply  filters</summary>
                 <div class="book-filter-options">
             <select name="publisher_id" class="a-select">
                 <option value="">All publishers</option>@foreach($publishers as $publisher)
@@ -125,7 +125,14 @@ $logoutRoute = route('admin.logout'); @endphp
         </div>
         <div class="publisher-table-footer"><span>Showing {{ $books->firstItem() ?? 0 }}–{{ $books->lastItem() ?? 0 }} of
                 {{ $books->total() }} books</span>
-            <div>{{ $books->links() }}</div>
+            <nav class="order-pagination" aria-label="Book pages">
+                @if($books->onFirstPage())<span class="disabled">Previous</span>@else<a
+                    href="{{ $books->previousPageUrl() }}">Previous</a>@endif
+                @foreach(range(1, max(1, $books->lastPage())) as $page)<a href="{{ $books->url($page) }}"
+                    class="{{ $books->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
+                @if($books->hasMorePages())<a href="{{ $books->nextPageUrl() }}">Next</a>@else<span
+                    class="disabled">Next</span>@endif
+            </nav>
         </div>
     </div>
     <script>(() => { const root = document.querySelector('[data-book-table]'), rows = [...root.querySelectorAll('[data-export-row]')], all = root.querySelector('[data-select-all]'), count = root.querySelector('[data-selection-count]'); const selected = () => rows.filter(r => r.querySelector('[data-row-select]').checked), update = () => { const n = selected().length; count.textContent = `${n} selected`; all.checked = n === rows.length && n > 0; all.indeterminate = n > 0 && n < rows.length }; all?.addEventListener('change', () => { rows.forEach(r => r.querySelector('[data-row-select]').checked = all.checked); update() }); rows.forEach(r => r.querySelector('[data-row-select]').addEventListener('change', update)); const ids = () => selected().map(r => r.dataset.id).join(','); root.querySelector('[data-copy]').addEventListener('click', async e => { const chosen = selected().length ? selected() : rows, text = chosen.map(r => [...r.querySelectorAll('[data-cell]')].map(c => c.textContent.trim()).join('\t')).join('\n'); await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1200) }); root.querySelectorAll('[data-export]').forEach(b => b.addEventListener('click', () => { const url = new URL(root.dataset.exportBase.replace(/csv$/, b.dataset.export), location.origin), params = new URLSearchParams(location.search); params.delete('page'); if (ids()) params.set('ids', ids()); url.search = params; b.dataset.export === 'print' || b.dataset.export === 'pdf' ? window.open(url, '_blank') : location.href = url })); })();</script>

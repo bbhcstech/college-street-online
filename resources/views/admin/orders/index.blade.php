@@ -34,42 +34,42 @@
         </div>
     </div>
     <div class="order-summary">
-        <div><span>Total orders</span><strong>{{ $totalOrders }}</strong></div>
-        <div><span>Pending payment</span><strong>{{ $pendingOrders }}</strong></div>
-        <div><span>Verified revenue</span><strong>₹{{ number_format($totalRevenue, 2) }}</strong></div>
+        <div><i>#</i><span>Total orders<small>In current view</small></span><strong>{{ $totalOrders }}</strong></div>
+        <div class="pending"><i>!</i><span>Pending payment<small>Needs attention</small></span><strong>{{ $pendingOrders }}</strong></div>
+        <div class="revenue"><i>₹</i><span>Verified revenue<small>Paid orders</small></span><strong>₹{{ number_format($totalRevenue, 2) }}</strong></div>
     </div>
 
     <div class="a-card publisher-table-card" data-order-table data-export-base="{{ route('admin.orders.export', 'csv') }}">
         <form method="GET" class="order-table-toolbar">
-            <div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}"
+            <div class="order-filter-main"><div class="publisher-search"><span>⌕</span><input name="q" value="{{ request('q') }}"
                     placeholder="Search order, customer or email"></div>
             <select name="status" class="a-select">
                 <option value="">All statuses</option>@foreach($statuses as $status)
                     <option value="{{ $status }}" @selected(request('status') === $status)>
                 {{ ucfirst(str_replace('_', ' ', $status)) }}</option>@endforeach
-            </select>
-            <select name="payment" class="a-select">
+            </select><button class="btn btn-primary btn-sm">Apply</button>@if(request()->query())<a
+                href="{{ route('admin.orders.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif</div>
+            <details class="order-filter-more" @if(request()->only(['payment', 'date_from', 'date_to', 'per_page']) !== []) open @endif>
+                <summary>More filters <span>Payment, dates &amp; page size</span></summary>
+                <div class="order-filter-options"><select name="payment" class="a-select">
                 <option value="">All payments</option>
                 <option value="pending" @selected(request('payment') === 'pending')>Pending</option>
                 <option value="verified" @selected(request('payment') === 'verified')>Verified</option>
                 <option value="rejected" @selected(request('payment') === 'rejected')>Rejected</option>
                 <option value="none" @selected(request('payment') === 'none')>No payment</option>
-            </select>
-            <input type="date" name="date_from" value="{{ request('date_from') }}" class="a-input" title="From date"><input
-                type="date" name="date_to" value="{{ request('date_to') }}" class="a-input" title="To date">
+            </select><label><span>From</span><input type="date" name="date_from" value="{{ request('date_from') }}" class="a-input"></label><label><span>To</span><input
+                type="date" name="date_to" value="{{ request('date_to') }}" class="a-input"></label>
             <select name="per_page" class="a-select">
                 <option value="10" @selected($orders->perPage() === 10)>10 entries</option>
                 <option value="25" @selected($orders->perPage() === 25)>25 entries</option>
                 <option value="50" @selected($orders->perPage() === 50)>50 entries</option>
                 <option value="100" @selected($orders->perPage() === 100)>100 entries</option>
-            </select>
-            <button class="btn btn-primary btn-sm">Apply</button>@if(request()->query())<a
-            href="{{ route('admin.orders.index') }}" class="btn btn-outline btn-sm">Reset</a>@endif
+            </select></div></details>
         </form>
         <div class="publisher-export-bar">
             <div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered orders
                     when none are selected.</span></div>
-            <div class="publisher-export-buttons"><button type="button" class="btn btn-outline btn-sm"
+            <div class="publisher-export-buttons"><span class="order-export-label">Export</span><button type="button" class="btn btn-outline btn-sm"
                     data-copy>Copy</button><button type="button" class="btn btn-outline btn-sm"
                     data-export="excel">Excel</button><button type="button" class="btn btn-outline btn-sm"
                     data-export="pdf">PDF</button><button type="button" class="btn btn-outline btn-sm"
@@ -121,7 +121,7 @@
                         </tr>
                     @empty<tr>
                         <td colspan="8">
-                            <div class="analytics-empty">No orders match your filters.</div>
+                            <div class="analytics-empty order-empty"><strong>No orders found</strong><span>Try changing or resetting your filters.</span></div>
                         </td>
                     </tr>@endforelse
                 </tbody>

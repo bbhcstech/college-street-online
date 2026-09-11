@@ -97,6 +97,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/administrators/{administrator}', [Admin\AdministratorController::class, 'update'])->name('administrators.update');
         Route::patch('/administrators/{administrator}/status', [Admin\AdministratorController::class, 'updateStatus'])->name('administrators.status');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/export/{type}', [Admin\AnalyticsController::class, 'export'])->name('analytics.export');
 
         // Admin Currency & Country Management
         Route::get('/currencies', [Admin\CurrencyController::class, 'index'])->name('currencies.index');
