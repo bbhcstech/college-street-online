@@ -14,8 +14,14 @@ $logoutRoute = route('admin.logout'); @endphp
     </div>
     <div class="admin-profile-grid">
         <div class="a-card admin-profile-identity">
-            <div class="admin-profile-photo">@if($user->profile_image_url)<img src="{{ $user->profile_image_url }}"
-            alt="{{ $user->name }}">@else<span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>@endif</div>
+            <div class="admin-profile-photo">
+                @if($user->profile_image_url)
+                    <img src="{{ $user->profile_image_url }}" alt="{{ $user->name }}" onerror="this.style.display='none'; document.getElementById('admin-avatar-fallback').style.display='flex';">
+                    <span id="admin-avatar-fallback" style="display:none;">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                @else
+                    <span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                @endif
+            </div>
             <h3>{{ $user->name }}</h3>
             <p>{{ $user->email }}</p><span class="badge badge-info">Administrator</span>
             <div class="admin-profile-meta">

@@ -419,7 +419,7 @@
                         <h4 style="font-size: 0.95rem; font-weight: 700; margin: 0; color: var(--a-text);">Low Stock Alerts</h4>
                         <p style="font-size: 0.78rem; color: var(--a-text-muted); margin: 2px 0 0 0;">Titles requiring re-stocking</p>
                     </div>
-                    <a href="{{ route('admin.books.index') }}" style="font-size: 0.78rem; color: var(--a-primary); font-weight: 600; text-decoration: none;">Manage Books →</a>
+                    <a href="{{ route('admin.inventory.index', ['stock' => 'low']) }}" style="font-size: 0.78rem; color: var(--a-primary); font-weight: 600; text-decoration: none;">Manage Inventory →</a>
                 </div>
                 <div class="dashboard-table-scroll">
                     <table class="a-table" style="width: 100%; font-size: 0.82rem;">

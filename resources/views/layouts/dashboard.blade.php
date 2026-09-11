@@ -48,12 +48,11 @@
                     <a href="{{ route('home') }}" target="_blank" class="btn btn-outline btn-sm">View Site &#8599;</a>
                     @php($profileRoute = auth()->user()?->isAdmin() ? route('admin.profile.edit') : route('publisher.profile.edit'))
                     <a href="{{ $profileRoute }}" class="user-chip">
-                        <div class="avatar" style="overflow:hidden;flex:0 0 30px;">
+                        <div class="avatar" style="overflow:hidden;flex:0 0 30px;height:30px;width:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--a-primary);color:#fff;font-weight:700;font-size:0.85rem;">
                             @if(auth()->user()->profile_image_url)
-                                <img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}"style="display:block;width:30px;height:30px;max-width:30px;object-fit:cover;border-radius:50%;">
-                            @else{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                            
+                                <img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}" style="display:block;width:30px;height:30px;max-width:30px;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';">
                             @endif
+                            <span>{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
                         </div>
                         <div class="meta">
                             <strong>{{ auth()->user()->name ?? 'User' }}</strong>

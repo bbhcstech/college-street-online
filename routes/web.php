@@ -135,6 +135,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/books/{id}/force', [Admin\BookController::class, 'forceDestroy'])->name('books.force-destroy');
         Route::delete('/books/{book}', [Admin\BookController::class, 'destroy'])->name('books.destroy');
 
+        Route::get('/inventory', [Admin\InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/inventory/export/{type}', [Admin\InventoryController::class, 'export'])->name('inventory.export');
+        Route::put('/inventory/{book}', [Admin\InventoryController::class, 'update'])->name('inventory.update');
+
         Route::get('/categories', [Admin\CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [Admin\CategoryController::class, 'storeCategory'])->name('categories.store');
         Route::put('/categories/{category}', [Admin\CategoryController::class, 'updateCategory'])->name('categories.update');
@@ -164,6 +168,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
         Route::patch('/payments/{payment}/verify', [Admin\OrderController::class, 'verifyPayment'])->name('payments.verify');
         Route::get('/payments/{payment}/proof', [Admin\OrderController::class, 'paymentProof'])->name('payments.proof');
+
+        Route::get('/reviews', [Admin\ReviewController::class, 'index'])->name('reviews.index');
+        Route::delete('/reviews/{review}', [Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
         Route::post('/newsletter/send', [Admin\NewsletterController::class, 'send'])->name('newsletter.send');

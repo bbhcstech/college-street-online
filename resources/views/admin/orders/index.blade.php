@@ -5,14 +5,32 @@
     $crumb = 'Operations';
     $logoutRoute = route('admin.logout');
     $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 'delivered', 'completed', 'cancelled', 'return_requested', 'returned'];
+    $statusMap = [
+        'pending_payment' => 'Pending Payment Orders',
+        'confirmed' => 'Confirmed Orders',
+        'processing' => 'Processing Orders',
+        'packed' => 'Packed Orders',
+        'shipped' => 'Shipped Orders',
+        'delivered' => 'Delivered Orders',
+        'completed' => 'Completed Orders',
+        'cancelled' => 'Cancelled Orders',
+        'return_requested' => 'Return & Refund Requests',
+        'returned' => 'Returned Orders',
+    ];
+    $paymentMap = [
+        'pending' => 'Payment Verification Queue',
+        'verified' => 'Verified Payment Transactions',
+        'failed' => 'Failed Payments',
+    ];
+    $pageTitle = $paymentMap[request('payment')] ?? ($statusMap[request('status')] ?? 'All Customer Orders');
 @endphp
-@section('title', 'All Orders')
+@section('title', $pageTitle)
 @section('nav')@include('admin.partials.nav', ['active' => 'orders'])@endsection
 @section('content')
     <div class="publisher-page-head">
         <div><span class="analytics-eyebrow">Order operations</span>
-            <h2>All customer orders</h2>
-            <p>Search, export, and manage every order from one table.</p>
+            <h2>{{ $pageTitle }}</h2>
+            <p>Search, export, and manage orders from one table.</p>
         </div>
     </div>
     <div class="order-summary">

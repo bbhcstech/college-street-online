@@ -77,6 +77,11 @@ class ProfileController extends Controller
         return back()->with('success', 'Profile details updated.');
     }
 
+    public function updateAdmin(Request $request)
+    {
+        return $this->update($request);
+    }
+
     public function destroyImage(Request $request)
     {
         $user = $request->user();
@@ -86,6 +91,11 @@ class ProfileController extends Controller
         if ($oldPath) Storage::disk('public')->delete($oldPath);
 
         return back()->with('success', 'Profile image removed.');
+    }
+
+    public function destroyAdminImage(Request $request)
+    {
+        return $this->destroyImage($request);
     }
 
     public function updatePassword(Request $request)
