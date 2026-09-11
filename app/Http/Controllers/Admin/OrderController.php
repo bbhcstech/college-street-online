@@ -19,10 +19,22 @@ class OrderController extends Controller
         $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
         $orders = $this->filteredQuery($request)->latest()->paginate($perPage)->withQueryString();
 
+        $statusCounts = Order::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $countries = Order::whereNotNull('country')->where('country', '!=', '')->distinct()->pluck('country')->sort()->values();
+
         return view('admin.orders.index', [
             'orders' => $orders,
+            'countries' => $countries,
             'totalOrders' => Order::count(),
-            'pendingOrders' => Order::where('status', 'pending_payment')->count(),
+            'pendingOrders' => (int) ($statusCounts['pending_payment'] ?? 0),
+            'processingOrders' => (int) ($statusCounts['processing'] ?? 0),
+            'shippedOrders' => (int) ($statusCounts['shipped'] ?? 0),
+            'deliveredOrders' => (int) ($statusCounts['delivered'] ?? 0) + (int) ($statusCounts['completed'] ?? 0),
+            'cancelledOrders' => (int) ($statusCounts['cancelled'] ?? 0),
+            'returnedOrders' => (int) ($statusCounts['return_requested'] ?? 0) + (int) ($statusCounts['returned'] ?? 0),
             'totalRevenue' => Order::whereHas('payment', fn ($query) => $query->where('verified_status', 'verified'))->sum('base_total_amount'),
         ]);
     }
@@ -56,7 +68,7 @@ class OrderController extends Controller
 
     private function filteredQuery(Request $request)
     {
-        return Order::query()->with(['customer', 'payment'])
+        return Order::query()->with(['customer', 'payment'])->withCount('items')
             ->when($request->filled('q'), function ($query) use ($request) {
                 $term = trim($request->query('q'));
                 $orderId = preg_replace('/\D/', '', $term);
@@ -71,6 +83,9 @@ class OrderController extends Controller
                     ? $query->whereDoesntHave('payment')
                     : $query->whereHas('payment', fn ($payment) => $payment->where('verified_status', $request->payment));
             })
+            ->when($request->filled('country'), fn ($query) => $query->where('country', $request->query('country')))
+            ->when($request->filled('min_price'), fn ($query) => $query->where('base_total_amount', '>=', (float) $request->query('min_price')))
+            ->when($request->filled('max_price'), fn ($query) => $query->where('base_total_amount', '<=', (float) $request->query('max_price')))
             ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->query('date_from')))
             ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->query('date_to')));
     }

@@ -53,7 +53,26 @@
                             </div>
                             <div class="form-group">
                                 <label>Contact Phone Number</label>
-                                <input name="shipping_phone" value="{{ old('shipping_phone') }}" class="form-control" placeholder="+1 234 567 8900" required>
+                                <div style="display: flex; gap: 8px;">
+                                    <select name="phone_code" id="phone_code_select" class="form-control" style="max-width: 145px; flex: 0 0 145px; font-weight: 700;">
+                                        <option value="+91" @selected($selectedCountry->code === 'IN')>🇮🇳 +91 (IN)</option>
+                                        <option value="+1" @selected($selectedCountry->code === 'US')>🇺🇸 +1 (USA)</option>
+                                        <option value="+44" @selected($selectedCountry->code === 'GB')>🇬🇧 +44 (UK)</option>
+                                        <option value="+1" @selected($selectedCountry->code === 'CA')>🇨🇦 +1 (Canada)</option>
+                                        <option value="+65" @selected($selectedCountry->code === 'SG')>🇸🇬 +65 (Singapore)</option>
+                                        <option value="+971" @selected($selectedCountry->code === 'AE')>🇦🇪 +971 (Dubai/UAE)</option>
+                                        <option value="+49" @selected($selectedCountry->code === 'DE')>🇩🇪 +49 (Germany)</option>
+                                        <option value="+61" @selected($selectedCountry->code === 'AU')>🇦🇺 +61 (Australia)</option>
+                                        <option value="+33" @selected($selectedCountry->code === 'FR')>🇫🇷 +33 (France)</option>
+                                        <option value="+880" @selected($selectedCountry->code === 'BD')>🇧🇩 +880 (Bangladesh)</option>
+                                        <option value="+977" @selected($selectedCountry->code === 'NP')>🇳🇵 +977 (Nepal)</option>
+                                        <option value="+94" @selected($selectedCountry->code === 'LK')>🇱🇰 +94 (Sri Lanka)</option>
+                                        <option value="+81" @selected($selectedCountry->code === 'JP')>🇯🇵 +81 (Japan)</option>
+                                        <option value="">Other</option>
+                                    </select>
+                                    <input name="shipping_phone_number" value="{{ old('shipping_phone_number', old('shipping_phone')) }}" class="form-control" placeholder="10-digit mobile number" required style="flex: 1;">
+                                </div>
+                                <input type="hidden" name="shipping_phone" id="shipping_phone_combined">
                             </div>
                         </div>
 
@@ -217,12 +236,32 @@
             form.querySelector('[data-checkout-currency]').textContent = q.currency;
         };
 
-        document.querySelector('[data-country]').addEventListener('change', async e => {
+        const countryDialMap = {
+            'IN': '+91', 'US': '+1', 'GB': '+44', 'CA': '+1', 'SG': '+65',
+            'AE': '+971', 'DE': '+49', 'AU': '+61', 'FR': '+33', 'BD': '+880',
+            'NP': '+977', 'LK': '+94', 'JP': '+81'
+        };
+
+        document.querySelector('[data-country]')?.addEventListener('change', async e => {
+            const code = e.target.value;
+            const phoneSelect = document.getElementById('phone_code_select');
+            if (phoneSelect && countryDialMap[code]) {
+                phoneSelect.value = countryDialMap[code];
+            }
             const p = new FormData();
             p.append('_token', form.querySelector('[name="_token"]').value);
-            p.append('country', e.target.value);
+            p.append('country', code);
             const r = await fetch(e.target.dataset.quoteUrl, { method: 'POST', headers: { Accept: 'application/json' }, body: p });
             if (r.ok) renderQuote((await r.json()).quote);
+        });
+
+        form.addEventListener('submit', () => {
+            const code = document.getElementById('phone_code_select')?.value || '';
+            const num = form.querySelector('[name="shipping_phone_number"]')?.value || '';
+            const combined = document.getElementById('shipping_phone_combined');
+            if (combined) {
+                combined.value = code ? `${code} ${num.trim()}` : num.trim();
+            }
         });
 
         couponButton.addEventListener('click', async () => {

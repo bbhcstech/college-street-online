@@ -104,13 +104,19 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'shipping_address' => 'required|string',
-            'shipping_phone' => 'nullable|string|max:30',
+            'shipping_phone' => 'nullable|string|max:40',
+            'shipping_phone_number' => 'nullable|string|max:30',
+            'phone_code' => 'nullable|string|max:10',
             'country' => 'required|in:' . implode(',', $activeCountryCodes),
             'coupon_code' => 'nullable|string',
             'payment_method' => 'required|in:upi_qr,bank_transfer,international_wire',
             'utr_number' => 'required|string|max:50',
             'proof' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
         ]);
+
+        $phoneCode = $request->input('phone_code', '');
+        $phoneNumber = $request->input('shipping_phone_number', $request->input('shipping_phone'));
+        $shippingPhone = !empty($data['shipping_phone']) ? $data['shipping_phone'] : trim($phoneCode . ' ' . ltrim($phoneNumber, '+'));
 
         $items = Cart::with('book')->where('customer_id', auth()->id())->get();
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
@@ -123,7 +129,7 @@ class CheckoutController extends Controller
         }
         $quote = $pricing->quote($items, $data['country'], $coupon);
 
-        $order = DB::transaction(function () use ($data, $items, $quote, $coupon, $inventoryService) {
+        $order = DB::transaction(function () use ($data, $items, $quote, $coupon, $inventoryService, $shippingPhone) {
             $order = Order::create([
                 'customer_id' => auth()->id(),
                 'status' => 'pending_payment',
@@ -131,7 +137,7 @@ class CheckoutController extends Controller
                 'currency' => $quote['currency'],
                 'exchange_rate' => $quote['rate'],
                 'shipping_address' => $data['shipping_address'],
-                'shipping_phone' => $data['shipping_phone'] ?? null,
+                'shipping_phone' => $shippingPhone,
                 'subtotal' => $quote['subtotal'],
                 'shipping_fee' => $quote['shipping'],
                 'platform_fee' => $quote['platformFee'],

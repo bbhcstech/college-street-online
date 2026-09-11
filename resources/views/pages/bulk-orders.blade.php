@@ -17,7 +17,7 @@
             <div class="grid grid-2" style="grid-template-columns:1.35fr .65fr;align-items:start;gap:28px;">
                 <div class="card">
                     <h3 style="margin-top:0;">Request a quotation</h3>
-                    <form method="POST" action="{{ route('bulk-orders.store') }}">@csrf
+                    <form method="POST" action="{{ route('bulk-orders.store') }}" id="bulk_order_form">@csrf
                         <div class="grid grid-2" style="gap:14px;">
                             <div class="form-group"><label>Institution / Business Name</label><input name="institution_name"
                                     value="{{ old('institution_name') }}" class="form-control" required></div>
@@ -26,8 +26,29 @@
                             </div>
                             <div class="form-group"><label>Email Address</label><input type="email" name="email"
                                     value="{{ old('email', auth()->user()?->email) }}" class="form-control" required></div>
-                            <div class="form-group"><label>Phone Number</label><input name="phone"
-                                    value="{{ old('phone') }}" class="form-control" required></div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <select name="phone_code" id="bulk_phone_code" class="form-control" style="max-width: 145px; flex: 0 0 145px; font-weight: 700;">
+                                        <option value="+91" selected>🇮🇳 +91 (IN)</option>
+                                        <option value="+1">🇺🇸 +1 (USA)</option>
+                                        <option value="+44">🇬🇧 +44 (UK)</option>
+                                        <option value="+1">🇨🇦 +1 (Canada)</option>
+                                        <option value="+65">🇸🇬 +65 (Singapore)</option>
+                                        <option value="+971">🇦🇪 +971 (Dubai/UAE)</option>
+                                        <option value="+49">🇩🇪 +49 (Germany)</option>
+                                        <option value="+61">🇦🇺 +61 (Australia)</option>
+                                        <option value="+33">🇫🇷 +33 (France)</option>
+                                        <option value="+880">🇧🇩 +880 (Bangladesh)</option>
+                                        <option value="+977">🇳🇵 +977 (Nepal)</option>
+                                        <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
+                                        <option value="+81">🇯🇵 +81 (Japan)</option>
+                                        <option value="">Other</option>
+                                    </select>
+                                    <input name="phone_number" value="{{ old('phone_number', old('phone')) }}" class="form-control" placeholder="Mobile number" required style="flex: 1;">
+                                </div>
+                                <input type="hidden" name="phone" id="bulk_phone_combined">
+                            </div>
                         </div>
                         <div class="form-group"><label>Books and quantities needed</label><textarea name="requirements"
                                 class="form-control" style="min-height:150px;"
@@ -40,6 +61,16 @@
                         </div>
                         <button class="btn btn-primary" style="width:100%;">Submit quote request</button>
                     </form>
+                    <script>
+                        document.getElementById('bulk_order_form')?.addEventListener('submit', function() {
+                            const code = document.getElementById('bulk_phone_code')?.value || '';
+                            const num = this.querySelector('[name="phone_number"]')?.value || '';
+                            const combined = document.getElementById('bulk_phone_combined');
+                            if (combined) {
+                                combined.value = code ? `${code} ${num.trim()}` : num.trim();
+                            }
+                        });
+                    </script>
                 </div>
                 <div class="card" style="background:var(--surface-alt);">
                     <h3 style="margin-top:0;">How it works</h3>
