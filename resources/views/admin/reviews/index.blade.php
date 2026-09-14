@@ -11,11 +11,17 @@
 
 @section('content')
 <!-- Page Header -->
-<div class="publisher-page-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+<div class="publisher-page-head review-page-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
     <div>
-        <span class="analytics-eyebrow" style="color: #6366f1; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Customer Feedback &amp; Ratings</span>
-        <h2 style="font-size: 1.35rem; font-weight: 700; color: #111827; margin: 2px 0;">Book Reviews &amp; Moderation</h2>
-        <p style="color: #6b7280; font-size: 0.82rem; margin: 0;">Monitor, filter, and moderate verified customer book reviews and ratings.</p>
+        <span class="analytics-eyebrow" style="color: #6366f1; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+            Customer Feedback &amp; Ratings
+        </span>
+        <h2 style="font-size: 1.35rem; font-weight: 700; color: #111827; margin: 2px 0;">
+            Book Reviews &amp; Moderation
+        </h2>
+        <p style="color: #6b7280; font-size: 0.82rem; margin: 0;">
+            Monitor, filter, and moderate verified customer book reviews and ratings.
+        </p>
     </div>
 </div>
 
@@ -26,7 +32,7 @@
 @endif
 
 <!-- Summary KPI Cards -->
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;">
+<div class="review-kpi-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;">
     <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #3b82f6; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
         <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #6b7280; letter-spacing: 0.5px;">Total Reviews</span>
         <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-top: 2px;">{{ number_format($totalReviews) }}</strong>
@@ -46,10 +52,10 @@
 </div>
 
 <!-- Main Table Card Container -->
-<div class="a-card" style="border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid var(--a-border, #e5e7eb); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+<div class="a-card review-table-card" style="border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid var(--a-border, #e5e7eb); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
     
     <!-- SINGLE ROW COMPACT FILTER BAR -->
-    <form method="GET" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; width: 100%; flex-wrap: nowrap; overflow-x: auto; background: #ffffff; border-bottom: 1px solid #e5e7eb;">
+    <form method="GET" class="review-filter-bar" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; width: 100%; flex-wrap: nowrap; overflow-x: auto; background: #ffffff; border-bottom: 1px solid #e5e7eb;">
         <!-- Search Input -->
         <div style="flex: 0 1 260px; min-width: 180px; display: flex; align-items: center; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 8px; height: 34px;">
             <span style="color: #9ca3af; margin-right: 6px; font-size: 0.85rem;">🔍</span>
@@ -90,7 +96,7 @@
 
     <!-- DATA TABLE -->
     <div class="table-responsive" style="overflow-x: auto;">
-        <table class="a-table" style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.84rem;">
+        <table class="a-table review-data-table" style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.84rem;">
             <thead>
                 <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                     <th style="padding: 10px 12px; width: 220px;">Book Title</th>
@@ -106,7 +112,7 @@
                     <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                         <td style="padding: 10px 12px;">
                             <div style="display: flex; gap: 8px; align-items: center;">
-                                <img src="{{ $rev->book->cover_image_url ?? asset('images/book-cover-placeholder.png') }}" 
+                                <img src="{{ $rev->book?->cover_url ?? asset('images/book-cover-placeholder.png') }}" 
                                      alt="{{ $rev->book->title ?? 'Book' }}" 
                                      style="width: 32px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; background: #f8fafc;">
                                 <div>
@@ -134,6 +140,7 @@
                             {{ $rev->created_at ? $rev->created_at->format('d M Y') : 'N/A' }}
                         </td>
                         <td style="padding: 10px 12px; text-align: right;">
+                            <a href="{{ route('admin.reviews.show', $rev) }}" class="btn btn-outline btn-sm" style="height:28px;padding:0 9px;font-size:.75rem;margin-right:5px;">View</a>
                             <form method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" onsubmit="return confirm('Delete this review permanently?')">
                                 @csrf
                                 @method('DELETE')
@@ -162,4 +169,3 @@
     @endif
 </div>
 @endsection
-

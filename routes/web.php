@@ -37,10 +37,12 @@ Route::middleware('role:customer')->group(function () {
     Route::post('/checkout/quote', [CheckoutController::class, 'quote'])->name('checkout.quote');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('/account/notifications', [AccountController::class, 'notifications'])->name('account.notifications');
     Route::get('/account/profile', [ProfileController::class, 'customerEdit'])->name('account.profile');
     Route::put('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
     Route::put('/account/password', [ProfileController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/books/{book}/reviews', [BookReviewController::class, 'store'])->name('books.reviews.store');
+    Route::post('/reviews/{review}/report', [BookReviewController::class, 'report'])->middleware('throttle:5,1')->name('reviews.report');
     Route::get('/account/support', [SupportController::class, 'index'])->name('account.support');
     Route::post('/account/support', [SupportController::class, 'store'])->middleware('throttle:5,1')->name('account.support.store');
 });
@@ -171,6 +173,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments/{payment}/proof', [Admin\OrderController::class, 'paymentProof'])->name('payments.proof');
 
         Route::get('/reviews', [Admin\ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('/reviews/{review}', [Admin\ReviewController::class, 'show'])->name('reviews.show');
+        Route::patch('/reviews/{review}/response', [Admin\ReviewController::class, 'updateResponse'])->name('reviews.response');
         Route::delete('/reviews/{review}', [Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');

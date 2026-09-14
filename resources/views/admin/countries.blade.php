@@ -12,7 +12,7 @@
 @endsection
 
 @section('content')
-    <div class="publisher-page-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div class="publisher-page-head country-page-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
         <div>
             <span class="analytics-eyebrow">Settings / Countries &amp; Shipping</span>
             <h2>Destination Countries &amp; Shipping Rates</h2>
@@ -25,9 +25,15 @@
         </div>
     </div>
 
+    <div class="country-summary-grid">
+        <div><span>Destinations</span><strong>{{ $countries->count() }}</strong><small>Configured countries</small></div>
+        <div><span>Active routes</span><strong>{{ $countries->where('is_active', true)->count() }}</strong><small>Available at checkout</small></div>
+        <div><span>Currencies</span><strong>{{ $countries->pluck('currency_code')->unique()->count() }}</strong><small>Assigned currencies</small></div>
+    </div>
+
     <div class="a-grid" style="grid-template-columns:minmax(0, 1fr);gap:24px;align-items:start;">
         <!-- Form Panel (Toggleable) -->
-        <div class="a-card" id="country-form-card" style="display:none;margin-bottom:8px;border:1px solid var(--a-border-accent, #3b82f6);">
+        <div class="a-card country-form-card" id="country-form-card" style="display:none;margin-bottom:8px;border:1px solid var(--a-border-accent, #3b82f6);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 id="form-title" style="margin:0;font-size:1.1rem;">Add Destination Country</h3>
                 <button type="button" class="btn btn-outline btn-sm" onclick="toggleCountryForm(false)">Close Panel ✕</button>
@@ -89,10 +95,10 @@
             </form>
         </div>
 
-        <div class="a-card">
+        <div class="a-card country-table-card">
             <h3 style="margin-top:0;margin-bottom:16px;font-size:1.15rem;">Active Destination Countries</h3>
 
-            <table class="a-table">
+            <div class="country-table-scroll"><table class="a-table country-table">
                 <thead>
                     <tr>
                         <th>Country</th>
@@ -137,7 +143,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table></div>
         </div>
     </div>
 

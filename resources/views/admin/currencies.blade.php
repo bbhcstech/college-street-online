@@ -12,7 +12,7 @@
 @endsection
 
 @section('content')
-    <div class="publisher-page-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div class="publisher-page-head currency-page-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
         <div>
             <span class="analytics-eyebrow">Settings / Currencies</span>
             <h2>Currency &amp; Exchange Rate Management</h2>
@@ -25,9 +25,15 @@
         </div>
     </div>
 
+    <div class="currency-summary-grid">
+        <div><span>Supported</span><strong>{{ $currencies->count() }}</strong><small>Total currencies</small></div>
+        <div><span>Active</span><strong>{{ $currencies->where('is_active', true)->count() }}</strong><small>Available at checkout</small></div>
+        <div><span>Base currency</span><strong>INR</strong><small>System pricing reference</small></div>
+    </div>
+
     <div class="a-grid" style="grid-template-columns:minmax(0, 1fr);gap:24px;align-items:start;" id="currencies-container">
         <!-- Add/Edit Form Card (Initially toggled based on action or edit) -->
-        <div class="a-card" id="currency-form-card" style="display:none;margin-bottom:8px;border:1px solid var(--a-border-accent, #3b82f6);">
+        <div class="a-card currency-form-card" id="currency-form-card" style="display:none;margin-bottom:8px;border:1px solid var(--a-border-accent, #3b82f6);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 id="form-title" style="margin:0;font-size:1.1rem;">Add New Currency</h3>
                 <button type="button" class="btn btn-outline btn-sm" onclick="toggleCurrencyForm(false)">Close Panel ✕</button>
@@ -70,10 +76,10 @@
             </form>
         </div>
 
-        <div class="a-card">
+        <div class="a-card currency-table-card">
             <h3 style="margin-top:0;margin-bottom:16px;font-size:1.15rem;">Active Currencies &amp; Exchange Rates</h3>
 
-            <table class="a-table">
+            <div class="currency-table-scroll"><table class="a-table currency-table">
                 <thead>
                     <tr>
                         <th>Code</th>
@@ -110,7 +116,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table></div>
         </div>
     </div>
 

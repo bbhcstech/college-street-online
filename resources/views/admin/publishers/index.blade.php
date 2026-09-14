@@ -16,7 +16,7 @@
 
 @section('content')
 <!-- Page Header -->
-<div class="publisher-page-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+<div class="publisher-page-head publisher-management-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
     <div>
         <span class="analytics-eyebrow" style="color: #6366f1; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Marketplace Partners</span>
         <h2 style="font-size: 1.35rem; font-weight: 700; color: #111827; margin: 2px 0;">Publisher Management</h2>
@@ -34,7 +34,7 @@
 @endif
 
 <!-- Summary KPI Cards -->
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;">
+<div class="publisher-kpi-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;">
     <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #3b82f6; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
         <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #6b7280; letter-spacing: 0.5px;">Total Publishers</span>
         <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-top: 2px;">{{ number_format($totalCount) }}</strong>
@@ -54,10 +54,10 @@
 </div>
 
 <!-- Main Table Card Container -->
-<div class="a-card" style="border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid var(--a-border, #e5e7eb); box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-publisher-table data-export-base="{{ route('admin.publishers.export', 'csv') }}">
+<div class="a-card publisher-management-card" style="border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid var(--a-border, #e5e7eb); box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-publisher-table data-export-base="{{ route('admin.publishers.export', 'csv') }}">
     
     <!-- SINGLE ROW COMPACT FILTER BAR -->
-    <form method="GET" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; width: 100%; flex-wrap: nowrap; overflow-x: auto; background: #ffffff; border-bottom: 1px solid #e5e7eb;">
+    <form method="GET" class="publisher-management-filters" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; width: 100%; flex-wrap: nowrap; overflow-x: auto; background: #ffffff; border-bottom: 1px solid #e5e7eb;">
         <!-- Search Input -->
         <div style="flex: 0 1 240px; min-width: 180px; display: flex; align-items: center; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 8px; height: 34px;">
             <span style="color: #9ca3af; margin-right: 6px; font-size: 0.85rem;">🔍</span>
@@ -113,7 +113,7 @@
 
     <!-- DATA TABLE -->
     <div class="table-responsive" style="overflow-x: auto;">
-        <table class="a-table" style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.84rem;">
+        <table class="a-table publisher-management-table" style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.84rem;">
             <thead>
                 <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                     <th style="width: 36px; text-align: center; padding: 10px 6px;"><input type="checkbox" data-select-all aria-label="Select all publishers"></th>

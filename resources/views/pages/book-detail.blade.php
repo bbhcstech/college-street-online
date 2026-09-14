@@ -113,7 +113,7 @@
             @if($eligibleOrder)
                 <div class="card review-form-card">
                     <h3 style="margin-top:0;">Review your purchase</h3>
-                    <form method="POST" action="{{ route('books.reviews.store', $book) }}">
+                    <form method="POST" action="{{ route('books.reviews.store', $book) }}" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="order_id" value="{{ $eligibleOrder->id }}">
                         <div class="form-group"><label>Rating</label><select name="rating" required class="form-control">
@@ -124,6 +124,8 @@
                             </select></div>
                         <div class="form-group"><label>Review (optional)</label><textarea name="review" maxlength="2000"
                                 class="form-control" style="min-height:100px;">{{ old('review') }}</textarea></div>
+                        <div class="form-group"><label>Photos (optional, up to 4)</label><input type="file" name="images[]"
+                                class="form-control" accept="image/jpeg,image/png,image/webp" multiple></div>
                         <button type="submit" class="btn btn-primary">Submit Review</button>
                     </form>
                 </div>
@@ -138,7 +140,18 @@
                         </div>
                         @if($review->review)
                         <p>{{ $review->review }}</p>@endif
+                        @if($review->images)
+                            <div class="review-images">@foreach($review->images as $image)<a href="{{ asset('storage/'.$image) }}" target="_blank"><img src="{{ asset('storage/'.$image) }}" alt="Customer review image"></a>@endforeach</div>
+                        @endif
+                        @if($review->admin_response)
+                            <div class="review-admin-response"><strong>Response from College Street Online</strong><p>{{ $review->admin_response }}</p></div>
+                        @endif
                         <small>{{ $review->created_at->format('d M Y') }}</small>
+                        @auth
+                            @if(auth()->user()->isCustomer() && auth()->id() !== $review->customer_id)
+                                <details class="review-report"><summary>Report review</summary><form method="POST" action="{{ route('reviews.report', $review) }}">@csrf<textarea name="reason" maxlength="500" required placeholder="Why are you reporting this review?"></textarea><button class="btn btn-outline" type="submit">Submit report</button></form></details>
+                            @endif
+                        @endauth
                     </article>
                 @empty
                     <p style="color:var(--text-secondary);">No reviews yet. Delivered customers can be the first to review this

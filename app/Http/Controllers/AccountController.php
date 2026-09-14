@@ -13,4 +13,12 @@ class AccountController extends Controller
             ->paginate(10);
         return view('pages.account-orders', compact('orders'));
     }
+
+    public function notifications()
+    {
+        $notifications = auth()->user()->notifications()->latest()->paginate(15);
+        auth()->user()->unreadNotifications->markAsRead();
+
+        return view('pages.account-notifications', compact('notifications'));
+    }
 }
