@@ -12,7 +12,7 @@
 @endsection
 
 @section('content')
-    <div class="publisher-page-head">
+    <div class="publisher-page-head payment-settings-head">
         <div>
             <span class="analytics-eyebrow">Payment settings</span>
             <h2>Payment Methods, QR &amp; Bank Transfer Settings</h2>
@@ -22,12 +22,12 @@
     </div>
 
     <!-- Active Methods & Bank Details Form -->
-    <div class="a-card" style="margin-bottom:28px;">
+    <div class="a-card payment-methods-card" style="margin-bottom:28px;">
         <h3 style="margin-top:0;margin-bottom:18px;font-size:1.15rem;">Enabled Checkout Payment Methods</h3>
         <form method="POST" action="{{ route('admin.payment-settings.bank') }}" id="bank-settings-form">
             @csrf @method('PUT')
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;padding:16px;background:var(--a-bg-surface-alt, #f8fafc);border-radius:10px;margin-bottom:24px;border:1px solid var(--a-border);">
+            <div class="payment-method-options" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;padding:16px;background:var(--a-bg-surface-alt, #f8fafc);border-radius:10px;margin-bottom:24px;border:1px solid var(--a-border);">
                 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.92rem;">
                     <input type="checkbox" name="method_upi_qr" value="1" @checked($enabledMethods['upi_qr']) style="width:18px;height:18px;cursor:pointer;">
                     <strong>Enable UPI / QR Payment</strong>
@@ -42,9 +42,9 @@
                 </label>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;">
+            <div class="payment-bank-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;">
                 <!-- Domestic Bank Details Card -->
-                <div style="border:1px solid var(--a-border);padding:20px;border-radius:12px;background:var(--a-bg-surface, #ffffff);position:relative;">
+                <div class="payment-bank-card" style="border:1px solid var(--a-border);padding:20px;border-radius:12px;background:var(--a-bg-surface, #ffffff);position:relative;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                         <h4 style="margin:0;color:var(--a-brand-primary, #1e293b);font-size:1.05rem;">Domestic Bank Account Details (India)</h4>
                         <button type="button" class="btn btn-outline btn-sm" onclick="toggleDomesticForm()" id="dom-toggle-btn">Edit Details</button>
@@ -94,7 +94,7 @@
                 </div>
 
                 <!-- International Bank Details Card -->
-                <div style="border:1px solid var(--a-border);padding:20px;border-radius:12px;background:var(--a-bg-surface, #ffffff);position:relative;">
+                <div class="payment-bank-card" style="border:1px solid var(--a-border);padding:20px;border-radius:12px;background:var(--a-bg-surface, #ffffff);position:relative;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                         <h4 style="margin:0;color:var(--a-brand-primary, #1e293b);font-size:1.05rem;">International Bank Wire Details</h4>
                         <button type="button" class="btn btn-outline btn-sm" onclick="toggleIntlForm()" id="intl-toggle-btn">Edit Details</button>
@@ -144,7 +144,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:24px;">Save Payment Instructions &amp; Bank Details</button>
+            <button type="submit" class="btn btn-primary payment-bank-save" style="margin-top:24px;">Save Payment Instructions &amp; Bank Details</button>
         </form>
     </div>
 
@@ -199,7 +199,8 @@
         </section>
     </div>
 
-    <section class="a-card" style="max-width:620px;margin-top:24px;">
+    <div class="payment-bottom-grid">
+    <section class="a-card payment-commission-card">
         <div class="payment-card-head"><span>%</span>
             <div>
                 <h3>Publisher deduction</h3>
@@ -216,6 +217,18 @@
             <button class="btn btn-primary">Save deduction rate</button>
         </form>
     </section>
+    <section class="a-card payment-instructions-card">
+        <div class="payment-card-head"><span>i</span>
+            <div><h3>Payment instructions</h3><p>Guidance shown throughout the payment workflow.</p></div>
+        </div>
+        <ol>
+            <li>Choose an enabled payment method at checkout.</li>
+            <li>Complete payment using the displayed QR or bank details.</li>
+            <li>Enter the exact amount and keep the transaction reference.</li>
+            <li>Upload proof of payment for administrator verification.</li>
+        </ol>
+    </section>
+    </div>
 
     <script>
         function toggleDomesticForm() {
