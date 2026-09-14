@@ -17,51 +17,7 @@
     }
 @endphp
 @section('title', 'Analytics & Reports')
-@section('nav')
-    <div class="nav-group">
-        <div class="nav-group-title">Overview</div>
-        <a href="{{ route('publisher.dashboard') }}" class="nav-link">
-            <span class="nav-icon">▣</span>
-            <span>Dashboard</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div>
-        <a href="{{ route('publisher.books.index') }}" class="nav-link">
-            <span class="nav-icon">📖</span>
-            <span>My Books</span>
-        </a>
-        <a href="{{ route('publisher.inventory.index') }}" class="nav-link">
-            <span class="nav-icon">📦</span>
-            <span>Inventory</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Marketing</div>
-        <a href="{{ route('publisher.coupons.index') }}" class="nav-link">
-            <span class="nav-icon">🏷</span>
-            <span>Coupons & Offers</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Sales</div>
-        <a href="{{ route('publisher.orders.index') }}" class="nav-link">
-            <span class="nav-icon">🚚</span>
-            <span>Orders</span>
-        </a>
-        <a href="{{ route('publisher.payments.index') }}" class="nav-link">
-            <span class="nav-icon">&#8377;</span>
-            <span>Payments & Invoices</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Reports</div>
-        <a href="{{ route('publisher.analytics.index') }}" class="nav-link active">
-            <span class="nav-icon">&#128200;</span>\
-            <span>Analytics & Reports</span>
-        </a>
-    </div>
-@endsection
+@section('nav')@include('publisher.partials.nav', ['active' => 'analytics'])@endsection
 @section('content')
     <style>
         html.dark .dashboard-card {
