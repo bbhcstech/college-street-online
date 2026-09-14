@@ -9,12 +9,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // --- Admin ---
-        User::create([
-            'name' => 'Site Admin',
-            'email' => 'admin@collegestreetonline.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@collegestreetonline.com'],
+            [
+                'name' => 'Site Admin',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
     }
 }
