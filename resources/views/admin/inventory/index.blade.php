@@ -87,7 +87,7 @@
 
         <!-- Per Page Dropdown -->
         <select name="per_page" style="width: 110px; height: 34px; padding: 0 8px; border: 1px solid #d1d5db; border-radius: 6px; background: #ffffff; font-size: 0.82rem; color: #374151; outline: none; cursor: pointer;">
-            <option value="15" @selected($books->perPage() === 15)>15 entries</option>
+            <option value="10" @selected($books->perPage() === 10)>10 entries</option>
             <option value="25" @selected($books->perPage() === 25)>25 entries</option>
             <option value="50" @selected($books->perPage() === 50)>50 entries</option>
             <option value="100" @selected($books->perPage() === 100)>100 entries</option>
@@ -161,7 +161,7 @@
                         </td>
                         <td style="padding: 10px 12px;">
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <img src="{{ $book->cover_image_url ?? asset('images/book-cover-placeholder.png') }}" 
+                                <img src="{{ $book->cover_url ?? asset('images/book-cover-placeholder.png') }}" 
                                      alt="{{ $book->title }}" 
                                      style="width: 36px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; background: #f8fafc;">
                                 <div>
@@ -217,10 +217,15 @@
     </div>
 
     <!-- PAGINATION FOOTER -->
-    @if($books->hasPages())
-        <div style="padding: 10px 14px; border-top: 1px solid #e2e8f0; background: #ffffff;">
-            {{ $books->links() }}
-        </div>
-    @endif
+    <div class="publisher-table-footer">
+        <span>Showing {{ $books->firstItem() ?? 0 }}–{{ $books->lastItem() ?? 0 }} of {{ $books->total() }} books</span>
+        @if($books->hasPages())
+            <nav class="order-pagination" aria-label="Inventory pages">
+                @if($books->onFirstPage())<span class="disabled">Previous</span>@else<a href="{{ $books->previousPageUrl() }}">Previous</a>@endif
+                @foreach(range(1, max(1, $books->lastPage())) as $page)<a href="{{ $books->url($page) }}" class="{{ $books->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
+                @if($books->hasMorePages())<a href="{{ $books->nextPageUrl() }}">Next</a>@else<span class="disabled">Next</span>@endif
+            </nav>
+        @endif
+    </div>
 </div>
 @endsection

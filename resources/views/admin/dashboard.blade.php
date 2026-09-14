@@ -352,6 +352,7 @@
                     }
                 }
             }
+        });
         // Top Selling Books Bar Chart
         const topBooksCtx = document.getElementById('topSellingBooksBarChart').getContext('2d');
         new Chart(topBooksCtx, {

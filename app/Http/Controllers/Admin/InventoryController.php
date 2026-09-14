@@ -21,7 +21,7 @@ class InventoryController extends Controller
         $outOfStockCount = Book::whereHas('inventory', fn ($q) => $q->where('quantity', '<=', 0))->count()
             + Book::doesntHave('inventory')->count();
 
-        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 15;
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
 
         $books = $this->filteredQuery($request)->orderBy('title')->paginate($perPage)->withQueryString();
 
@@ -101,4 +101,3 @@ class InventoryController extends Controller
             ->when($request->stock === 'healthy', fn ($query) => $query->whereHas('inventory', fn ($i) => $i->whereColumn('quantity', '>', 'low_stock_threshold')));
     }
 }
-
