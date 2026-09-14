@@ -8,6 +8,107 @@
 @section('title', 'My Books')
 @section('nav')@include('publisher.partials.nav', ['active' => 'books'])@endsection
 @section('content')
+    <style>
+        .publisher-table-card {
+            padding: 16px 20px;
+        }
+        .publisher-book-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .publisher-search {
+            flex: 1 1 200px;
+            min-width: 170px;
+        }
+        .publisher-book-toolbar .a-select {
+            flex: 0 1 auto;
+            padding: 5px 8px;
+            font-size: 0.78rem;
+            height: 32px;
+        }
+        .publisher-export-bar {
+            padding: 6px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .publisher-table-scroll {
+            overflow-x: auto;
+        }
+        .publisher-book-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .publisher-book-table th,
+        .publisher-book-table td {
+            padding: 7px 10px !important;
+            font-size: 0.82rem;
+            vertical-align: middle;
+        }
+        .publisher-book-table th {
+            font-size: 0.69rem;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .publisher-book-table .a-book-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 130px;
+        }
+        .publisher-book-table .a-book-cover-thumb,
+        .publisher-book-table .a-book-cover-placeholder {
+            width: 32px !important;
+            height: 42px !important;
+            border-radius: 4px;
+            object-fit: cover;
+            flex: 0 0 32px;
+        }
+        .publisher-book-table .a-book-title strong {
+            font-size: 0.84rem;
+            line-height: 1.2;
+            display: block;
+        }
+        .publisher-book-table .a-book-title small {
+            font-size: 0.7rem;
+            margin-top: 1px;
+            display: block;
+            color: var(--a-text-muted);
+        }
+        .publisher-book-table .book-status-select {
+            padding: 3px 6px;
+            font-size: 0.72rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            height: 26px;
+        }
+        .publisher-book-table .book-row-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .publisher-book-table .book-row-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            line-height: 1.3;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .publisher-book-table .publisher-stock {
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+    </style>
     <div class="publisher-page-head">
         <div><span class="analytics-eyebrow">Catalogue</span>
             <h2>My book catalogue</h2>

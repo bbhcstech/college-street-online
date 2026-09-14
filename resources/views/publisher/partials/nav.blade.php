@@ -58,10 +58,20 @@
 </div>
 
 <!-- 🚚 Orders -->
-<div class="nav-group {{ $active === 'orders' || request()->routeIs('publisher.orders.*') ? 'has-active' : '' }}">
-    <a href="{{ route('publisher.orders.index') }}" class="nav-link {{ $active === 'orders' || request()->routeIs('publisher.orders.*') ? 'active' : '' }}">
+@php
+    $isOrdersActive = $active === 'orders' || request()->routeIs('publisher.orders.*');
+    $currentStatus = request('status');
+@endphp
+<div class="nav-group {{ $isOrdersActive ? 'has-active' : '' }}">
+    <a href="{{ route('publisher.orders.index') }}" class="nav-link {{ $isOrdersActive ? 'active' : '' }}">
         <span class="nav-icon">🚚</span><span>Orders</span>
     </a>
+    <div class="nav-sub-items">
+        <a href="{{ route('publisher.orders.index') }}" class="nav-sub-link {{ $isOrdersActive && empty($currentStatus) ? 'active' : '' }}">All Orders</a>
+        <a href="{{ route('publisher.orders.index', ['status' => 'processing']) }}" class="nav-sub-link {{ $isOrdersActive && $currentStatus === 'processing' ? 'active' : '' }}">Processing</a>
+        <a href="{{ route('publisher.orders.index', ['status' => 'shipped']) }}" class="nav-sub-link {{ $isOrdersActive && $currentStatus === 'shipped' ? 'active' : '' }}">Shipped</a>
+        <a href="{{ route('publisher.orders.index', ['status' => 'delivered']) }}" class="nav-sub-link {{ $isOrdersActive && $currentStatus === 'delivered' ? 'active' : '' }}">Delivered</a>
+    </div>
 </div>
 
 <!-- 💳 Sales / Earnings -->
