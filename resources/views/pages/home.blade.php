@@ -389,20 +389,73 @@
     @endauth
 
     @if(isset($recentlyViewedBooks) && $recentlyViewedBooks->isNotEmpty())
-        <section class="section section-alt" id="recently-viewed">
+        <section class="section section-alt" id="recently-viewed" style="padding: 24px 0 28px 0;">
             <div class="container">
-                <div class="section-head reveal">
-                    <span class="eyebrow"><span class="dot"></span> Browsing history</span>
-                    <h2>Recently Viewed</h2>
-                    <p>Books you have recently viewed on College Street Online.</p>
+                <div class="section-head reveal" style="margin-bottom: 14px;">
+                    <span class="eyebrow" style="margin-bottom:2px;"><span class="dot"></span> Browsing history</span>
+                    <h2 style="font-size:1.35rem; margin:2px 0 2px 0;">Recently Viewed</h2>
+                    <p style="font-size:0.82rem; margin:0; color:var(--text-secondary);">Books you have recently viewed on College Street Online.</p>
                 </div>
-                <div class="grid grid-4">
+                <div class="recently-viewed-grid">
                     @foreach($recentlyViewedBooks as $book)
                         @include('partials.book-card', ['book' => $book])
                     @endforeach
                 </div>
             </div>
         </section>
+        <style>
+            #recently-viewed .recently-viewed-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(165px, 185px));
+                gap: 12px;
+            }
+            #recently-viewed .book-card {
+                border-radius: 10px !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
+            }
+            #recently-viewed .book-cover {
+                height: 145px !important;
+                min-height: 145px !important;
+                padding: 6px !important;
+            }
+            #recently-viewed .book-cover-image {
+                max-height: 132px !important;
+                object-fit: contain !important;
+            }
+            #recently-viewed .book-card-body {
+                padding: 8px 10px !important;
+            }
+            #recently-viewed .book-card-meta {
+                margin-bottom: 2px !important;
+            }
+            #recently-viewed .badge-tag-outline {
+                font-size: 0.65rem !important;
+                padding: 1px 5px !important;
+            }
+            #recently-viewed .book-card .title {
+                font-size: 0.82rem !important;
+                margin-bottom: 2px !important;
+                line-height: 1.25 !important;
+            }
+            #recently-viewed .book-card .author {
+                font-size: 0.72rem !important;
+                margin-bottom: 4px !important;
+            }
+            #recently-viewed .book-card .price {
+                font-size: 0.88rem !important;
+            }
+            #recently-viewed .book-card .price-row {
+                margin-bottom: 2px !important;
+            }
+            #recently-viewed .stock-pill {
+                font-size: 0.68rem !important;
+                padding: 1px 6px !important;
+            }
+            #recently-viewed .book-card-action {
+                font-size: 0.72rem !important;
+                margin-top: 4px !important;
+            }
+        </style>
     @endif
 
     <section class="section section-alt" id="bestsellers">
