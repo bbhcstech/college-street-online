@@ -132,7 +132,7 @@
         
         <!-- SECTION 4: Customer Information & Shipping Address -->
         <div class="a-card" style="padding: 20px;">
-            <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 1.05rem;">Customer Information</h3>
+            <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 1.05rem;">Customer &amp; Market Destination</h3>
             <div style="margin-bottom: 14px;">
                 <strong style="font-size: 0.95rem; display: block; color: var(--a-text);">{{ $order->customer->name ?? 'Guest / Unavailable' }}</strong>
                 <span style="font-size: 0.82rem; color: var(--a-text-muted); display: block;">{{ $order->customer->email ?? 'No email on file' }}</span>
@@ -140,26 +140,60 @@
                     <span style="font-size: 0.82rem; color: var(--a-text-muted); display: block; margin-top: 2px;">Phone: <strong>{{ $order->shipping_phone }}</strong></span>
                 @endif
             </div>
-            <div style="border-top: 1px solid var(--a-border); padding-top: 12px;">
+            <div style="border-top: 1px solid var(--a-border); padding-top: 12px; margin-bottom: 12px;">
                 <h4 style="margin: 0 0 6px 0; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--a-text-muted); letter-spacing: 0.05em;">Shipping Address</h4>
                 <p style="margin: 0; font-size: 0.85rem; line-height: 1.5; color: var(--a-text);">{{ $order->shipping_address ?: 'No address specified' }}</p>
-                <div style="margin-top: 8px;">
+                <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
                     <span class="badge badge-outline" style="font-weight: 700;">Country: {{ $order->country ?: 'India' }}</span>
+                    @if($order->country_code)
+                        <span class="badge badge-outline" style="font-weight: 700;">Code: {{ strtoupper($order->country_code) }}</span>
+                    @endif
+                </div>
+            </div>
+            <div style="border-top: 1px solid var(--a-border); padding-top: 12px;">
+                <h4 style="margin: 0 0 6px 0; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--a-text-muted); letter-spacing: 0.05em;">Market Tax &amp; Exchange Rate</h4>
+                <div style="font-size: 0.82rem; color: var(--a-text); display: flex; flex-direction: column; gap: 4px;">
+                    <div><strong>Currency:</strong> {{ $order->currency ?? 'INR' }} ({{ $order->currency_symbol ?? '₹' }})</div>
+                    <div><strong>Exchange Rate (to INR):</strong> {{ number_format($order->exchange_rate_to_inr ?? 1, 4) }}</div>
+                    @if(isset($order->tax_rate) && $order->tax_rate > 0)
+                        <div><strong>Market Tax Rate:</strong> {{ number_format($order->tax_rate, 2) }}% ({{ $order->is_tax_inclusive ? 'Tax Inclusive' : 'Tax Exclusive' }})</div>
+                    @endif
                 </div>
             </div>
         </div>
 
         <!-- SECTION 5: Price Breakdown -->
         <div class="a-card" style="padding: 20px;">
-            <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 1.05rem;">Price Breakdown</h3>
+            <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 1.05rem;">Price &amp; Base INR Accounting Breakdown</h3>
             <div class="summary-line" style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px dashed var(--a-border);">
                 <span style="color: var(--a-text-muted);">Items Subtotal</span>
-                <strong>{{ $order->currency_symbol }}{{ number_format($order->subtotal, 2) }}</strong>
+                <div style="text-align: right;">
+                    <strong>{{ $order->currency_symbol }}{{ number_format($order->subtotal, 2) }}</strong>
+                    @if($order->currency !== 'INR' && isset($order->base_subtotal))
+                        <small style="display: block; color: var(--a-text-muted); font-size: 0.72rem;">(Base: ₹{{ number_format($order->base_subtotal, 2) }})</small>
+                    @endif
+                </div>
             </div>
             <div class="summary-line" style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px dashed var(--a-border);">
                 <span style="color: var(--a-text-muted);">Shipping Charge</span>
-                <strong>{{ $order->currency_symbol }}{{ number_format($order->shipping_fee, 2) }}</strong>
+                <div style="text-align: right;">
+                    <strong>{{ $order->currency_symbol }}{{ number_format($order->shipping_fee, 2) }}</strong>
+                    @if($order->currency !== 'INR' && isset($order->base_shipping_fee))
+                        <small style="display: block; color: var(--a-text-muted); font-size: 0.72rem;">(Base: ₹{{ number_format($order->base_shipping_fee, 2) }})</small>
+                    @endif
+                </div>
             </div>
+            @if(isset($order->tax_amount) && $order->tax_amount > 0)
+                <div class="summary-line" style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px dashed var(--a-border);">
+                    <span style="color: var(--a-text-muted);">Market Tax ({{ number_format($order->tax_rate, 1) }}%)</span>
+                    <div style="text-align: right;">
+                        <strong>{{ $order->currency_symbol }}{{ number_format($order->tax_amount, 2) }}</strong>
+                        @if($order->currency !== 'INR' && isset($order->base_tax_amount))
+                            <small style="display: block; color: var(--a-text-muted); font-size: 0.72rem;">(Base: ₹{{ number_format($order->base_tax_amount, 2) }})</small>
+                        @endif
+                    </div>
+                </div>
+            @endif
             <div class="summary-line" style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px dashed var(--a-border);">
                 <span style="color: var(--a-text-muted);">Platform Fee</span>
                 <strong>{{ $order->currency_symbol }}{{ number_format($order->platform_fee, 2) }}</strong>
@@ -167,12 +201,23 @@
             @if($order->discount_amount > 0 || $order->coupon)
                 <div class="summary-line" style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px dashed var(--a-border); color: #078657;">
                     <span>Discount @if($order->coupon?->code) ({{ $order->coupon->code }}) @endif</span>
-                    <strong>&minus;{{ $order->currency_symbol }}{{ number_format($order->discount_amount, 2) }}</strong>
+                    <div style="text-align: right;">
+                        <strong>&minus;{{ $order->currency_symbol }}{{ number_format($order->discount_amount, 2) }}</strong>
+                        @if($order->currency !== 'INR' && isset($order->base_discount_amount))
+                            <small style="display: block; color: var(--a-text-muted); font-size: 0.72rem;">(Base: &minus;₹{{ number_format($order->base_discount_amount, 2) }})</small>
+                        @endif
+                    </div>
                 </div>
             @endif
             <div class="summary-line total" style="display: flex; justify-content: space-between; padding: 10px 0 0 0; font-size: 1.1rem; font-weight: 800; color: var(--a-primary);">
-                <span>Final Amount ({{ $order->currency }})</span>
-                <span>{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</span>
+                <span>Final Billed Amount</span>
+                <div style="text-align: right;">
+                    <span>{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</span>
+                    @if($order->currency !== 'INR')
+                        @php($baseTotal = $order->base_total_amount ?? ($order->base_subtotal + $order->base_shipping_fee + ($order->is_tax_inclusive ? 0 : $order->base_tax_amount) - $order->base_discount_amount))
+                        <small style="display: block; color: var(--a-text-muted); font-size: 0.78rem; font-weight: 600;">(Base INR: ₹{{ number_format($baseTotal, 2) }})</small>
+                    @endif
+                </div>
             </div>
         </div>
 

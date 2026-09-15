@@ -10,32 +10,42 @@ use Illuminate\Support\Collection;
 
 class PricingService
 {
-    const PLATFORM_FEE = 0.00;
-
-    public function quote(Collection $cartItems, string $countryCode = 'IN', ?Coupon $coupon = null): array
+    public function quote(Collection $cartItems, ?string $countryCode = null, ?Coupon $coupon = null): array
     {
-        $country = Country::where('code', $countryCode)->first() ?? Country::where('code', 'IN')->first();
+        $currencyService = app(CurrencyService::class);
+        $country = $countryCode ? Country::where('code', $countryCode)->first() : null;
+        $country = $country ?? $currencyService->getSelectedCountry();
+
         $currency = Currency::where('code', $country->currency_code)->first();
         $rate = (float) ($currency?->exchange_rate ?? 1.0);
-
-        $currencyService = app(CurrencyService::class);
 
         // Sum subtotal in target country's currency
         $subtotal = $cartItems->sum(function (CartModel $cart) use ($currencyService, $country) {
             $priceData = $currencyService->resolveBookPrice($cart->book, $country);
-            return $cart->quantity * $priceData['price'];
+            return $cart->quantity * ($priceData['price'] ?? (float) $cart->book->price);
         });
 
         $baseSubtotal = $cartItems->sum(fn (CartModel $c) => $c->quantity * (float) $c->book->price);
         $totalItems = $cartItems->sum('quantity');
 
-        // Calculate shipping in target currency
-        $shipping = $currencyService->calculateShippingFee($totalItems, $subtotal, $country);
+        // Multi-publisher shipment shipping fee calculation
+        $publisherGroups = $cartItems->groupBy(fn (CartModel $c) => $c->book->publisher_id);
+        $shipping = 0.00;
+
+        if ($country->free_shipping_threshold && $subtotal >= $country->free_shipping_threshold) {
+            $shipping = 0.00;
+        } else {
+            foreach ($publisherGroups as $pubId => $pubItems) {
+                $pubItemCount = $pubItems->sum('quantity');
+                $pubShipFee = (float) $country->base_shipping_fee + ($pubItemCount > 1 ? ($pubItemCount - 1) * (float) $country->per_item_shipping_fee : 0);
+                $shipping += $pubShipFee;
+            }
+            $shipping = round($shipping, 2);
+        }
+
         $baseShipping = $rate > 0 ? round($shipping / $rate, 2) : $shipping;
 
-        $platformFee = 0.00;
-        $basePlatformFee = 0.00;
-
+        // Discount calculation
         $discount = 0.00;
         $baseDiscount = 0.00;
 
@@ -47,20 +57,52 @@ class PricingService
             }
         }
 
-        $total = max(0, round($subtotal + $shipping + $platformFee - $discount, 2));
-        $baseTotal = max(0, round($baseSubtotal + $baseShipping + $basePlatformFee - $baseDiscount, 2));
+        // Tax calculation
+        $taxRate = (float) ($country->tax_rate ?? 0.00);
+        $isTaxInclusive = (bool) $country->is_tax_inclusive;
+        $taxableSubtotal = max(0, $subtotal - $discount);
+
+        if ($taxRate > 0 && $taxableSubtotal > 0) {
+            if ($isTaxInclusive) {
+                $tax = round($taxableSubtotal * ($taxRate / (100 + $taxRate)), 2);
+            } else {
+                $tax = round($taxableSubtotal * ($taxRate / 100), 2);
+            }
+        } else {
+            $tax = 0.00;
+        }
+
+        $baseTax = $rate > 0 ? round($tax / $rate, 2) : $tax;
+
+        // Final Totals
+        if ($isTaxInclusive) {
+            $total = max(0, round($subtotal + $shipping - $discount, 2));
+            $baseTotal = max(0, round($baseSubtotal + $baseShipping - $baseDiscount, 2));
+        } else {
+            $total = max(0, round($subtotal + $shipping + $tax - $discount, 2));
+            $baseTotal = max(0, round($baseSubtotal + $baseShipping + $baseTax - $baseDiscount, 2));
+        }
 
         return [
             'subtotal' => $subtotal,
             'shipping' => $shipping,
-            'platformFee' => $platformFee,
+            'tax' => $tax,
+            'taxRate' => $taxRate,
+            'isTaxInclusive' => $isTaxInclusive,
+            'platformFee' => 0.00,
             'discount' => $discount,
             'total' => $total,
+            'baseSubtotal' => $baseSubtotal,
+            'baseShipping' => $baseShipping,
+            'baseTax' => $baseTax,
+            'basePlatformFee' => 0.00,
+            'baseDiscount' => $baseDiscount,
             'baseTotal' => $baseTotal,
             'rate' => $rate,
             'country' => $country->code,
             'currency' => $country->currency_code,
             'symbol' => $country->symbol,
+            'publishersCount' => $publisherGroups->count(),
         ];
     }
 
@@ -74,7 +116,7 @@ class PricingService
             ))
             ->sum(function (CartModel $cart) use ($currencyService, $country) {
                 $priceData = $currencyService->resolveBookPrice($cart->book, $country);
-                return $cart->quantity * $priceData['price'];
+                return $cart->quantity * ($priceData['price'] ?? (float) $cart->book->price);
             });
     }
 }

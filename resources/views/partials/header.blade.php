@@ -8,6 +8,9 @@
         default => route('account.profile'),
     };
     $searchCategories = \App\Models\Category::orderBy('name')->get(['name', 'slug']);
+    $headerCountries = \App\Models\Country::where('is_active', true)->orderBy('name')->get();
+    $headerCountryCode = session('customer_country', auth()->check() ? (auth()->user()->country_code ?? 'IN') : 'IN');
+    $headerCurrentCountry = $headerCountries->firstWhere('code', $headerCountryCode) ?? $headerCountries->firstWhere('code', 'IN');
 @endphp
 <header class="site-header">
     <div class="container header-inner">
@@ -20,20 +23,18 @@
 
         {{-- navbar --}}
         <nav class="main-nav" aria-label="Primary">
-            <a href="{{ route('home') }}"style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">
+            <a href="{{ route('home') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">
                 Home
             </a>
-
             <a href="{{ route('books.index') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">
                 Browse Books
             </a>
-            <a href="{{ route('bulk-orders') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">Bulk
-                Orders
+            <a href="{{ route('bulk-orders') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">
+                Bulk Orders
             </a>
             <a href="{{ route('about') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">
                 About Us
             </a>
-            {{-- customer support link --}}
             @auth
                 @if(auth()->user()->isCustomer())
                     <a href="{{ route('account.support') }}" style="padding:10px 15px;font-family:var(--font-heading);font-weight:500;font-size:0.92rem;color:var(--text-secondary);">
@@ -42,6 +43,8 @@
                 @endif
             @endauth
         </nav>
+
+        {{-- search box --}}
         <form class="search-box header-search" action="{{ route('books.index') }}" method="GET" data-search-form
             data-suggestions-url="{{ url('/books/suggestions') }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -62,6 +65,7 @@
             </button>
             <div class="search-suggestions" data-search-suggestions hidden></div>
         </form>
+
         <div class="header-actions">
             @auth
                 @if(auth()->user()->isCustomer())
@@ -104,6 +108,30 @@
                     </div>
                 </details>
             @endauth
+
+            {{-- Region & Currency Dropdown --}}
+            <details class="auth-portal country-switcher-portal" style="position:relative;">
+                <summary class="btn auth-portal-button" title="Change Region & Currency" style="font-size:0.8rem; padding:6px 10px; gap:4px; display:inline-flex; align-items:center;">
+                    <span>🌐</span>
+                    <span style="font-weight:700;">{{ $headerCurrentCountry ? $headerCurrentCountry->code : 'IN' }}</span>
+                    <span style="opacity:0.75; font-size:0.75rem;">({{ $headerCurrentCountry ? $headerCurrentCountry->currency_code : 'INR' }})</span>
+                </summary>
+                <div class="auth-portal-menu" style="min-width:210px; padding:10px;">
+                    <form method="POST" action="{{ route('country.switch') }}">
+                        @csrf
+                        <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted, #64748b); text-transform:uppercase; margin-bottom:6px; letter-spacing:0.04em;">Select Region / Currency</div>
+                        <select name="country" onchange="this.form.submit()" class="form-control" style="font-size:0.82rem; padding:6px 8px; width:100%; cursor:pointer;">
+                            @foreach($headerCountries as $c)
+                                <option value="{{ $c->code }}" @selected(($headerCurrentCountry->code ?? 'IN') === $c->code)>
+                                    {{ $c->name }} ({{ $c->currency_code }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            </details>
+
+            {{-- Cart Link --}}
             <a href="{{ route('cart.index') }}" class="icon-btn-nav" aria-label="Cart">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="9" cy="21" r="1" />
@@ -114,6 +142,8 @@
                     <span class="cart-count">{{ $cartCount }}</span>
                 @endif
             </a>
+
+            {{-- Theme Toggle --}}
             <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode">
                 <span class="knob">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -122,6 +152,8 @@
                     </svg>
                 </span>
             </button>
+
+            {{-- Hamburger Menu for Mobile --}}
             <button type="button" class="hamburger" data-hamburger aria-label="Open menu" aria-expanded="false">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 6h18M3 12h18M3 18h18" />
@@ -168,18 +200,16 @@
         About Us
     </a>
     @auth
-        <a href="{{ $profileRoute }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">My
-            Profile
+        <a href="{{ $profileRoute }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">
+            My Profile
         </a>
         @if(auth()->user()->isCustomer())
             <a href="{{ route('account.orders') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">
                 My Orders
             </a>
-        @endif
-        @if(auth()->user()->isCustomer())
-        <a href="{{ route('account.support') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">
-            Contact Support
-        </a>
+            <a href="{{ route('account.support') }}" style="display:block;padding:15px 4px;font-family:var(--font-heading);font-weight:700;border-bottom:1px solid var(--border);">
+                Contact Support
+            </a>
         @endif
         <form method="POST" action="{{ route('account.logout') }}" class="mobile-logout-form">
             @csrf

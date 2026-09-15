@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function index(PricingService $pricing)
+    public function index(PricingService $pricing, \App\Services\CurrencyService $currencyService)
     {
         $items = Cart::with('book.author')->where('customer_id', auth()->id())->get();
-        $quote = $pricing->quote($items, 'IN');
+        $country = $currencyService->getSelectedCountry();
+        $quote = $pricing->quote($items, $country->code);
         return view('pages.cart', compact('items', 'quote'));
     }
 
@@ -24,7 +25,7 @@ class CartController extends Controller
         return back()->with('success', 'Added to cart.');
     }
 
-    public function update(Request $request, Cart $cart, PricingService $pricing)
+    public function update(Request $request, Cart $cart, PricingService $pricing, \App\Services\CurrencyService $currencyService)
     {
         abort_unless($cart->customer_id === auth()->id(), 403);
         $data = $request->validate(['quantity' => 'required|integer|min:1']);
@@ -33,10 +34,11 @@ class CartController extends Controller
         if ($request->expectsJson()) {
             $cart->load('book');
             $items = Cart::with('book')->where('customer_id', auth()->id())->get();
+            $country = $currencyService->getSelectedCountry();
 
             return response()->json([
                 'line_total' => $cart->lineTotal(),
-                'quote' => $pricing->quote($items, 'IN'),
+                'quote' => $pricing->quote($items, $country->code),
             ]);
         }
 

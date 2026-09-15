@@ -49,13 +49,43 @@
                         <div class="item-fulfillment-list">
                             <h4>Book fulfillment</h4>
                             @foreach($order->items as $item)
-                                <div>
-                                    <span>{{ $item->book?->title ?? 'Book unavailable' }}</span>
-                                    <strong>{{ ucfirst($item->fulfillment_status) }}</strong>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                                    <span>{{ $item->book?->title ?? 'Book unavailable' }} &times; {{ $item->quantity }}</span>
+                                    <div>
+                                        <strong style="margin-right:8px;">{{ $order->currency_symbol }}{{ number_format($item->quantity * $item->unit_price, 2) }}</strong>
+                                        <span class="badge badge-outline" style="font-size:0.7rem;">{{ ucfirst($item->fulfillment_status) }}</span>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
-                        <div class="tracking-history">
+                        <div style="margin-top: 14px; padding: 12px; background: var(--bg-surface-alt, #f8fafc); border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 0.85rem;">
+                            <h4 style="margin: 0 0 8px 0; font-size: 0.9rem;">Order Financial Summary</h4>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-secondary);">
+                                <span>Items Subtotal</span>
+                                <span>{{ $order->currency_symbol }}{{ number_format($order->subtotal, 2) }}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-secondary);">
+                                <span>Shipping Fee</span>
+                                <span>{{ $order->currency_symbol }}{{ number_format($order->shipping_fee, 2) }}</span>
+                            </div>
+                            @if(isset($order->tax_amount) && $order->tax_amount > 0)
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-secondary);">
+                                    <span>Market Tax ({{ number_format($order->tax_rate, 1) }}% {{ $order->is_tax_inclusive ? 'incl.' : 'excl.' }})</span>
+                                    <span>{{ $order->currency_symbol }}{{ number_format($order->tax_amount, 2) }}</span>
+                                </div>
+                            @endif
+                            @if($order->discount_amount > 0)
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px; color: #078657;">
+                                    <span>Discount</span>
+                                    <span>&minus;{{ $order->currency_symbol }}{{ number_format($order->discount_amount, 2) }}</span>
+                                </div>
+                            @endif
+                            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.95rem; margin-top:8px; border-top:1px solid var(--border-color, #cbd5e1); padding-top:6px;">
+                                <span>Total Billed</span>
+                                <span>{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</span>
+                            </div>
+                        </div>
+                        <div class="tracking-history" style="margin-top: 14px;">
                             @forelse($order->statusHistory->sortByDesc('created_at') as $history)
                                 <div>
                                     <strong>{{ ucfirst(str_replace('_', ' ', $history->to_status)) }}</strong><span>{{ $history->created_at->format('d M Y, h:i A') }}</span>

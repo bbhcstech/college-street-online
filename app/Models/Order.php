@@ -7,8 +7,8 @@ class Order extends Model
 {
     protected $fillable = [
         'customer_id', 'status', 'tracking_number', 'country', 'currency', 'shipping_address', 'shipping_phone',
-        'subtotal', 'shipping_fee', 'platform_fee', 'coupon_id', 'discount_amount', 'total_amount',
-        'exchange_rate', 'base_total_amount',
+        'subtotal', 'shipping_fee', 'tax_amount', 'tax_rate', 'is_tax_inclusive', 'platform_fee', 'coupon_id', 'discount_amount', 'total_amount',
+        'exchange_rate', 'base_subtotal', 'base_shipping_fee', 'base_tax_amount', 'base_discount_amount', 'base_total_amount',
     ];
 
     const STATUSES = [

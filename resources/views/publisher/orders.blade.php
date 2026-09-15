@@ -339,7 +339,13 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                             data-cell>{{ $item->order->customer?->email }}</small></td>
                     <td><strong data-cell>{{ $item->book?->title ?? 'Book unavailable' }}</strong></td>
                     <td data-cell>{{ $item->quantity }}</td>
-                    <td data-cell>₹{{ number_format($item->quantity * $price, 2) }}</td>
+                    <td data-cell>
+                        @php($baseGross = $item->quantity * ($item->base_unit_price ?? ($item->unit_price / ($item->order->exchange_rate_to_inr ?: 1))))
+                        <strong>₹{{ number_format($baseGross, 2) }}</strong>
+                        @if(($item->order->currency ?? 'INR') !== 'INR')
+                            <small>({{ $item->order->currency_symbol }}{{ number_format($item->quantity * $item->unit_price, 2) }} {{ $item->order->currency }})</small>
+                        @endif
+                    </td>
                     <td><span class="order-payment payment-{{ $item->order->payment?->verified_status ?? 'none' }}"
                             data-cell>{{ ucfirst($item->order->payment?->verified_status ?? 'No payment') }}</span></td>
                     <td><span class="badge badge-muted"

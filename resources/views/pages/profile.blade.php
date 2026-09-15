@@ -13,7 +13,7 @@
         .cust-profile-head .breadcrumb-row {
             margin-bottom: 10px;
             font-size: 0.88rem;
-            color: var(--text-muted, #94a3b8);
+            color: var(--text-secondary, #94a3b8);
         }
         .cust-profile-head .breadcrumb-row a {
             color: var(--text-secondary, #64748b);
@@ -42,11 +42,11 @@
             }
         }
         .cust-card {
-            background: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
+            background: var(--surface, #ffffff);
+            border: 1px solid var(--border, #e2e8f0);
             border-radius: 14px;
             padding: 28px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            box-shadow: var(--shadow-sm, 0 4px 16px rgba(0,0,0,0.04));
         }
         .cust-identity-card {
             text-align: center;
@@ -64,7 +64,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border: 3px solid #ffffff;
+            border: 3px solid var(--border, #ffffff);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .cust-avatar img {
@@ -89,7 +89,7 @@
             font-size: 0.75rem;
             font-weight: 700;
             color: var(--success, #1f9d6c);
-            background: rgba(31, 157, 108, 0.1);
+            background: rgba(31, 157, 108, 0.12);
             margin-bottom: 20px;
         }
         .cust-meta-grid {
@@ -97,8 +97,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             padding: 16px 0;
-            border-top: 1px solid var(--border-color, #f1f5f9);
-            border-bottom: 1px solid var(--border-color, #f1f5f9);
+            border-top: 1px solid var(--border, #f1f5f9);
+            border-bottom: 1px solid var(--border, #f1f5f9);
             margin-bottom: 20px;
             text-align: left;
         }
@@ -107,7 +107,7 @@
             font-size: 0.74rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: var(--text-muted, #94a3b8);
+            color: var(--text-secondary, #94a3b8);
             margin-bottom: 2px;
         }
         .cust-meta-grid strong {
@@ -125,7 +125,7 @@
             align-items: center;
             margin-bottom: 22px;
             padding-bottom: 14px;
-            border-bottom: 1px solid var(--border-color, #f1f5f9);
+            border-bottom: 1px solid var(--border, #f1f5f9);
         }
         .cust-card-head h3 {
             font-size: 1.18rem;
@@ -138,9 +138,9 @@
             margin: 4px 0 0 0;
         }
         .profile-input-readonly {
-            background-color: var(--bg-secondary, #f8fafc) !important;
-            border-color: var(--border-color, #e2e8f0) !important;
-            color: var(--text-primary, #1e293b) !important;
+            background-color: var(--surface-alt, #f8fafc) !important;
+            border-color: var(--border, #e2e8f0) !important;
+            color: var(--text-secondary, #64748b) !important;
             cursor: default !important;
             pointer-events: none;
         }
@@ -176,8 +176,8 @@
             padding: 10px 14px;
             font-size: 0.92rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color, #cbd5e1);
-            background: var(--input-bg, #ffffff);
+            border: 1px solid var(--border, #cbd5e1);
+            background: var(--surface, #ffffff);
             color: var(--text-primary, #0f172a);
         }
         .cust-card .form-control:focus {
@@ -189,8 +189,8 @@
             font-size: 0.84rem;
             padding: 6px 14px;
             border-radius: 6px;
-            border: 1px solid var(--border-color, #cbd5e1);
-            background: var(--card-bg, #ffffff);
+            border: 1px solid var(--border, #cbd5e1);
+            background: var(--surface, #ffffff);
             color: var(--text-primary, #334155);
             cursor: pointer;
             font-weight: 600;
@@ -200,8 +200,51 @@
             transition: all 0.2s ease;
         }
         .btn-toggle-edit:hover {
-            background: var(--bg-secondary, #f1f5f9);
+            background: var(--surface-alt, #f1f5f9);
             border-color: var(--accent-gold, #c59b27);
+        }
+
+        /* Dark Mode Overrides */
+        html.dark .cust-card {
+            background: var(--surface, #0f2a44) !important;
+            border-color: var(--border, #1d3e5c) !important;
+        }
+        html.dark .cust-profile-head h1,
+        html.dark .cust-identity-card h3,
+        html.dark .cust-card-head h3,
+        html.dark .cust-card label,
+        html.dark .cust-meta-grid strong {
+            color: var(--text-primary, #edf1fa) !important;
+        }
+        html.dark .cust-profile-head p,
+        html.dark .cust-identity-card p,
+        html.dark .cust-card-head p,
+        html.dark .cust-meta-grid small,
+        html.dark .cust-form-full label span {
+            color: var(--text-secondary, #93a3be) !important;
+        }
+        html.dark .cust-card .form-control {
+            background: var(--surface-alt, #12314e) !important;
+            border-color: var(--border, #1d3e5c) !important;
+            color: var(--text-primary, #edf1fa) !important;
+        }
+        html.dark .profile-input-readonly {
+            background-color: var(--bg-shift, #0b1e33) !important;
+            border-color: var(--border, #1d3e5c) !important;
+            color: var(--text-secondary, #93a3be) !important;
+        }
+        html.dark .btn-toggle-edit {
+            background: var(--surface-alt, #12314e) !important;
+            color: var(--text-primary, #edf1fa) !important;
+            border-color: var(--border, #1d3e5c) !important;
+        }
+        html.dark .btn-toggle-edit:hover {
+            background: var(--surface, #0f2a44) !important;
+            border-color: var(--accent-gold, #eda13a) !important;
+        }
+        html.dark .cust-meta-grid,
+        html.dark .cust-card-head {
+            border-color: var(--border, #1d3e5c) !important;
         }
     </style>
 
@@ -277,16 +320,16 @@
 
                             @if(isset($countries))
                                 <div class="form-group">
-                                    <label for="profile-country">Country / Region</label>
-                                    <select id="profile-country" name="country_code" class="form-control profile-field profile-input-readonly" disabled>
+                                    <label for="profile-country">Country / Region (Registered)</label>
+                                    <select id="profile-country" class="form-control profile-input-readonly" disabled style="background-color:var(--bg-secondary, #f8fafc) !important;cursor:not-allowed;">
                                         <option value="">-- Select Country --</option>
                                         @foreach($countries as $country)
-                                            <option value="{{ $country->code }}" @selected(old('country_code', $user->country_code ?? session('customer_country', 'IN')) === $country->code)>
+                                            <option value="{{ $country->code }}" @selected(($user->country_code ?? session('customer_country', 'IN')) === $country->code)>
                                                 {{ $country->name }} ({{ $country->currency_code }})
                                             </option>
                                         @endforeach
                                     </select>
-                                    <small class="auth-field-help">Sets localized pricing & shipping rules.</small>
+                                    <small class="auth-field-help" style="color:var(--text-muted, #94a3b8);">🔒 Country is set at registration and cannot be changed.</small>
                                 </div>
                             @endif
 

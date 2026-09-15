@@ -72,7 +72,7 @@ class ProfileController extends Controller
                     'profile_image_path' => $newPath ?: $oldPath,
                 ];
 
-                if (array_key_exists('country_code', $data)) {
+                if (array_key_exists('country_code', $data) && empty($user->country_code)) {
                     $updateData['country_code'] = $data['country_code'];
                 }
                 if (array_key_exists('phone_code', $data)) {

@@ -121,10 +121,24 @@ class CheckoutController extends Controller
         $items = Cart::with('book')->where('customer_id', auth()->id())->get();
         abort_if($items->isEmpty(), 404, 'Your cart is empty.');
 
+        $targetCountry = Country::where('code', $data['country'])->first();
+        $currencyService = app(CurrencyService::class);
+
+        // Item 9 Checkout Validation: Verify book availability & stock for selected market
+        foreach ($items as $item) {
+            $priceData = $currencyService->resolveBookPrice($item->book, $targetCountry);
+            if (isset($priceData['is_available']) && !$priceData['is_available']) {
+                return back()->withErrors(['country' => "The book '{$item->book->title}' is not available for delivery to {$targetCountry->name}."]);
+            }
+            if ($item->book->inventory && $item->book->inventory->quantity < $item->quantity) {
+                return back()->withErrors(['stock' => "Insufficient stock for '{$item->book->title}'."]);
+            }
+        }
+
         $couponCode = $data['coupon_code'] ?? null;
         $coupon = $couponCode ? Coupon::where('code', strtoupper(trim($couponCode)))->first() : null;
         if ($coupon) {
-            $couponSubtotal = $pricing->couponSubtotal($items, $coupon);
+            $couponSubtotal = $pricing->couponSubtotal($items, $coupon, $targetCountry);
             if ($couponSubtotal <= 0 || ! $coupon->isValidFor($couponSubtotal)) $coupon = null;
         }
         $quote = $pricing->quote($items, $data['country'], $coupon);
@@ -140,10 +154,17 @@ class CheckoutController extends Controller
                 'shipping_phone' => $shippingPhone,
                 'subtotal' => $quote['subtotal'],
                 'shipping_fee' => $quote['shipping'],
-                'platform_fee' => $quote['platformFee'],
+                'tax_amount' => $quote['tax'],
+                'tax_rate' => $quote['taxRate'],
+                'is_tax_inclusive' => $quote['isTaxInclusive'],
+                'platform_fee' => 0.00,
                 'coupon_id' => $coupon?->id,
                 'discount_amount' => $quote['discount'],
                 'total_amount' => $quote['total'],
+                'base_subtotal' => $quote['baseSubtotal'],
+                'base_shipping_fee' => $quote['baseShipping'],
+                'base_tax_amount' => $quote['baseTax'],
+                'base_discount_amount' => $quote['baseDiscount'],
                 'base_total_amount' => $quote['baseTotal'],
             ]);
             $order->statusHistory()->create(['to_status' => 'pending_payment', 'changed_by' => auth()->id()]);
