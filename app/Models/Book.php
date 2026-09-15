@@ -35,6 +35,7 @@ class Book extends Model
     public function inventoryTransactions() { return $this->hasMany(InventoryTransaction::class); }
     public function reviews() { return $this->hasMany(BookReview::class); }
     public function orderItems() { return $this->hasMany(OrderItem::class); }
+    public function markets() { return $this->hasMany(BookMarket::class); }
 
     public function getCoverUrlAttribute(): ?string
     {

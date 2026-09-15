@@ -118,10 +118,66 @@
                 </div>
             </section>
 
-            <!-- Step 3: Book Description -->
+            <!-- Step 3: International Markets & Local Pricing -->
             <section class="a-card book-form-section">
                 <div class="book-section-head">
                     <span>3</span>
+                    <div>
+                        <h3>International Market Pricing &amp; Availability</h3>
+                        <p>Configure country availability, explicit local selling prices, dispatch times, and order limits per market.</p>
+                    </div>
+                </div>
+
+                @if(isset($countries) && $countries->count() > 0)
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+                        @foreach($countries as $country)
+                            @php
+                                $m = isset($bookMarkets) && isset($bookMarkets[$country->code]) ? $bookMarkets[$country->code] : null;
+                                $isAvailable = $m ? $m->is_available : true;
+                            @endphp
+                            <div style="background:var(--a-surface-alt, #f8fafc);border:1px solid var(--a-border, #e2e8f0);border-radius:10px;padding:16px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <strong>{{ $country->name }}</strong>
+                                        <code style="font-size:0.78rem;">{{ $country->code }}</code>
+                                        <span class="badge badge-info">{{ $country->currency_code }} ({{ $country->symbol }})</span>
+                                    </div>
+                                    <label style="display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;">
+                                        <input type="checkbox" name="markets[{{ $country->code }}][is_available]" value="1" @checked($isAvailable) style="width:16px;height:16px;">
+                                        <span>Available in {{ $country->name }}</span>
+                                    </label>
+                                </div>
+
+                                <div class="book-form-grid" style="grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:12px;">
+                                    <div class="a-form-group" style="margin:0;">
+                                        <label style="font-size:0.8rem;">Explicit Price ({{ $country->symbol }})</label>
+                                        <input type="number" step="0.01" min="0" name="markets[{{ $country->code }}][price]" value="{{ old('markets.'.$country->code.'.price', $m?->price) }}" class="a-input" placeholder="Exchange conversion if empty">
+                                    </div>
+                                    <div class="a-form-group" style="margin:0;">
+                                        <label style="font-size:0.8rem;">Explicit MRP ({{ $country->symbol }})</label>
+                                        <input type="number" step="0.01" min="0" name="markets[{{ $country->code }}][mrp]" value="{{ old('markets.'.$country->code.'.mrp', $m?->mrp) }}" class="a-input" placeholder="0.00">
+                                    </div>
+                                    <div class="a-form-group" style="margin:0;">
+                                        <label style="font-size:0.8rem;">Max Qty / Order</label>
+                                        <input type="number" min="1" max="100" name="markets[{{ $country->code }}][max_order_qty]" value="{{ old('markets.'.$country->code.'.max_order_qty', $m?->max_order_qty ?? 10) }}" class="a-input" placeholder="10">
+                                    </div>
+                                    <div class="a-form-group" style="margin:0;">
+                                        <label style="font-size:0.8rem;">Dispatch Lead Time</label>
+                                        <input type="text" name="markets[{{ $country->code }}][dispatch_days]" value="{{ old('markets.'.$country->code.'.dispatch_days', $m?->dispatch_days ?? '2-4 business days') }}" class="a-input" placeholder="e.g. 2-4 business days">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p style="color:var(--a-text-muted);font-size:0.88rem;margin:0;">No active international destination markets configured by admin.</p>
+                @endif
+            </section>
+
+            <!-- Step 4: Book Description -->
+            <section class="a-card book-form-section">
+                <div class="book-section-head">
+                    <span>4</span>
                     <div>
                         <h3>Description &amp; Synopsis</h3>
                         <p>Provide a detailed summary to engage readers.</p>
