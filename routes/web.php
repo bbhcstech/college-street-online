@@ -73,7 +73,10 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::get('/coupons', [Pub\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Pub\CouponController::class, 'store'])->name('coupons.store');
         Route::get('/payments', [Pub\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/notifications', [Pub\NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/payments/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
+        Route::get('/payments/statement', [Pub\PaymentController::class, 'statement'])->name('payments.statement');
+        Route::post('/payouts', [Pub\PayoutController::class, 'store'])->name('payouts.store');
         Route::get('/orders/export/{type}', [Pub\OrderController::class, 'export'])->name('orders.export');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/items/{orderItem}/status', [Pub\OrderController::class, 'updateStatus'])->name('orders.items.status');
@@ -117,6 +120,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
         Route::put('/payment-settings/bank', [Admin\PaymentSettingController::class, 'updateBankDetails'])->name('payment-settings.bank');
         Route::put('/payment-settings/commission', [Admin\PaymentSettingController::class, 'updateCommission'])->name('payment-settings.commission');
+        Route::get('/payouts', [Admin\PayoutController::class, 'index'])->name('payouts.index');
+        Route::patch('/payouts/{payout}', [Admin\PayoutController::class, 'update'])->name('payouts.update');
 
         Route::get('/publishers', [Admin\PublisherController::class, 'index'])->name('publishers.index');
         Route::get('/publishers/create', [Admin\PublisherController::class, 'create'])->name('publishers.create');

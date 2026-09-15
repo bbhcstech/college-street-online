@@ -88,6 +88,14 @@
     </a>
 </div>
 
+<!-- 🔔 Notifications -->
+<div class="nav-group {{ $active === 'notifications' || request()->routeIs('publisher.notifications.*') ? 'has-active' : '' }}">
+    <a href="{{ route('publisher.notifications.index') }}" class="nav-link {{ $active === 'notifications' || request()->routeIs('publisher.notifications.*') ? 'active' : '' }}">
+        <span class="nav-icon">🔔</span><span>Notifications</span>
+        @if(auth()->user()->unreadNotifications()->count())<span class="nav-notification-count">{{ auth()->user()->unreadNotifications()->count() }}</span>@endif
+    </a>
+</div>
+
 <!-- ⚙️ Profile / Settings -->
 <div class="nav-group {{ $active === 'profile' || request()->routeIs('publisher.profile.*') ? 'has-active' : '' }}">
     <a href="{{ route('publisher.profile.edit') }}" class="nav-link {{ $active === 'profile' || request()->routeIs('publisher.profile.*') ? 'active' : '' }}">

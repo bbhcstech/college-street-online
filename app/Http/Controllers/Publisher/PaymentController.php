@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Publisher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\PublisherLedgerEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +35,13 @@ class PaymentController extends Controller
             ->selectRaw("COUNT(DISTINCT CASE WHEN payments.verified_status = 'verified' THEN orders.id END) as paid_orders")
             ->first();
 
-        return view('publisher.payments', compact('orders', 'period', 'paymentStatus', 'totals'));
+        $availableBalance = (float) PublisherLedgerEntry::where('publisher_id', $publisherId)->where('available_at', '<=', now())->sum('amount');
+        $pendingBalance = (float) PublisherLedgerEntry::where('publisher_id', $publisherId)->where('type', 'earning')->where(fn ($query) => $query->whereNull('available_at')->orWhere('available_at', '>', now()))->sum('amount');
+        $reservedBalance = (float) auth()->user()->publisher->payoutRequests()->whereIn('status', ['requested', 'approved'])->sum('amount');
+        $payouts = auth()->user()->publisher->payoutRequests()->latest()->limit(10)->get();
+        $ledgerEntries = PublisherLedgerEntry::where('publisher_id', $publisherId)->latest()->limit(20)->get();
+
+        return view('publisher.payments', compact('orders', 'period', 'paymentStatus', 'totals', 'availableBalance', 'pendingBalance', 'reservedBalance', 'payouts', 'ledgerEntries'));
     }
 
     public function invoice(Order $order)
@@ -49,5 +56,18 @@ class PaymentController extends Controller
         $net = $gross - $deductions;
 
         return view('publisher.payment-invoice', compact('publisher', 'order', 'items', 'gross', 'deductions', 'net'));
+    }
+
+    public function statement()
+    {
+        $publisherId = auth()->user()->publisher->id;
+        $entries = PublisherLedgerEntry::where('publisher_id', $publisherId)->oldest()->get();
+
+        return response()->streamDownload(function () use ($entries) {
+            $output = fopen('php://output', 'w');
+            fputcsv($output, ['Date', 'Type', 'Description', 'Order', 'Gross', 'Publisher Discount', 'Commission', 'Net Change', 'Available On']);
+            foreach ($entries as $entry) fputcsv($output, [$entry->created_at->format('Y-m-d H:i'), $entry->type, $entry->description, $entry->order_id ? 'CSO'.$entry->order_id : '', $entry->gross_amount, $entry->discount_amount, $entry->commission_amount, $entry->amount, $entry->available_at?->format('Y-m-d H:i')]);
+            fclose($output);
+        }, 'publisher-settlement-'.now()->format('Y-m-d').'.csv');
     }
 }

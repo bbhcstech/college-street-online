@@ -135,24 +135,13 @@
                     data-export="pdf">PDF</button><button type="button" class="btn btn-outline btn-sm"
                     data-export="print">Print</button><button type="button" class="btn btn-outline btn-sm"
                     data-export="csv">CSV</button></div>
-            <div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered orders when none are selected.</span></div>
-            <div class="publisher-export-buttons">
-                <span class="order-export-label">Export</span>
-                <button type="button" class="btn btn-outline btn-sm" data-copy>Copy</button>
-                <button type="button" class="btn btn-outline btn-sm" data-export="excel">Excel</button>
-                <button type="button" class="btn btn-outline btn-sm" data-export="pdf">PDF</button>
-                <button type="button" class="btn btn-outline btn-sm" data-export="print">Print</button>
-                <button type="button" class="btn btn-outline btn-sm" data-export="csv">CSV</button>
-            </div>
         </div>
         <div class="publisher-table-scroll">
             <table class="a-table order-data-table">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" data-select-all aria-label="Select all orders"></th>
                         <th style="width: 40px; text-align: center;"><input type="checkbox" data-select-all aria-label="Select all orders"></th>
                         <th>Order ID</th>
-                        <th>Date</th>
                         <th>Date &amp; Time</th>
                         <th>Customer</th>
                         <th>Country</th>
@@ -160,28 +149,18 @@
                         <th>Amount</th>
                         <th>Payment Status</th>
                         <th>Order Status</th>
-                        <th>Action</th>
                         <th style="text-align: right;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
                         <tr data-export-row data-id="{{ $order->id }}">
-                            <td><input type="checkbox" data-row-select aria-label="Select order CSO{{ $order->id }}"></td>
-                            <td><strong data-cell>#CSO{{ $order->id }}</strong></td>
                             <td style="text-align: center;"><input type="checkbox" data-row-select aria-label="Select order CSO{{ $order->id }}"></td>
                             <td><strong data-cell style="font-size: 0.9rem; color: var(--a-primary);">#CSO{{ $order->id }}</strong></td>
                             <td data-cell>
-                                {{ $order->created_at->format('d M Y') }}<small>{{ $order->created_at->format('h:i A') }}</small>
                                 <span style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--a-text);">{{ $order->created_at->format('d M Y') }}</span>
                                 <small style="display: block; font-size: 0.72rem; color: var(--a-text-muted); margin-top: 2px;">{{ $order->created_at->format('h:i A') }}</small>
                             </td>
-                            <td><strong data-cell>{{ $order->customer?->name ?? '—' }}</strong><small
-                                    data-cell>{{ $order->customer?->email ?? '—' }}</small></td>
-                            <td data-cell><span class="badge badge-outline">{{ $order->country ?: 'India' }}</span></td>
-                            <td data-cell><strong>{{ $order->items_count ?? 0 }}</strong> <small>items</small></td>
-                            <td><strong
-                                    data-cell>{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</strong><small>{{ $order->currency }}</small>
                             <td>
                                 <strong data-cell style="display: block; font-size: 0.88rem; color: var(--a-text);">{{ $order->customer?->name ?? '—' }}</strong>
                                 <small data-cell style="display: block; font-size: 0.76rem; color: var(--a-text-muted); margin-top: 2px;">{{ $order->customer?->email ?? '—' }}</small>
@@ -195,11 +174,6 @@
                                 <span style="font-size: 0.88rem; font-weight: 700; color: var(--a-text);">{{ $order->items_count ?? 0 }}</span> <small style="font-size: 0.75rem; color: var(--a-text-muted);">items</small>
                             </td>
                             <td>
-                                <form method="POST" action="{{ route('admin.orders.status', $order) }}">@csrf
-                                    @method('PATCH')<select name="status"
-                                        class="order-status-select status-{{ $order->status }}"
-                                        data-current="{{ $order->status }}"
-                                        onchange="if(confirm('Change this order status?'))this.form.submit();else this.value=this.dataset.current">@foreach($statuses as $status)
                                 <strong data-cell style="display: block; font-size: 0.92rem; color: var(--a-primary);">{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</strong>
                                 <small style="display: block; font-size: 0.68rem; color: var(--a-text-muted); font-weight: 700; text-transform: uppercase;">{{ $order->currency }}</small>
                             </td>
@@ -216,13 +190,6 @@
                                             <option value="{{ $status }}" @selected($order->status === $status)>
                                         {{ ucfirst(str_replace('_', ' ', $status)) }}</option>@endforeach
                                     </select></form>
-                                                {{ ucfirst(str_replace('_', ' ', $status)) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </form>
-                            </td>
-                            <td><a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-sm">View</a></td>
                             <td style="text-align: right;">
                                 <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 5px 14px; font-weight: 600;">View</a>
                             </td>
@@ -232,16 +199,6 @@
                             <div class="analytics-empty order-empty"><strong>No orders found</strong><span>Try changing or resetting your filters.</span></div>
                         </td>
                     </tr>@endforelse
-                    @empty
-                        <tr>
-                            <td colspan="10" style="padding: 40px 20px; text-align: center;">
-                                <div class="analytics-empty order-empty">
-                                    <strong style="font-size: 1rem; color: var(--a-text); display: block; margin-bottom: 4px;">No orders found</strong>
-                                    <span style="font-size: 0.82rem; color: var(--a-text-muted);">Try changing or resetting your active search or filters.</span>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -254,37 +211,6 @@
                         @if($orders->hasMorePages())<a href="{{ $orders->nextPageUrl() }}">Next</a>@else<span
                 class="disabled">Next</span>@endif</nav>@endif
         
-        <div class="publisher-table-footer" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--a-border); flex-wrap: wrap; gap: 12px;">
-            <span style="font-size: 0.82rem; color: var(--a-text-muted);">
-                Showing <strong>{{ $orders->firstItem() ?? 0 }}</strong> to <strong>{{ $orders->lastItem() ?? 0 }}</strong> of <strong>{{ $orders->total() }}</strong> orders
-            </span>
-            @if($orders->hasPages())
-                <div class="order-pagination" style="display: flex; gap: 6px; align-items: center;">
-                    {{-- Previous Page Link --}}
-                    @if ($orders->onFirstPage())
-                        <span class="btn btn-outline btn-sm disabled" style="opacity: 0.5; pointer-events: none; padding: 4px 12px; font-size: 0.8rem;">&laquo; Prev</span>
-                    @else
-                        <a href="{{ $orders->previousPageUrl() }}" class="btn btn-outline btn-sm" style="padding: 4px 12px; font-size: 0.8rem;">&laquo; Prev</a>
-                    @endif
-
-                    {{-- Pagination Elements --}}
-                    @foreach ($orders->getUrlRange(max(1, $orders->currentPage() - 2), min($orders->lastPage(), $orders->currentPage() + 2)) as $page => $url)
-                        @if ($page == $orders->currentPage())
-                            <span class="btn btn-primary btn-sm" style="font-weight: 700; padding: 4px 12px; font-size: 0.8rem;">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="btn btn-outline btn-sm" style="padding: 4px 12px; font-size: 0.8rem;">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    {{-- Next Page Link --}}
-                    @if ($orders->hasMorePages())
-                        <a href="{{ $orders->nextPageUrl() }}" class="btn btn-outline btn-sm" style="padding: 4px 12px; font-size: 0.8rem;">Next &raquo;</a>
-                    @else
-                        <span class="btn btn-outline btn-sm disabled" style="opacity: 0.5; pointer-events: none; padding: 4px 12px; font-size: 0.8rem;">Next &raquo;</span>
-                    @endif
-                </div>
-            @endif
-        </div>
     </div>
     <script>(() => { const root = document.querySelector('[data-order-table]'), rows = [...root.querySelectorAll('[data-export-row]')], all = root.querySelector('[data-select-all]'), count = root.querySelector('[data-selection-count]'); const selected = () => rows.filter(r => r.querySelector('[data-row-select]').checked), update = () => { const n = selected().length; count.textContent = `${n} selected`; if (all) { all.checked = n === rows.length && n > 0; all.indeterminate = n > 0 && n < rows.length } }; all?.addEventListener('change', () => { rows.forEach(r => r.querySelector('[data-row-select]').checked = all.checked); update() }); rows.forEach(r => r.querySelector('[data-row-select]').addEventListener('change', update)); const ids = () => selected().map(r => r.dataset.id).join(','); root.querySelector('[data-copy]')?.addEventListener('click', async e => { const chosen = selected().length ? selected() : rows, text = chosen.map(r => [...r.querySelectorAll('[data-cell]')].map(c => c.textContent.trim()).join('\t')).join('\n'); await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1200) }); root.querySelectorAll('[data-export]').forEach(b => b.addEventListener('click', () => { const url = new URL(root.dataset.exportBase.replace(/csv$/, b.dataset.export), location.origin), params = new URLSearchParams(location.search); params.delete('page'); if (ids()) params.set('ids', ids()); url.search = params; b.dataset.export === 'print' || b.dataset.export === 'pdf' ? window.open(url, '_blank') : location.href = url })); })();</script>
 @endsection

@@ -45,6 +45,13 @@
                             </svg>
                         </span>
                     </button>
+                    @if(auth()->user()?->isPublisher())
+                        @php($unreadNotifications = auth()->user()->unreadNotifications()->count())
+                        <a href="{{ route('publisher.notifications.index') }}" class="topbar-notification" aria-label="Notifications">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+                            @if($unreadNotifications)<span>{{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}</span>@endif
+                        </a>
+                    @endif
                     <a href="{{ route('home') }}" target="_blank" class="btn btn-outline btn-sm">View Site &#8599;</a>
                     @php($profileRoute = auth()->user()?->isAdmin() ? route('admin.profile.edit') : route('publisher.profile.edit'))
                     <a href="{{ $profileRoute }}" class="user-chip">

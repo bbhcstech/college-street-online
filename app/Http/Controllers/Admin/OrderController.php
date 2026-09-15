@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\SiteSetting;
 use App\Services\InventoryService;
+use App\Services\PublisherSettlementService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -125,6 +126,8 @@ class OrderController extends Controller
             }
 
             $order->transitionTo($data['status'], auth()->id());
+            if (in_array($data['status'], ['delivered', 'completed'], true)) app(PublisherSettlementService::class)->scheduleRelease($order);
+            if (in_array($data['status'], ['cancelled', 'returned'], true)) app(PublisherSettlementService::class)->recordReversal($order, ucfirst($data['status']).' order #CSO'.$order->id);
         });
 
         return back()->with('success', 'Order status updated successfully.');
@@ -148,14 +151,10 @@ class OrderController extends Controller
 
         if ($data['decision'] === 'verified') {
             $commissionRate = (float) (SiteSetting::where('key', 'publisher_commission_rate')->value('value') ?? 0);
-            foreach ($payment->order->items as $item) {
-                $gross = $item->quantity * ($item->base_unit_price ?? $item->unit_price);
-                $item->update([
-                    'publisher_commission_rate' => $commissionRate,
-                    'publisher_commission_amount' => round($gross * $commissionRate / 100, 2),
-                ]);
-            }
+            app(PublisherSettlementService::class)->recordVerifiedOrder($payment->order, $commissionRate);
             $payment->order->transitionTo('confirmed', auth()->id());
+        } elseif ($payment->order) {
+            app(PublisherSettlementService::class)->recordReversal($payment->order, 'Payment rejected for order #CSO'.$payment->order_id);
         }
 
         return back()->with('success', 'Payment status updated to ' . $data['decision'] . '.');

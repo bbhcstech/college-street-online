@@ -53,7 +53,7 @@
 @php
     $isPaymentQuery = request()->filled('payment');
     $isOrdersActive = (in_array($active, ['orders', 'bulk-orders']) || request()->routeIs('admin.orders.*')) && !$isPaymentQuery;
-    $isPaymentsActive = $active === 'payment-settings' || request()->routeIs('admin.payment-settings.*') || $isPaymentQuery;
+    $isPaymentsActive = $active === 'payment-settings' || request()->routeIs('admin.payment-settings.*', 'admin.payouts.*') || $isPaymentQuery;
 @endphp
 <div class="nav-group {{ $isOrdersActive ? 'has-active' : '' }}">
     <a href="{{ route('admin.orders.index') }}" class="nav-link {{ $isOrdersActive ? 'active' : '' }}">
@@ -77,6 +77,7 @@
     <div class="nav-sub-items">
         <a href="{{ route('admin.orders.index', ['payment' => 'pending']) }}" class="nav-sub-link {{ request('payment') === 'pending' ? 'active' : '' }}">Payment Verification</a>
         <a href="{{ route('admin.orders.index', ['payment' => 'verified']) }}" class="nav-sub-link {{ request('payment') === 'verified' ? 'active' : '' }}">Transactions</a>
+        <a href="{{ route('admin.payouts.index') }}" class="nav-sub-link {{ request()->routeIs('admin.payouts.*') ? 'active' : '' }}">Publisher Payouts</a>
         <a href="{{ route('admin.payment-settings.edit') }}" class="nav-sub-link {{ $active === 'payment-settings' || request()->routeIs('admin.payment-settings.*') ? 'active' : '' }}">Payment Settings</a>
     </div>
 </div>

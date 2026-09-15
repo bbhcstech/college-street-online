@@ -159,9 +159,27 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
     .publisher-order-table th:nth-child(8) { width:78px }
     .publisher-order-table th:nth-child(9) { width:94px }
     .publisher-order-table th:nth-child(10) { width:94px }
+    .publisher-order-table th:nth-child(3) { width:90px }
+    .publisher-order-table th:nth-child(4) { width:124px }
+    .publisher-order-table th:nth-child(5) { width:200px }
     .publisher-order-table tbody tr:nth-child(even) { background:#fbfcfe }
     .publisher-order-table td:last-child .btn { width:100%; padding:7px 8px; line-height:1.2 }
     .publisher-export-bar { padding-top:10px; padding-bottom:10px }
+
+    .publisher-table-card { overflow:hidden; border-radius:14px; box-shadow:0 5px 18px rgba(20,45,70,.05) }
+    .publisher-order-toolbar { background:#fbfcfe; gap:9px }
+    .publisher-order-toolbar .a-input,.publisher-order-toolbar .a-select,.publisher-order-toolbar .publisher-search { height:38px; border-radius:9px; background:#fff }
+    .publisher-order-toolbar .btn { min-height:38px; border-radius:9px }
+    .publisher-export-bar { background:#f1f5fa; border-top:1px solid #e0e7f0 }
+    .publisher-export-buttons { gap:6px }
+    .publisher-export-buttons .btn { min-width:52px; border-radius:8px }
+    .publisher-order-table thead th { background:#f8fafc; color:#425572; letter-spacing:.055em; border-bottom:1px solid #dbe4ee }
+    .publisher-order-table tbody td { height:58px; border-bottom-color:#e5ebf2 }
+    .publisher-order-table tbody td:nth-child(2) strong { color:var(--a-primary); font-size:.8rem }
+    .publisher-order-table .a-muted { display:inline-flex; align-items:center; padding:5px 9px; border-radius:99px; background:#f1f4f8; color:#718096; font-size:.66rem; font-weight:700; white-space:nowrap }
+    .publisher-order-table .badge,.publisher-order-table .fulfillment-badge,.publisher-order-table .order-payment { white-space:nowrap }
+    .publisher-order-table th:nth-child(3),.publisher-order-table td:nth-child(3) { width:110px; white-space:nowrap }
+    .publisher-order-table th:nth-child(5),.publisher-order-table td:nth-child(5) { width:180px }
 
     .fulfillment-badge {
         display: inline-flex;
@@ -296,9 +314,9 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                 <tr>
                     <th><input type="checkbox" data-select-all></th>
                     <th>Order</th>
+                    <th>Order date</th>
                     <th>Customer</th>
                     <th>Book</th>
-                    <th>Date</th>
                     <th>Qty</th>
                     <th>Gross</th>
                     <th>Payment</th>
@@ -314,12 +332,12 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                 <tr data-export-row data-id="{{ $item->id }}">
                     <td><input type="checkbox" data-row-select></td>
                     <td><strong data-cell>#CSO{{ $item->order_id }}</strong></td>
-                    <td><strong data-cell>{{ $item->order->customer?->name ?? '—' }}</strong><small
-                            data-cell>{{ $item->order->customer?->email }}</small></td>
-                    <td><strong data-cell>{{ $item->book?->title ?? 'Book unavailable' }}</strong></td>
                     <td data-cell>
                         {{ $item->order->created_at->format('d M Y') }}<small>{{ $item->order->created_at->format('h:i A') }}</small>
                     </td>
+                    <td><strong data-cell>{{ $item->order->customer?->name ?? '—' }}</strong><small
+                            data-cell>{{ $item->order->customer?->email }}</small></td>
+                    <td><strong data-cell>{{ $item->book?->title ?? 'Book unavailable' }}</strong></td>
                     <td data-cell>{{ $item->quantity }}</td>
                     <td data-cell>₹{{ number_format($item->quantity * $price, 2) }}</td>
                     <td><span class="order-payment payment-{{ $item->order->payment?->verified_status ?? 'none' }}"
