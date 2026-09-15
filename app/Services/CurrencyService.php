@@ -11,7 +11,10 @@ class CurrencyService
 {
     public function getSelectedCountry(): Country
     {
-        $code = session()->get('customer_country', 'IN');
+        $code = (auth()->check() && auth()->user()->country_code)
+            ? auth()->user()->country_code
+            : session()->get('customer_country', 'IN');
+
         $country = Country::where('code', $code)->where('is_active', true)->first();
 
         if (! $country) {
@@ -26,6 +29,13 @@ class CurrencyService
 
     public function getSelectedCurrency(): Currency
     {
+        if (auth()->check() && auth()->user()->preferred_currency) {
+            $currency = Currency::where('code', auth()->user()->preferred_currency)->where('is_active', true)->first();
+            if ($currency) {
+                return $currency;
+            }
+        }
+
         $country = $this->getSelectedCountry();
         $currency = Currency::where('code', $country->currency_code)->first();
 

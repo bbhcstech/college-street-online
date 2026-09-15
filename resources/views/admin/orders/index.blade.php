@@ -39,32 +39,38 @@
             <span>Total orders<small>All orders</small></span>
             <strong>{{ $totalOrders }}</strong>
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'pending_payment']) }}" class="summary-card pending {{ request('status') === 'pending_payment' ? 'active' : '' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'pending_payment']) }}"
+            class="summary-card pending {{ request('status') === 'pending_payment' ? 'active' : '' }}">
             <i class="icon-pending">!</i>
             <span>Pending<small>Needs payment</small></span>
             <strong>{{ $pendingOrders }}</strong>
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="summary-card processing {{ request('status') === 'processing' ? 'active' : '' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}"
+            class="summary-card processing {{ request('status') === 'processing' ? 'active' : '' }}">
             <i class="icon-processing">⚙</i>
             <span>Processing<small>In fulfillment</small></span>
             <strong>{{ $processingOrders }}</strong>
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'shipped']) }}" class="summary-card shipped {{ request('status') === 'shipped' ? 'active' : '' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'shipped']) }}"
+            class="summary-card shipped {{ request('status') === 'shipped' ? 'active' : '' }}">
             <i class="icon-shipped">🚚</i>
             <span>Shipped<small>In transit</small></span>
             <strong>{{ $shippedOrders }}</strong>
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="summary-card delivered {{ request('status') === 'delivered' ? 'active' : '' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}"
+            class="summary-card delivered {{ request('status') === 'delivered' ? 'active' : '' }}">
             <i class="icon-delivered">✓</i>
             <span>Delivered<small>Fulfilled</small></span>
             <strong>{{ $deliveredOrders }}</strong>
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="summary-card cancelled {{ request('status') === 'cancelled' ? 'active' : '' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}"
+            class="summary-card cancelled {{ request('status') === 'cancelled' ? 'active' : '' }}">
             <i class="icon-cancelled">✕</i>
             <span>Cancelled<small>Voided</small></span>
             <strong>{{ $cancelledOrders }}</strong>
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'return_requested']) }}" class="summary-card returned {{ in_array(request('status'), ['return_requested', 'returned']) ? 'active' : '' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'return_requested']) }}"
+            class="summary-card returned {{ in_array(request('status'), ['return_requested', 'returned']) ? 'active' : '' }}">
             <i class="icon-returned">↩</i>
             <span>Return / Refund<small>Requests &amp; returns</small></span>
             <strong>{{ $returnedOrders }}</strong>
@@ -111,10 +117,14 @@
             <details class="order-filter-more" @if(request()->only(['date_from', 'date_to', 'min_price', 'max_price', 'per_page']) !== []) open @endif>
                 <summary>More filters <span>Date range, price range &amp; entries</span></summary>
                 <div class="order-filter-options">
-                    <label><span>Date From</span><input type="date" name="date_from" value="{{ request('date_from') }}" class="a-input"></label>
-                    <label><span>Date To</span><input type="date" name="date_to" value="{{ request('date_to') }}" class="a-input"></label>
-                    <label><span>Min Price (₹)</span><input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min ₹" class="a-input" step="0.01"></label>
-                    <label><span>Max Price (₹)</span><input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max ₹" class="a-input" step="0.01"></label>
+                    <label><span>Date From</span><input type="date" name="date_from" value="{{ request('date_from') }}"
+                            class="a-input"></label>
+                    <label><span>Date To</span><input type="date" name="date_to" value="{{ request('date_to') }}"
+                            class="a-input"></label>
+                    <label><span>Min Price (₹)</span><input type="number" name="min_price"
+                            value="{{ request('min_price') }}" placeholder="Min ₹" class="a-input" step="0.01"></label>
+                    <label><span>Max Price (₹)</span><input type="number" name="max_price"
+                            value="{{ request('max_price') }}" placeholder="Max ₹" class="a-input" step="0.01"></label>
                     <label><span>Page Size</span>
                         <select name="per_page" class="a-select">
                             <option value="10" @selected($orders->perPage() === 10)>10 entries</option>
@@ -129,18 +139,19 @@
         <div class="publisher-export-bar">
             <div><strong data-selection-count>0 selected</strong><span>Exports use selected rows, or all filtered orders
                     when none are selected.</span></div>
-            <div class="publisher-export-buttons"><span class="order-export-label">Export</span><button type="button" class="btn btn-outline btn-sm"
-                    data-copy>Copy</button><button type="button" class="btn btn-outline btn-sm"
-                    data-export="excel">Excel</button><button type="button" class="btn btn-outline btn-sm"
-                    data-export="pdf">PDF</button><button type="button" class="btn btn-outline btn-sm"
-                    data-export="print">Print</button><button type="button" class="btn btn-outline btn-sm"
-                    data-export="csv">CSV</button></div>
+            <div class="publisher-export-buttons"><span class="order-export-label">Export</span><button type="button"
+                    class="btn btn-outline btn-sm" data-copy>Copy</button><button type="button"
+                    class="btn btn-outline btn-sm" data-export="excel">Excel</button><button type="button"
+                    class="btn btn-outline btn-sm" data-export="pdf">PDF</button><button type="button"
+                    class="btn btn-outline btn-sm" data-export="print">Print</button><button type="button"
+                    class="btn btn-outline btn-sm" data-export="csv">CSV</button></div>
         </div>
         <div class="publisher-table-scroll">
             <table class="a-table order-data-table">
                 <thead>
                     <tr>
-                        <th style="width: 40px; text-align: center;"><input type="checkbox" data-select-all aria-label="Select all orders"></th>
+                        <th style="width: 40px; text-align: center;"><input type="checkbox" data-select-all
+                                aria-label="Select all orders"></th>
                         <th>Order ID</th>
                         <th>Date &amp; Time</th>
                         <th>Customer</th>
@@ -155,48 +166,66 @@
                 <tbody>
                     @forelse($orders as $order)
                         <tr data-export-row data-id="{{ $order->id }}">
-                            <td style="text-align: center;"><input type="checkbox" data-row-select aria-label="Select order CSO{{ $order->id }}"></td>
-                            <td><strong data-cell style="font-size: 0.9rem; color: var(--a-primary);">#CSO{{ $order->id }}</strong></td>
+                            <td style="text-align: center;"><input type="checkbox" data-row-select
+                                    aria-label="Select order CSO{{ $order->id }}"></td>
+                            <td><strong data-cell
+                                    style="font-size: 0.9rem; color: var(--a-primary);">#CSO{{ $order->id }}</strong></td>
                             <td data-cell>
-                                <span style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--a-text);">{{ $order->created_at->format('d M Y') }}</span>
-                                <small style="display: block; font-size: 0.72rem; color: var(--a-text-muted); margin-top: 2px;">{{ $order->created_at->format('h:i A') }}</small>
+                                <span
+                                    style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--a-text);">{{ $order->created_at->format('d M Y') }}</span>
+                                <small
+                                    style="display: block; font-size: 0.72rem; color: var(--a-text-muted); margin-top: 2px;">{{ $order->created_at->format('h:i A') }}</small>
                             </td>
                             <td>
-                                <strong data-cell style="display: block; font-size: 0.88rem; color: var(--a-text);">{{ $order->customer?->name ?? '—' }}</strong>
-                                <small data-cell style="display: block; font-size: 0.76rem; color: var(--a-text-muted); margin-top: 2px;">{{ $order->customer?->email ?? '—' }}</small>
+                                <strong data-cell
+                                    style="display: block; font-size: 0.88rem; color: var(--a-text);">{{ $order->customer?->name ?? '—' }}</strong>
+                                <small data-cell
+                                    style="display: block; font-size: 0.76rem; color: var(--a-text-muted); margin-top: 2px;">{{ $order->customer?->email ?? '—' }}</small>
                             </td>
                             <td><span class="order-payment payment-{{ $order->payment?->verified_status ?? 'none' }}"
                                     data-cell>{{ ucfirst($order->payment?->verified_status ?? 'No payment') }}</span></td>
                             <td data-cell>
-                                <span class="badge badge-outline" style="font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;">{{ $order->country ?: 'India' }}</span>
+                                <span class="badge badge-outline"
+                                    style="font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;">{{ $order->country ?: 'India' }}</span>
                             </td>
                             <td data-cell>
-                                <span style="font-size: 0.88rem; font-weight: 700; color: var(--a-text);">{{ $order->items_count ?? 0 }}</span> <small style="font-size: 0.75rem; color: var(--a-text-muted);">items</small>
+                                <span
+                                    style="font-size: 0.88rem; font-weight: 700; color: var(--a-text);">{{ $order->items_count ?? 0 }}</span>
+                                <small style="font-size: 0.75rem; color: var(--a-text-muted);">items</small>
                             </td>
                             <td>
-                                <strong data-cell style="display: block; font-size: 0.92rem; color: var(--a-primary);">{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</strong>
-                                <small style="display: block; font-size: 0.68rem; color: var(--a-text-muted); font-weight: 700; text-transform: uppercase;">{{ $order->currency }}</small>
+                                <strong data-cell
+                                    style="display: block; font-size: 0.92rem; color: var(--a-primary);">{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</strong>
+                                <small
+                                    style="display: block; font-size: 0.68rem; color: var(--a-text-muted); font-weight: 700; text-transform: uppercase;">{{ $order->currency }}</small>
                             </td>
                             <td>
-                                <span class="order-payment payment-{{ $order->payment?->verified_status ?? 'none' }}" data-cell style="display: inline-block; padding: 4px 10px; border-radius: 99px; font-weight: 700; font-size: 0.74rem;">
+                                <span class="order-payment payment-{{ $order->payment?->verified_status ?? 'none' }}" data-cell
+                                    style="display: inline-block; padding: 4px 10px; border-radius: 99px; font-weight: 700; font-size: 0.74rem;">
                                     {{ ucfirst($order->payment?->verified_status ?? 'No payment') }}
                                 </span>
                             </td>
                             <td>
                                 <form method="POST" action="{{ route('admin.orders.status', $order) }}">
                                     @csrf @method('PATCH')
-                                    <select name="status" class="order-status-select status-{{ $order->status }}" data-current="{{ $order->status }}" onchange="if(confirm('Change this order status?'))this.form.submit();else this.value=this.dataset.current">
+                                    <select name="status" class="order-status-select status-{{ $order->status }}"
+                                        data-current="{{ $order->status }}"
+                                        onchange="if(confirm('Change this order status?'))this.form.submit();else this.value=this.dataset.current">
                                         @foreach($statuses as $status)
                                             <option value="{{ $status }}" @selected($order->status === $status)>
-                                        {{ ucfirst(str_replace('_', ' ', $status)) }}</option>@endforeach
-                                    </select></form>
+                                                {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                        </option>@endforeach
+                                    </select>
+                                </form>
                             <td style="text-align: right;">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 5px 14px; font-weight: 600;">View</a>
+                                <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-sm"
+                                    style="font-size: 0.8rem; padding: 5px 14px; font-weight: 600;">View</a>
                             </td>
                         </tr>
                     @empty<tr>
                         <td colspan="10">
-                            <div class="analytics-empty order-empty"><strong>No orders found</strong><span>Try changing or resetting your filters.</span></div>
+                            <div class="analytics-empty order-empty"><strong>No orders found</strong><span>Try changing or
+                                    resetting your filters.</span></div>
                         </td>
                     </tr>@endforelse
                 </tbody>
@@ -209,8 +238,9 @@
                         @foreach(range(1, $orders->lastPage()) as $page)<a href="{{ $orders->url($page) }}"
                         class="{{ $orders->currentPage() === $page ? 'active' : '' }}">{{ $page }}</a>@endforeach
                         @if($orders->hasMorePages())<a href="{{ $orders->nextPageUrl() }}">Next</a>@else<span
-                class="disabled">Next</span>@endif</nav>@endif
-        
-    </div>
-    <script>(() => { const root = document.querySelector('[data-order-table]'), rows = [...root.querySelectorAll('[data-export-row]')], all = root.querySelector('[data-select-all]'), count = root.querySelector('[data-selection-count]'); const selected = () => rows.filter(r => r.querySelector('[data-row-select]').checked), update = () => { const n = selected().length; count.textContent = `${n} selected`; if (all) { all.checked = n === rows.length && n > 0; all.indeterminate = n > 0 && n < rows.length } }; all?.addEventListener('change', () => { rows.forEach(r => r.querySelector('[data-row-select]').checked = all.checked); update() }); rows.forEach(r => r.querySelector('[data-row-select]').addEventListener('change', update)); const ids = () => selected().map(r => r.dataset.id).join(','); root.querySelector('[data-copy]')?.addEventListener('click', async e => { const chosen = selected().length ? selected() : rows, text = chosen.map(r => [...r.querySelectorAll('[data-cell]')].map(c => c.textContent.trim()).join('\t')).join('\n'); await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1200) }); root.querySelectorAll('[data-export]').forEach(b => b.addEventListener('click', () => { const url = new URL(root.dataset.exportBase.replace(/csv$/, b.dataset.export), location.origin), params = new URLSearchParams(location.search); params.delete('page'); if (ids()) params.set('ids', ids()); url.search = params; b.dataset.export === 'print' || b.dataset.export === 'pdf' ? window.open(url, '_blank') : location.href = url })); })();</script>
-@endsection
+                        class="disabled">Next</span>@endif
+                </nav>@endif
+
+        </div>
+        <script>(() => { const root = document.querySelector('[data-order-table]'), rows = [...root.querySelectorAll('[data-export-row]')], all = root.querySelector('[data-select-all]'), count = root.querySelector('[data-selection-count]'); const selected = () => rows.filter(r => r.querySelector('[data-row-select]').checked), update = () => { const n = selected().length; count.textContent = `${n} selected`; if (all) { all.checked = n === rows.length && n > 0; all.indeterminate = n > 0 && n < rows.length } }; all?.addEventListener('change', () => { rows.forEach(r => r.querySelector('[data-row-select]').checked = all.checked); update() }); rows.forEach(r => r.querySelector('[data-row-select]').addEventListener('change', update)); const ids = () => selected().map(r => r.dataset.id).join(','); root.querySelector('[data-copy]')?.addEventListener('click', async e => { const chosen = selected().length ? selected() : rows, text = chosen.map(r => [...r.querySelectorAll('[data-cell]')].map(c => c.textContent.trim()).join('\t')).join('\n'); await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1200) }); root.querySelectorAll('[data-export]').forEach(b => b.addEventListener('click', () => { const url = new URL(root.dataset.exportBase.replace(/csv$/, b.dataset.export), location.origin), params = new URLSearchParams(location.search); params.delete('page'); if (ids()) params.set('ids', ids()); url.search = params; b.dataset.export === 'print' || b.dataset.export === 'pdf' ? window.open(url, '_blank') : location.href = url })); })();</script>
+@endsection 

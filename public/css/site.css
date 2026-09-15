@@ -4302,6 +4302,9 @@ html.dark .status-step.current .dot {
     border-radius: 8px;
 }
 
+/* Refined public catalogue cards */
+.book-card{border-radius:16px;overflow:hidden;border-color:color-mix(in srgb,var(--brand-primary) 12%,var(--border));box-shadow:0 8px 24px rgba(17,51,80,.07);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.book-card:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--brand-primary) 35%,var(--border));box-shadow:0 18px 38px rgba(17,51,80,.14)}.book-card>a:first-child{display:block;overflow:hidden;background:linear-gradient(145deg,#edf3f8,#f8fafc)}.book-card .book-cover{aspect-ratio:4/5}.book-card .book-cover-image{transition:transform .28s ease}.book-card:hover .book-cover-image{transform:scale(1.025)}.book-card-body{padding:14px 15px 15px;gap:5px}.book-card-meta{min-height:21px;margin-bottom:1px}.book-card-meta .badge-tag-outline{padding:3px 8px;background:var(--surface-alt);font-size:.63rem}.book-card .discount-badge{padding:3px 7px;border-radius:999px;background:rgba(31,157,108,.11);font-size:.65rem}.book-card-body .title{min-height:2.55em;font-size:.9rem;line-height:1.28}.book-card-body .author{font-size:.72rem}.book-card-body .price-row{margin-top:3px;gap:7px}.book-card-body .price{font-size:1.12rem}.book-card .stock-pill{margin-top:1px;padding:3px 8px}.book-card-action{margin-top:auto;padding-top:10px;border-top:1px solid var(--border);transition:color .18s ease}.book-card-action span{transition:transform .18s ease}.book-card:hover .book-card-action span{transform:translateX(3px)}
+
 /* Customer Coupons & Offers Bar */
 .customer-coupons-bar {
     padding: 20px 0 28px;

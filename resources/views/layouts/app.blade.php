@@ -40,6 +40,7 @@
         @yield('content')
     </main>
     @include('partials.footer')
+    @include('partials.guest-country-modal')
     <script src="{{ asset('js/site.js') }}"></script>
 </body>
 

@@ -12,7 +12,12 @@ class CustomerAuthController extends Controller
 {
     public function showLogin() { return view('pages.account-login'); }
 
-    public function showRegister() { return view('pages.account-register'); }
+    public function showRegister()
+    {
+        $countries = \App\Models\Country::where('is_active', true)->orderBy('name')->get();
+        $currencies = \App\Models\Currency::where('is_active', true)->orderBy('code')->get();
+        return view('pages.account-register', compact('countries', 'currencies'));
+    }
 
     public function login(Request $request)
     {
@@ -21,9 +26,18 @@ class CustomerAuthController extends Controller
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return back()->withErrors(['email' => 'Too many attempts. Try again later.']);
         }
-        if (Auth::attempt($creds + ['role' => 'customer']) ) {
+        if (Auth::attempt($creds + ['role' => 'customer'])) {
             $request->session()->regenerate(); // prevent session fixation, per FR-1
             RateLimiter::clear($key);
+
+            $user = Auth::user();
+            if ($user->country_code) {
+                session(['customer_country' => $user->country_code]);
+            }
+            if ($user->preferred_currency) {
+                session(['customer_currency' => $user->preferred_currency]);
+            }
+
             return redirect()->intended(route('home'));
         }
         RateLimiter::hit($key, 300);
@@ -35,11 +49,36 @@ class CustomerAuthController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:150',
             'email' => 'required|email|unique:users,email',
+            'country_code' => 'required|string|exists:countries,code',
+            'phone_code' => 'nullable|string|max:10',
+            'phone_number' => 'nullable|string|max:30',
+            'preferred_currency' => 'nullable|string|exists:currencies,code',
             'password' => 'required|string|min:8',
         ]);
-        $user = User::create($data + ['password' => Hash::make($data['password']), 'role' => 'customer']);
+
+        $country = \App\Models\Country::where('code', $data['country_code'])->first();
+        $currencyCode = $data['preferred_currency'] ?? ($country?->currency_code ?? 'INR');
+
+        $user = User::create([
+            'name' => trim($data['name']),
+            'email' => strtolower(trim($data['email'])),
+            'country_code' => $data['country_code'],
+            'phone_code' => $data['phone_code'] ?? null,
+            'phone_number' => $data['phone_number'] ?? null,
+            'preferred_currency' => $currencyCode,
+            'marketing_consent' => $request->boolean('marketing_consent'),
+            'password' => Hash::make($data['password']),
+            'role' => 'customer',
+        ]);
+
         Auth::login($user);
         $request->session()->regenerate();
+
+        session([
+            'customer_country' => $user->country_code,
+            'customer_currency' => $user->preferred_currency,
+        ]);
+
         return redirect()->route('home');
     }
 

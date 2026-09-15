@@ -8,9 +8,6 @@
         default => route('account.profile'),
     };
     $searchCategories = \App\Models\Category::orderBy('name')->get(['name', 'slug']);
-    $headerCountries = \App\Models\Country::where('is_active', true)->orderBy('name')->get();
-    $currentCountryCode = session('customer_country', 'IN');
-    $currentCountry = $headerCountries->firstWhere('code', $currentCountryCode) ?? $headerCountries->first();
 @endphp
 <header class="site-header">
     <div class="container header-inner">
@@ -66,18 +63,6 @@
             <div class="search-suggestions" data-search-suggestions hidden></div>
         </form>
         <div class="header-actions">
-            @if($headerCountries->isNotEmpty())
-                <form method="POST" action="{{ route('country.switch') }}" style="display:inline-block;">
-                    @csrf
-                    <select name="country" onchange="this.form.submit()" aria-label="Select Country & Currency" style="padding:6px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-primary);font-size:0.8rem;font-weight:600;cursor:pointer;">
-                        @foreach($headerCountries as $cnt)
-                            <option value="{{ $cnt->code }}" @selected($cnt->code === $currentCountry?->code)>
-                                {{ $cnt->name }} ({{ $cnt->symbol }} {{ $cnt->currency_code }})
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
-            @endif
             @auth
                 @if(auth()->user()->isCustomer())
                     <button type="button" class="btn auth-portal-button customer-profile-trigger" data-customer-sidebar-toggle aria-label="Open Profile Menu">

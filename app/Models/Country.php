@@ -15,6 +15,11 @@ class Country extends Model
         'per_kg_shipping_fee',
         'per_item_shipping_fee',
         'free_shipping_threshold',
+        'tax_rate',
+        'is_tax_inclusive',
+        'min_order_value',
+        'payment_methods',
+        'estimated_delivery_days',
         'is_active',
     ];
 
@@ -23,6 +28,10 @@ class Country extends Model
         'base_shipping_fee' => 'float',
         'per_kg_shipping_fee' => 'float',
         'free_shipping_threshold' => 'float',
+        'tax_rate' => 'float',
+        'is_tax_inclusive' => 'boolean',
+        'min_order_value' => 'float',
+        'payment_methods' => 'array',
         'is_active' => 'boolean',
     ];
 

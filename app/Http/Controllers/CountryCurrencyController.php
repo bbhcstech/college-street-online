@@ -17,6 +17,14 @@ class CountryCurrencyController extends Controller
 
         session()->put('customer_country', $country->code);
         session()->put('customer_currency', $country->currency_code);
+        session()->put('country_confirmed', true);
+
+        if (auth()->check()) {
+            auth()->user()->update([
+                'country_code' => $country->code,
+                'preferred_currency' => $country->currency_code,
+            ]);
+        }
 
         return back()->with('success', "Switched region to {$country->name} ({$country->currency_code}).");
     }
