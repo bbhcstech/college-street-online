@@ -801,3 +801,129 @@ html.dark .tabs a.active, html.dark .tabs a:hover { color: var(--a-gold-light); 
 .publisher-analytics-filter{display:flex;gap:7px;align-items:center}.publisher-analytics-filter .a-input{width:135px}.analytics-metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}.analytics-metric-grid-3{grid-template-columns:repeat(3,1fr)}.analytics-metric-grid>div{padding:14px;border:1px solid var(--a-border);border-radius:10px;background:var(--a-surface-alt)}.analytics-metric-grid span,.analytics-metric-grid strong{display:block}.analytics-metric-grid span{color:var(--a-text-muted);font-size:.68rem}.analytics-metric-grid strong{font-size:1.2rem;margin-top:4px}.analytics-inventory-bars{height:120px;display:flex;align-items:flex-end;justify-content:center;gap:24px;margin-top:18px}.analytics-inventory-bars i{position:relative;width:42px;height:var(--value);min-height:5px;border-radius:7px 7px 0 0;background:#2684be}.analytics-inventory-bars i.warning{background:#eda13a}.analytics-inventory-bars i.danger{background:#d64545}.analytics-inventory-bars span{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);font-style:normal;font-size:.63rem;color:var(--a-text-muted)}.publisher-report-links{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:18px}.publisher-report-links .btn{text-align:left}@media(max-width:800px){.publisher-analytics-filter{width:100%;flex-wrap:wrap}.analytics-metric-grid-3{grid-template-columns:1fr}}
 .publisher-sales-line{width:100%;height:250px;min-width:520px;overflow:visible}.publisher-sales-line .axis{stroke:var(--a-border);stroke-width:1}.publisher-sales-line polyline{fill:none;stroke-linecap:round;stroke-linejoin:round}.publisher-sales-line .revenue-line{stroke:#eda13a;stroke-width:3}.publisher-sales-line .units-line{stroke:#173f63;stroke-width:2.5;stroke-dasharray:6 4}.publisher-sales-line .revenue-dot{fill:#eda13a;stroke:#fff;stroke-width:2}.publisher-sales-line text{fill:var(--a-text-muted);font:10px var(--font-body)}
 .publisher-sales-line .grid-line{stroke:var(--a-border);stroke-width:1;stroke-dasharray:4 5;opacity:.7}.publisher-sales-line .revenue-area{fill:url(#publisherRevenueFill)}.publisher-sales-line .units-dot{fill:#173f63;stroke:#fff;stroke-width:2}.publisher-sales-line .single-guide{stroke:#cbd6e2;stroke-width:1;stroke-dasharray:4 5}.publisher-sales-line .value-label{fill:var(--a-text);font-weight:800;font-size:11px}.publisher-sales-line circle{transition:r .15s ease}.publisher-sales-line circle:hover{r:7px}
+
+
+/* ---------------- Dark Mode Theme Styles for Admin Panel & Dashboards ---------------- */
+html.dark {
+  --a-bg: #0f172a;
+  --a-surface: #1e293b;
+  --a-surface-alt: #0f172a;
+  --a-border: rgba(255, 255, 255, 0.12);
+  --a-text: #f8fafc;
+  --a-text-secondary: #cbd5e1;
+  --a-text-muted: #94a3b8;
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+html.dark .admin-main {
+  background-color: #0f172a !important;
+}
+
+html.dark .admin-topbar {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .admin-topbar h1,
+html.dark .crumb,
+html.dark .user-chip .meta strong {
+  color: #f8fafc !important;
+}
+
+html.dark .a-card,
+html.dark .card,
+html.dark .coupon-create-card,
+html.dark .coupon-list-card,
+html.dark .coupon-request-review,
+html.dark .inventory-table-wrap,
+html.dark .inventory-data-toolbar,
+html.dark .publisher-inventory-summary > div,
+html.dark .dataTables_wrapper,
+html.dark .dt-container,
+html.dark div[style*="background:#ffffff"],
+html.dark div[style*="background: #ffffff"],
+html.dark div[style*="background: #fff"],
+html.dark article[style*="background:#ffffff"] {
+  background: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+}
+
+html.dark .a-table,
+html.dark table {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .a-table thead tr,
+html.dark table thead tr,
+html.dark tr[style*="background:#f8fafc"],
+html.dark .inventory-data-table thead th {
+  background: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .a-table th,
+html.dark table th {
+  color: #94a3b8 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .a-table td,
+html.dark table td,
+html.dark tr[style*="border-bottom:1px solid #f1f5f9"] {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .a-input,
+html.dark .a-select,
+html.dark .a-textarea,
+html.dark input.form-control,
+html.dark select.form-control,
+html.dark input.a-input,
+html.dark select.a-select,
+html.dark input[type="text"],
+html.dark input[type="number"],
+html.dark input[type="email"],
+html.dark input[type="search"],
+html.dark select {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #f8fafc !important;
+}
+
+html.dark .a-input::placeholder,
+html.dark input::placeholder {
+  color: #64748b !important;
+}
+
+html.dark .btn-outline {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+html.dark div[style*="background:linear-gradient"] {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark strong,
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+  color: #f8fafc !important;
+}
+
+html.dark p, html.dark span, html.dark label, html.dark small {
+  color: #cbd5e1;
+}
