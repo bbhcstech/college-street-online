@@ -59,6 +59,7 @@ class BookController extends Controller
     public function show(Book $book)
     {
         $recent = session()->get('recently_viewed_books', []);
+        if (! in_array($book->id, $recent, true)) $book->increment('view_count');
         $recent = array_values(array_diff($recent, [$book->id]));
         array_unshift($recent, $book->id);
         session()->put('recently_viewed_books', array_slice($recent, 0, 8));
