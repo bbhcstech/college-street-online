@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Publisher;
 use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
+use App\Models\PublisherActivity;
 use App\Models\Category;
 use App\Models\Inventory;
 use App\Services\PublicImageStorageService;
@@ -54,6 +55,7 @@ class BookController extends Controller
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $request->validate(['status' => 'required|in:active,inactive']);
         $book->update($data);
+        PublisherActivity::record(auth()->user()->publisher, 'book_status', $book->title, 'Status changed to '.ucfirst($data['status']).'.', $book);
         return back()->with('success', 'Book status updated.');
     }
 
@@ -97,6 +99,7 @@ class BookController extends Controller
                 unset($data['new_author_name']);
                 $book = Book::create($data);
                 Inventory::create(['book_id' => $book->id, 'quantity' => (int) $request->input('initial_stock', 0)]);
+                PublisherActivity::record(auth()->user()->publisher, 'book_created', $book->title, 'Book added with '.(int) $request->input('initial_stock', 0).' units in stock.', $book);
             });
         } catch (\Throwable $exception) {
             if ($cover) $images->delete($cover);
@@ -130,6 +133,7 @@ class BookController extends Controller
                 $data['author_id'] = $this->resolveAuthorId($request, $data['author_id'] ?? null);
                 unset($data['new_author_name']);
                 $book->update($data);
+                PublisherActivity::record(auth()->user()->publisher, 'book_updated', $book->title, 'Book details updated.', $book);
             });
         } catch (\Throwable $exception) {
             if ($cover) $images->delete($cover);
@@ -151,6 +155,7 @@ class BookController extends Controller
     public function destroy(Book $book)
     {
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
+        PublisherActivity::record(auth()->user()->publisher, 'book_deleted', $book->title, 'Book removed from the catalogue.', $book);
         $book->delete();
         return back()->with('success', 'Book removed from catalogue.');
     }

@@ -311,7 +311,7 @@
     </div>
 
     <!-- Top-Selling Books -->
-    <section class="a-card" style="margin-bottom: 22px;">
+    <section class="a-card publisher-top-books-card">
         <div class="a-card-head dashboard-card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
                 <h3 style="margin:0;">Top-Selling Books</h3>
@@ -323,24 +323,35 @@
         </div>
 
         <div class="dashboard-table-scroll">
-            <table class="a-table" style="font-size:0.8rem;">
+            <table class="a-table publisher-top-books-table">
                 <thead>
                     <tr>
-                        <th>#</th><th>Book</th><th>ISBN</th><th>Units sold</th><th style="text-align:right;">Revenue</th>
+                        <th>#</th><th>Book details</th><th>ISBN</th><th>Orders</th><th>Units sold</th><th>Stock</th><th style="text-align:right;">Revenue</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($topSellingBooks as $index => $book)
                         <tr>
                             <td><span class="top-book-rank {{ $index === 0 ? 'gold' : '' }}">{{ $index + 1 }}</span></td>
-                            <td><strong>{{ $book->title }}</strong></td>
+                            <td>
+                                <div class="publisher-top-book">
+                                    @if($book->cover_image_url)
+                                        <img src="{{ str_starts_with($book->cover_image_url, 'http') ? $book->cover_image_url : \Illuminate\Support\Facades\Storage::disk('public')->url($book->cover_image_url) }}" alt="{{ $book->title }} cover">
+                                    @else
+                                        <span class="publisher-top-book-placeholder">📘</span>
+                                    @endif
+                                    <span><strong>{{ $book->title }}</strong><small>{{ $book->author_name ?: 'Author not specified' }}</small></span>
+                                </div>
+                            </td>
                             <td>{{ $book->isbn ?: '—' }}</td>
+                            <td>{{ number_format($book->orders_count) }}</td>
                             <td><strong>{{ number_format($book->units_sold) }}</strong></td>
+                            <td><span class="publisher-stock-chip {{ $book->current_stock <= 0 ? 'is-out' : '' }}">{{ number_format($book->current_stock) }} available</span></td>
                             <td style="text-align:right;font-weight:700;">₹{{ number_format($book->total_revenue, 0) }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" style="text-align:center; color:var(--a-text-muted); padding:24px 10px;">
+                            <td colspan="7" style="text-align:center; color:var(--a-text-muted); padding:24px 10px;">
                                 No completed book sales recorded yet.
                             </td>
                         </tr>
@@ -418,18 +429,18 @@
 
     <section class="a-card publisher-activity-card">
         <div class="a-card-head dashboard-card-title">
-            <div><h3>Recent Activity</h3><p>Latest book and inventory updates</p></div>
+            <div><h3>Recent Activity</h3><p>Live catalogue, stock, order, and payout updates</p></div>
             <a href="{{ route('publisher.inventory.index') }}">View inventory →</a>
         </div>
         <div class="dashboard-table-scroll">
             <table class="a-table">
-                <thead><tr><th>Book</th><th>Activity</th><th>Stock</th><th>Updated</th></tr></thead>
-                <tbody>@forelse($recentBooks as $book)
+                <thead><tr><th>Activity</th><th>Details</th><th>Performed by</th><th>Time</th></tr></thead>
+                <tbody>@forelse($recentActivities as $activity)
                     <tr>
-                        <td><strong>{{ $book->title }}</strong></td>
-                        <td>{{ $book->created_at->equalTo($book->updated_at) ? 'Book added' : 'Book or inventory updated' }}</td>
-                        <td>{{ $book->inventory?->quantity ?? 0 }}</td>
-                        <td>{{ $book->updated_at->diffForHumans() }}</td>
+                        <td><span class="publisher-activity-kind publisher-activity-kind--{{ str_replace('_', '-', $activity->type) }}">{{ str($activity->type)->replace('_', ' ')->title() }}</span></td>
+                        <td><strong>{{ $activity->subject }}</strong><small>{{ $activity->description }}</small></td>
+                        <td>{{ $activity->actor?->name ?? 'System' }}</td>
+                        <td class="publisher-activity-time" title="{{ $activity->created_at->format('d M Y, h:i A') }}">{{ $activity->created_at->diffForHumans() }}</td>
                     </tr>
                 @empty<tr><td colspan="4">No recent activity.</td></tr>@endforelse</tbody>
             </table>

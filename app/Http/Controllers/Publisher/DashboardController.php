@@ -41,7 +41,7 @@ class DashboardController extends Controller
             ->join('books', 'books.id', '=', 'order_items.book_id')
             ->where('books.publisher_id', $publisher->id)
             ->where('order_items.fulfillment_status', 'pending')
-            ->whereIn('orders.status', $saleStatuses)
+            ->whereIn('orders.status', ['confirmed', 'processing', 'packed', 'shipped'])
             ->distinct()
             ->count('orders.id');
 
@@ -68,10 +68,12 @@ class DashboardController extends Controller
         $topSellingBooks = DB::table('order_items')
             ->join('books', 'books.id', '=', 'order_items.book_id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->leftJoin('authors', 'authors.id', '=', 'books.author_id')
+            ->leftJoin('inventories', 'inventories.book_id', '=', 'books.id')
             ->where('books.publisher_id', $publisher->id)
             ->whereIn('orders.status', $saleStatuses)
-            ->selectRaw('books.id, books.title, books.isbn, books.cover_image_url, SUM(order_items.quantity) as units_sold, SUM(order_items.quantity * COALESCE(order_items.base_unit_price, order_items.unit_price)) as total_revenue, COUNT(DISTINCT orders.id) as orders_count')
-            ->groupBy('books.id', 'books.title', 'books.isbn', 'books.cover_image_url')
+            ->selectRaw('books.id, books.title, books.isbn, books.cover_image_url, authors.name as author_name, COALESCE(inventories.quantity, 0) as current_stock, SUM(order_items.quantity) as units_sold, SUM(order_items.quantity * COALESCE(order_items.base_unit_price, order_items.unit_price)) as total_revenue, COUNT(DISTINCT orders.id) as orders_count')
+            ->groupBy('books.id', 'books.title', 'books.isbn', 'books.cover_image_url', 'authors.name', 'inventories.quantity')
             ->orderByDesc('units_sold')
             ->limit(5)
             ->get();
@@ -82,7 +84,7 @@ class DashboardController extends Controller
             'inactiveBooks' => $publisher->books()->where('status', '!=', 'active')->count(),
             'outOfStockCount' => $publisher->books()->whereHas('inventory', fn ($query) => $query->where('quantity', '<=', 0))->count(),
             'inStockCount' => $publisher->books()->whereHas('inventory', fn ($query) => $query->where('quantity', '>', 0))->count(),
-            'recentBooks' => $publisher->books()->with(['author', 'category', 'inventory'])->latest('updated_at')->limit(5)->get(),
+            'recentActivities' => $publisher->activities()->with('actor')->latest()->limit(8)->get(),
             'totalSales' => $totalSales,
             'totalOrders' => $totalOrders,
             'unitsSold' => $unitsSold,

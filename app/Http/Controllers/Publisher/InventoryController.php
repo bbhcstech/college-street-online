@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Publisher;
 
+use App\Models\PublisherActivity;
+
 use App\Http\Controllers\Controller;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
@@ -72,6 +74,8 @@ class InventoryController extends Controller
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $request->validate(['quantity' => 'required|integer|min:1']);
         $inventoryService->recordRestock($book, $data['quantity']);
+        $book->load('inventory');
+        PublisherActivity::record(auth()->user()->publisher, 'stock_updated', $book->title, '+'.$data['quantity'].' units added; '.$book->inventory->quantity.' now in stock.', $book);
         return back()->with('success', 'Stock updated.');
     }
 
@@ -80,6 +84,8 @@ class InventoryController extends Controller
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $request->validate(['quantity' => 'required|integer|min:1']);
         $inventoryService->recordAdjustment($book, -$data['quantity']);
+        $book->load('inventory');
+        PublisherActivity::record(auth()->user()->publisher, 'stock_updated', $book->title, $data['quantity'].' units removed; '.$book->inventory->quantity.' now in stock.', $book);
         return back()->with('success', 'Stock reduced.');
     }
 
@@ -98,6 +104,9 @@ class InventoryController extends Controller
         } else {
             $inventoryService->recordAdjustment($book, $quantity);
         }
+
+        $book->load('inventory');
+        PublisherActivity::record(auth()->user()->publisher, 'stock_updated', $book->title, ($quantity > 0 ? '+' : '').$quantity.' unit adjustment; '.$book->inventory->quantity.' now in stock.', $book);
 
         return back()->with('success', 'Stock adjusted successfully.');
     }

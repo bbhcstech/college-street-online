@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Publisher;
 
+use App\Models\PublisherActivity;
+
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
@@ -18,7 +20,9 @@ class OrderController extends Controller
         return view('publisher.orders', [
             'items' => $items,
             'totalItems' => (clone $base)->count(),
-            'pendingItems' => (clone $base)->where('fulfillment_status', 'pending')->count(),
+            'pendingItems' => (clone $base)->where('fulfillment_status', 'pending')
+                ->whereHas('order', fn ($query) => $query->whereNotIn('status', ['delivered', 'completed', 'cancelled', 'returned']))
+                ->count(),
             'unitsOrdered' => (clone $base)->sum('quantity'),
         ]);
     }
@@ -117,6 +121,8 @@ class OrderController extends Controller
                 $order->transitionTo($syncedStatus, auth()->id());
             }
         });
+
+        PublisherActivity::record(auth()->user()->publisher, 'order_updated', $orderItem->book->title, 'Order #CSO'.$orderItem->order_id.' marked '.ucfirst($data['status']).'.', $orderItem->book);
 
         return back()->with('success', 'Item status updated.');
     }

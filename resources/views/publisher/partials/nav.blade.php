@@ -84,7 +84,7 @@
 <!-- 📈 Reports -->
 <div class="nav-group {{ $active === 'analytics' || request()->routeIs('publisher.analytics.*') ? 'has-active' : '' }}">
     <a href="{{ route('publisher.analytics.index') }}" class="nav-link {{ $active === 'analytics' || request()->routeIs('publisher.analytics.*') ? 'active' : '' }}">
-        <span class="nav-icon">📈</span><span>Reports</span>
+        <span class="nav-icon">📈</span><span>Analytics &amp; Reports</span>
     </a>
 </div>
 

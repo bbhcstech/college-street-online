@@ -57,8 +57,9 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
 
     Route::middleware('role:publisher')->group(function () {
         Route::get('/dashboard', [Pub\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/analytics', [Pub\AnalyticsController::class, 'index'])->name('analytics.index');
-        Route::get('/analytics/export/{type}', [Pub\AnalyticsController::class, 'export'])->name('analytics.export');
+        Route::redirect('/analytics', '/publisher/analytics-reports');
+        Route::get('/analytics-reports', [Pub\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics-reports/export/{type}', [Pub\AnalyticsController::class, 'export'])->name('analytics.export');
         Route::get('/profile', [ProfileController::class, 'publisherEdit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
@@ -72,10 +73,11 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::post('/inventory/{book}/adjust', [Pub\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::get('/coupons', [Pub\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Pub\CouponController::class, 'store'])->name('coupons.store');
-        Route::get('/payments', [Pub\PaymentController::class, 'index'])->name('payments.index');
+        Route::redirect('/payments', '/publisher/sales-earnings');
+        Route::get('/sales-earnings', [Pub\PaymentController::class, 'index'])->name('payments.index');
         Route::get('/notifications', [Pub\NotificationController::class, 'index'])->name('notifications.index');
-        Route::get('/payments/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
-        Route::get('/payments/statement', [Pub\PaymentController::class, 'statement'])->name('payments.statement');
+        Route::get('/sales-earnings/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
+        Route::get('/sales-earnings/statement', [Pub\PaymentController::class, 'statement'])->name('payments.statement');
         Route::post('/payouts', [Pub\PayoutController::class, 'store'])->name('payouts.store');
         Route::get('/orders/export/{type}', [Pub\OrderController::class, 'export'])->name('orders.export');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');

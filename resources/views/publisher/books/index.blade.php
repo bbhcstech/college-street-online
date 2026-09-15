@@ -143,6 +143,60 @@
         .publisher-book-summary > div:nth-child(2) { border-left: 3px solid #10b981; }
         .publisher-book-summary > div:nth-child(3) { border-left: 3px solid #f59e0b; }
         .publisher-book-table tbody tr:hover { background: color-mix(in srgb, var(--a-primary) 3%, var(--a-surface)); }
+        .publisher-table-scroll {
+            padding: 0 14px 6px;
+        }
+        .publisher-book-table thead th {
+            padding-top: 9px !important;
+            padding-bottom: 9px !important;
+            background: #f5f8fc;
+            color: #435774;
+            border-top: 1px solid var(--a-border);
+        }
+        .publisher-book-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .publisher-book-table thead th:last-child { border-radius: 0 8px 8px 0; }
+        .publisher-book-table tbody td {
+            height: 48px;
+            border-bottom-color: #e4eaf1;
+        }
+        .publisher-book-table tbody tr:nth-child(even) {
+            background: #fbfcfe;
+        }
+        .publisher-book-table tbody tr:hover {
+            background: #f2f7fb;
+            box-shadow: inset 3px 0 var(--a-primary);
+        }
+        .publisher-book-table th:first-child,
+        .publisher-book-table td:first-child { text-align: center; padding-inline: 5px !important; }
+        .publisher-book-table td:nth-child(3) {
+            color: #40536a;
+            font-variant-numeric: tabular-nums;
+        }
+        .publisher-book-table td:nth-child(5) strong { color: #102f4c; }
+        .publisher-book-table .a-book-cover-thumb,
+        .publisher-book-table .a-book-cover-placeholder {
+            border: 1px solid #d7e0ea;
+            box-shadow: 0 2px 6px rgba(22, 58, 92, .12);
+        }
+        .publisher-book-table .book-status-select {
+            border: 0;
+            background-color: #e3f4ed;
+            color: #087c55;
+            box-shadow: inset 0 0 0 1px rgba(8, 124, 85, .06);
+        }
+        .publisher-book-table .book-status-select:has(option[value="inactive"]:checked) {
+            background-color: #eef1f5;
+            color: #5c6878;
+        }
+        .publisher-book-table .book-row-actions {
+            padding: 3px;
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .publisher-book-table .book-row-actions .btn {
+            border-radius: 6px;
+        }
         @media (max-width: 1150px) {
             .publisher-book-toolbar { grid-template-columns: repeat(3, 1fr); }
             .publisher-book-toolbar .publisher-search { grid-column: 1 / -1; }

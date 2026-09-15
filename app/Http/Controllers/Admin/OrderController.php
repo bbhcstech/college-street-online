@@ -126,6 +126,19 @@ class OrderController extends Controller
             }
 
             $order->transitionTo($data['status'], auth()->id());
+            if (in_array($data['status'], ['delivered', 'completed'], true)) {
+                $order->load('items');
+                foreach ($order->items as $item) {
+                    if ($item->fulfillment_status === $data['status']) continue;
+                    $oldFulfillment = $item->fulfillment_status;
+                    $item->update(['fulfillment_status' => $data['status']]);
+                    $item->statusHistory()->create([
+                        'from_status' => $oldFulfillment,
+                        'to_status' => $data['status'],
+                        'changed_by' => auth()->id(),
+                    ]);
+                }
+            }
             if (in_array($data['status'], ['delivered', 'completed'], true)) app(PublisherSettlementService::class)->scheduleRelease($order);
             if (in_array($data['status'], ['cancelled', 'returned'], true)) app(PublisherSettlementService::class)->recordReversal($order, ucfirst($data['status']).' order #CSO'.$order->id);
         });
