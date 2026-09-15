@@ -8,9 +8,6 @@
         default => route('account.profile'),
     };
     $searchCategories = \App\Models\Category::orderBy('name')->get(['name', 'slug']);
-    $headerCountries = \App\Models\Country::where('is_active', true)->orderBy('name')->get();
-    $headerCountryCode = session('customer_country', auth()->check() ? (auth()->user()->country_code ?? 'IN') : 'IN');
-    $headerCurrentCountry = $headerCountries->firstWhere('code', $headerCountryCode) ?? $headerCountries->firstWhere('code', 'IN');
 @endphp
 <header class="site-header">
     <div class="container header-inner">
@@ -108,28 +105,6 @@
                     </div>
                 </details>
             @endauth
-
-            {{-- Region & Currency Dropdown --}}
-            <details class="auth-portal country-switcher-portal" style="position:relative;">
-                <summary class="btn auth-portal-button" title="Change Region & Currency" style="font-size:0.8rem; padding:6px 10px; gap:4px; display:inline-flex; align-items:center;">
-                    <span>🌐</span>
-                    <span style="font-weight:700;">{{ $headerCurrentCountry ? $headerCurrentCountry->code : 'IN' }}</span>
-                    <span style="opacity:0.75; font-size:0.75rem;">({{ $headerCurrentCountry ? $headerCurrentCountry->currency_code : 'INR' }})</span>
-                </summary>
-                <div class="auth-portal-menu" style="min-width:210px; padding:10px;">
-                    <form method="POST" action="{{ route('country.switch') }}">
-                        @csrf
-                        <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted, #64748b); text-transform:uppercase; margin-bottom:6px; letter-spacing:0.04em;">Select Region / Currency</div>
-                        <select name="country" onchange="this.form.submit()" class="form-control" style="font-size:0.82rem; padding:6px 8px; width:100%; cursor:pointer;">
-                            @foreach($headerCountries as $c)
-                                <option value="{{ $c->code }}" @selected(($headerCurrentCountry->code ?? 'IN') === $c->code)>
-                                    {{ $c->name }} ({{ $c->currency_code }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
-            </details>
 
             {{-- Cart Link --}}
             <a href="{{ route('cart.index') }}" class="icon-btn-nav" aria-label="Cart">
