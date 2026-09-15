@@ -10,28 +10,35 @@
 @section('content')
     <style>
         .publisher-table-card {
-            padding: 16px 20px;
+            padding: 0;
+            overflow: hidden;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(22, 58, 92, .05);
         }
         .publisher-book-toolbar {
-            display: flex;
+            display: grid;
+            grid-template-columns: minmax(250px, 1.7fr) repeat(4, minmax(120px, .8fr)) auto auto;
             align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
+            gap: 9px;
+            padding: 14px 16px;
+            margin: 0;
+            background: color-mix(in srgb, var(--a-surface-alt) 38%, var(--a-surface));
+            border-bottom: 1px solid var(--a-border);
         }
         .publisher-search {
             flex: 1 1 200px;
             min-width: 170px;
         }
         .publisher-book-toolbar .a-select {
-            flex: 0 1 auto;
+            width: 100%;
+            min-width: 0;
             padding: 5px 8px;
             font-size: 0.78rem;
             height: 32px;
         }
         .publisher-export-bar {
-            padding: 6px 12px;
-            margin-bottom: 8px;
+            padding: 8px 16px;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -40,10 +47,13 @@
         }
         .publisher-table-scroll {
             overflow-x: auto;
+            padding: 0 16px 8px;
         }
         .publisher-book-table {
             width: 100%;
+            min-width: 0 !important;
             border-collapse: collapse;
+            table-layout: auto;
         }
         .publisher-book-table th,
         .publisher-book-table td {
@@ -56,6 +66,15 @@
             letter-spacing: 0.05em;
             white-space: nowrap;
         }
+        .publisher-book-table th:first-child,
+        .publisher-book-table td:first-child { width: 38px; }
+        .publisher-book-table th:nth-child(2) { width: 22%; }
+        .publisher-book-table th:nth-child(3) { width: 17%; }
+        .publisher-book-table th:nth-child(4) { width: 13%; }
+        .publisher-book-table th:nth-child(5),
+        .publisher-book-table th:nth-child(6),
+        .publisher-book-table th:nth-child(7) { width: 9%; }
+        .publisher-book-table th:last-child { width: 170px; }
         .publisher-book-table .a-book-title {
             display: flex;
             align-items: center;
@@ -108,8 +127,35 @@
             font-size: 0.75rem;
             font-weight: 700;
         }
+        .publisher-books-head {
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--a-border);
+            border-radius: 14px;
+            background: linear-gradient(110deg, var(--a-surface), #f3f8fc);
+            box-shadow: 0 5px 16px rgba(22, 58, 92, .04);
+        }
+        .publisher-books-head h2 { margin: 4px 0 2px; font-size: 1.5rem; }
+        .publisher-books-head .btn { min-height: 38px; box-shadow: 0 5px 12px rgba(22, 58, 92, .14); }
+        .publisher-book-summary { gap: 11px; margin-bottom: 14px; }
+        .publisher-book-summary > div { padding: 13px 16px; border-radius: 11px; box-shadow: 0 3px 12px rgba(22, 58, 92, .035); }
+        .publisher-book-summary > div:nth-child(1) { border-left: 3px solid #3b82f6; }
+        .publisher-book-summary > div:nth-child(2) { border-left: 3px solid #10b981; }
+        .publisher-book-summary > div:nth-child(3) { border-left: 3px solid #f59e0b; }
+        .publisher-book-table tbody tr:hover { background: color-mix(in srgb, var(--a-primary) 3%, var(--a-surface)); }
+        @media (max-width: 1150px) {
+            .publisher-book-toolbar { grid-template-columns: repeat(3, 1fr); }
+            .publisher-book-toolbar .publisher-search { grid-column: 1 / -1; }
+        }
+        @media (max-width: 700px) {
+            .publisher-books-head { align-items: flex-start; flex-direction: column; }
+            .publisher-books-head .btn { width: 100%; justify-content: center; }
+            .publisher-book-toolbar { grid-template-columns: 1fr; }
+            .publisher-book-toolbar .publisher-search { grid-column: auto; }
+            .publisher-book-summary { grid-template-columns: 1fr; }
+        }
     </style>
-    <div class="publisher-page-head">
+    <div class="publisher-page-head publisher-books-head">
         <div><span class="analytics-eyebrow">Catalogue</span>
             <h2>My book catalogue</h2>
             <p>Search, export, and manage every title you sell.</p>

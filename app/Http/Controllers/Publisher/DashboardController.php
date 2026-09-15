@@ -82,7 +82,7 @@ class DashboardController extends Controller
             'inactiveBooks' => $publisher->books()->where('status', '!=', 'active')->count(),
             'outOfStockCount' => $publisher->books()->whereHas('inventory', fn ($query) => $query->where('quantity', '<=', 0))->count(),
             'inStockCount' => $publisher->books()->whereHas('inventory', fn ($query) => $query->where('quantity', '>', 0))->count(),
-            'recentBooks' => $publisher->books()->with(['author', 'category', 'inventory'])->latest()->limit(5)->get(),
+            'recentBooks' => $publisher->books()->with(['author', 'category', 'inventory'])->latest('updated_at')->limit(5)->get(),
             'totalSales' => $totalSales,
             'totalOrders' => $totalOrders,
             'unitsSold' => $unitsSold,

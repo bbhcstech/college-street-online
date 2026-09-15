@@ -156,6 +156,21 @@
         }
         $revPolyline = implode(' ', $revPoints);
         $unitPolyline = implode(' ', $unitPoints);
+        $dashboardStatuses = collect([
+            'Pending' => ($statusMix['pending_payment'] ?? 0) + ($statusMix['confirmed'] ?? 0),
+            'Processing' => ($statusMix['processing'] ?? 0) + ($statusMix['packed'] ?? 0),
+            'Shipped' => $statusMix['shipped'] ?? 0,
+            'Delivered' => ($statusMix['delivered'] ?? 0) + ($statusMix['completed'] ?? 0),
+        ]);
+        $dashboardStatusTotal = max(1, $dashboardStatuses->sum());
+        $statusCursor = 0;
+        $statusPalette = ['#EDA13A', '#7352B4', '#2684BE', '#1F9D6C'];
+        $statusGradient = [];
+        foreach ($dashboardStatuses->values() as $index => $count) {
+            $next = $statusCursor + (($count / $dashboardStatusTotal) * 100);
+            $statusGradient[] = $statusPalette[$index] . " {$statusCursor}% {$next}%";
+            $statusCursor = $next;
+        }
     @endphp
 
     <style>
@@ -203,12 +218,23 @@
             background: var(--a-gold, #EDA13A);
             color: #0C242B;
         }
+        .publisher-status-wrap { display:flex; align-items:center; justify-content:center; gap:30px; min-height:220px; }
+        .publisher-status-donut { width:150px; height:150px; border-radius:50%; display:grid; place-items:center; position:relative; background:conic-gradient({{ implode(', ', $statusGradient) }}); }
+        .publisher-status-donut::after { content:''; position:absolute; inset:30px; border-radius:50%; background:var(--a-surface); }
+        .publisher-status-donut strong { position:relative; z-index:1; font-size:1.5rem; }
+        .publisher-status-list { min-width:155px; }
+        .publisher-status-list div { display:grid; grid-template-columns:9px 1fr auto; gap:8px; align-items:center; padding:7px 0; font-size:.75rem; }
+        .publisher-status-list i { width:8px; height:8px; border-radius:50%; }
+        .sales-overview-head { display:block !important; }
+        .sales-overview-head .chart-legend { justify-content:flex-start !important; flex-wrap:wrap; gap:8px 18px !important; margin-top:10px; }
+        .sales-overview-head .chart-legend span { width:auto !important; height:auto !important; white-space:nowrap; }
+        @media (max-width: 560px) { .publisher-status-wrap { flex-direction:column; gap:14px; } }
     </style>
 
     <div class="sales-analytics-grid">
         <!-- 📈 Sales Overview — Line Graph -->
         <section class="a-card">
-            <div class="a-card-head dashboard-card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="a-card-head dashboard-card-title sales-overview-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
                     <h3 style="margin:0;">Sales Overview</h3>
                     <p style="margin:3px 0 0; color:var(--a-text-muted); font-size:0.75rem;">Monthly Revenue &amp; Books Sold trend</p>
@@ -265,92 +291,34 @@
             </div>
         </section>
 
-        <!-- 🏆 Top-Selling Books -->
+        <!-- Order Status -->
         <section class="a-card">
-            <div class="a-card-head dashboard-card-title" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="a-card-head dashboard-card-title">
                 <div>
-                    <h3 style="margin:0;">Top-Selling Books</h3>
-                    <p style="margin:3px 0 0; color:var(--a-text-muted); font-size:0.75rem;">Best performing titles by sales</p>
+                    <h3 style="margin:0;">Order Status</h3>
+                    <p style="margin:3px 0 0; color:var(--a-text-muted); font-size:0.75rem;">Current fulfillment distribution</p>
                 </div>
-                <a href="{{ route('publisher.books.index') }}" style="color:var(--a-primary); font-size:0.78rem; font-weight:700;">All books &rarr;</a>
             </div>
-
-            <div class="dashboard-table-scroll" style="margin-top:8px;">
-                <table class="a-table" style="font-size:0.8rem;">
-                    <thead>
-                        <tr>
-                            <th style="width:36px;">#</th>
-                            <th>Book Title</th>
-                            <th style="text-align:center;">Sold</th>
-                            <th style="text-align:right;">Gross</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($topSellingBooks as $index => $book)
-                            <tr>
-                                <td>
-                                    <span class="top-book-rank {{ $index === 0 ? 'gold' : '' }}">{{ $index + 1 }}</span>
-                                </td>
-                                <td>
-                                    <strong style="display:block; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $book->title }}</strong>
-                                    <small style="color:var(--a-text-muted); font-size:0.7rem;">{{ $book->isbn ?: 'ISBN N/A' }}</small>
-                                </td>
-                                <td style="text-align:center;">
-                                    <strong>{{ number_format($book->units_sold) }}</strong>
-                                    <small style="display:block; color:var(--a-text-muted); font-size:0.68rem;">units</small>
-                                </td>
-                                <td style="text-align:right; font-weight:700; color:var(--a-text);">
-                                    ₹{{ number_format($book->total_revenue, 0) }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" style="text-align:center; color:var(--a-text-muted); padding:28px 10px;">
-                                    No completed book sales recorded yet.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="publisher-status-wrap">
+                <div class="publisher-status-donut"><strong>{{ $dashboardStatuses->sum() }}</strong></div>
+                <div class="publisher-status-list">
+                    @foreach($dashboardStatuses as $label => $count)
+                        <div><i style="background:{{ $statusPalette[$loop->index] }}"></i><span>{{ $label }}</span><strong>{{ $count }}</strong></div>
+                    @endforeach
+                </div>
             </div>
         </section>
     </div>
 
-    <!-- 📖 My Books & Stock Management -->
+    <!-- Top-Selling Books -->
     <section class="a-card" style="margin-bottom: 22px;">
         <div class="a-card-head dashboard-card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-                <h3 style="margin:0;">My Books &amp; Stock Management</h3>
-                <p style="margin:3px 0 0; color:var(--a-text-muted); font-size:0.75rem;">Catalogue status, inventory stock levels, and quick edit</p>
+                <h3 style="margin:0;">Top-Selling Books</h3>
+                <p style="margin:3px 0 0; color:var(--a-text-muted); font-size:0.75rem;">Best-performing titles by units sold and revenue</p>
             </div>
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <a href="{{ route('publisher.books.create') }}" class="btn btn-primary btn-sm">+ Add Book</a>
-                <a href="{{ route('publisher.inventory.index') }}" class="btn btn-outline btn-sm">Stock Management &rarr;</a>
                 <a href="{{ route('publisher.books.index') }}" class="btn btn-outline btn-sm">All Books &rarr;</a>
-            </div>
-        </div>
-
-        <!-- Status & Stock Quick Summary Pills -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin: 14px 0 18px;">
-            <div style="padding:10px 14px; border-radius:10px; background:var(--a-surface-alt); border:1px solid var(--a-border);">
-                <small style="color:var(--a-text-muted); font-size:0.68rem; display:block;">Active Titles</small>
-                <strong style="font-size:1.15rem; color:#1F9D6C;">{{ number_format($activeBooks) }}</strong>
-            </div>
-            <div style="padding:10px 14px; border-radius:10px; background:var(--a-surface-alt); border:1px solid var(--a-border);">
-                <small style="color:var(--a-text-muted); font-size:0.68rem; display:block;">Inactive / Draft</small>
-                <strong style="font-size:1.15rem; color:#718096;">{{ number_format($inactiveBooks) }}</strong>
-            </div>
-            <div style="padding:10px 14px; border-radius:10px; background:var(--a-surface-alt); border:1px solid var(--a-border);">
-                <small style="color:var(--a-text-muted); font-size:0.68rem; display:block;">In Stock</small>
-                <strong style="font-size:1.15rem; color:#2684BE;">{{ number_format($inStockCount) }}</strong>
-            </div>
-            <div style="padding:10px 14px; border-radius:10px; background:var(--a-surface-alt); border:1px solid var(--a-border);">
-                <small style="color:var(--a-text-muted); font-size:0.68rem; display:block;">Low Stock</small>
-                <strong style="font-size:1.15rem; color:#E07C2D;">{{ number_format($lowStockCount) }}</strong>
-            </div>
-            <div style="padding:10px 14px; border-radius:10px; background:var(--a-surface-alt); border:1px solid var(--a-border);">
-                <small style="color:var(--a-text-muted); font-size:0.68rem; display:block;">Out of Stock</small>
-                <strong style="font-size:1.15rem; color:{{ $outOfStockCount > 0 ? '#D64545' : '#718096' }};">{{ number_format($outOfStockCount) }}</strong>
             </div>
         </div>
 
@@ -358,47 +326,22 @@
             <table class="a-table" style="font-size:0.8rem;">
                 <thead>
                     <tr>
-                        <th>Book Title</th>
-                        <th>Author</th>
-                        <th>Price</th>
-                        <th>Stock Level</th>
-                        <th>Status</th>
-                        <th style="text-align:right;">Actions</th>
+                        <th>#</th><th>Book</th><th>ISBN</th><th>Units sold</th><th style="text-align:right;">Revenue</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($recentBooks as $book)
+                    @forelse($topSellingBooks as $index => $book)
                         <tr>
-                            <td>
-                                <strong>{{ $book->title }}</strong>
-                                <small style="display:block; color:var(--a-text-muted); font-size:0.7rem;">{{ $book->isbn ?: 'ISBN N/A' }}</small>
-                            </td>
-                            <td>{{ $book->author?->name ?? '—' }}</td>
-                            <td>₹{{ number_format($book->price, 2) }}</td>
-                            <td>
-                                @php($qty = $book->inventory?->quantity ?? 0)
-                                @php($threshold = $book->inventory?->low_stock_threshold ?? 5)
-                                @if($qty <= 0)
-                                    <span class="badge badge-danger">Out of stock (0)</span>
-                                @elseif($qty <= $threshold)
-                                    <span class="badge badge-warning">Low stock ({{ $qty }})</span>
-                                @else
-                                    <span class="badge badge-success">{{ $qty }} in stock</span>
-                                @endif
-                            </td>
-                            <td>
-                                <span class="badge {{ $book->status === 'active' ? 'badge-success' : 'badge-secondary' }}">
-                                    {{ ucfirst($book->status) }}
-                                </span>
-                            </td>
-                            <td style="text-align:right;">
-                                <a href="{{ route('publisher.books.edit', $book) }}" class="btn btn-outline btn-sm" style="padding:4px 10px; font-size:0.75rem;">✏️ Edit</a>
-                            </td>
+                            <td><span class="top-book-rank {{ $index === 0 ? 'gold' : '' }}">{{ $index + 1 }}</span></td>
+                            <td><strong>{{ $book->title }}</strong></td>
+                            <td>{{ $book->isbn ?: '—' }}</td>
+                            <td><strong>{{ number_format($book->units_sold) }}</strong></td>
+                            <td style="text-align:right;font-weight:700;">₹{{ number_format($book->total_revenue, 0) }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="text-align:center; color:var(--a-text-muted); padding:24px 10px;">
-                                No books added to catalogue yet. <a href="{{ route('publisher.books.create') }}">Add your first book</a>
+                            <td colspan="5" style="text-align:center; color:var(--a-text-muted); padding:24px 10px;">
+                                No completed book sales recorded yet.
                             </td>
                         </tr>
                     @endforelse
@@ -448,8 +391,8 @@
         <section class="a-card">
             <div class="a-card-head dashboard-card-title">
                 <div>
-                    <h3>Inventory alerts</h3>
-                    <p>Titles at or below their threshold</p>
+                    <h3>Low Stock Alerts</h3>
+                    <p>Books that need restocking</p>
                 </div>
                 <a href="{{ route('publisher.inventory.index') }}">Manage →</a>
             </div>
@@ -472,4 +415,24 @@
             </div>
         </section>
     </div>
+
+    <section class="a-card publisher-activity-card">
+        <div class="a-card-head dashboard-card-title">
+            <div><h3>Recent Activity</h3><p>Latest book and inventory updates</p></div>
+            <a href="{{ route('publisher.inventory.index') }}">View inventory →</a>
+        </div>
+        <div class="dashboard-table-scroll">
+            <table class="a-table">
+                <thead><tr><th>Book</th><th>Activity</th><th>Stock</th><th>Updated</th></tr></thead>
+                <tbody>@forelse($recentBooks as $book)
+                    <tr>
+                        <td><strong>{{ $book->title }}</strong></td>
+                        <td>{{ $book->created_at->equalTo($book->updated_at) ? 'Book added' : 'Book or inventory updated' }}</td>
+                        <td>{{ $book->inventory?->quantity ?? 0 }}</td>
+                        <td>{{ $book->updated_at->diffForHumans() }}</td>
+                    </tr>
+                @empty<tr><td colspan="4">No recent activity.</td></tr>@endforelse</tbody>
+            </table>
+        </div>
+    </section>
 @endsection

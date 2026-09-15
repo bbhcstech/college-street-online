@@ -35,11 +35,20 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         font: italic 600 1.5rem var(--font-display)
     }
 
+    .publisher-order-summary>div {
+        border-left: 3px solid var(--a-primary);
+        background: linear-gradient(135deg, var(--a-surface) 75%, #f4f8fc);
+        box-shadow: 0 4px 14px rgba(20, 45, 70, .05)
+    }
+
+    .publisher-order-summary>div:nth-child(2) { border-left-color: #eda13a }
+    .publisher-order-summary>div:nth-child(3) { border-left-color: #1f9d6c }
+
     .publisher-order-toolbar {
         display: grid;
         grid-template-columns: repeat(12, minmax(0, 1fr));
         gap: 10px;
-        padding: 18px 20px;
+        padding: 14px 18px;
         background: var(--a-surface);
         border-bottom: 1px solid var(--a-border)
     }
@@ -95,12 +104,14 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
     }
 
     .publisher-order-table {
-        min-width: 1240px
+        min-width: 1080px;
+        table-layout: fixed
     }
 
     .publisher-order-table th,
     .publisher-order-table td {
-        padding: 13px 12px
+        padding: 10px 9px;
+        vertical-align: middle
     }
 
     .publisher-order-table tbody tr:hover {
@@ -121,7 +132,8 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         z-index: 2;
         background: var(--a-surface);
         box-shadow: -8px 0 14px rgba(20, 45, 70, .07);
-        min-width: 145px
+        width: 118px;
+        min-width: 118px
     }
 
     .publisher-order-table th:last-child {
@@ -137,6 +149,19 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         width: 42px;
         text-align: center
     }
+
+    .publisher-order-table th:nth-child(2) { width:68px }
+    .publisher-order-table th:nth-child(3) { width:124px }
+    .publisher-order-table th:nth-child(4) { width:200px }
+    .publisher-order-table th:nth-child(5) { width:90px }
+    .publisher-order-table th:nth-child(6) { width:48px }
+    .publisher-order-table th:nth-child(7) { width:76px }
+    .publisher-order-table th:nth-child(8) { width:78px }
+    .publisher-order-table th:nth-child(9) { width:94px }
+    .publisher-order-table th:nth-child(10) { width:94px }
+    .publisher-order-table tbody tr:nth-child(even) { background:#fbfcfe }
+    .publisher-order-table td:last-child .btn { width:100%; padding:7px 8px; line-height:1.2 }
+    .publisher-export-bar { padding-top:10px; padding-bottom:10px }
 
     .fulfillment-badge {
         display: inline-flex;
