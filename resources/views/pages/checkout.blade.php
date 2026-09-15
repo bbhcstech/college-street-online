@@ -188,7 +188,36 @@
 
                     <!-- Summary Card -->
                     <div class="order-summary-card checkout-summary">
-                        <div class="summary-heading"><span>Order summary</span><small>Review totals</small></div>
+                        <div class="summary-heading">
+                            <span>Order summary</span>
+                            <small>{{ $items->count() }} {{ Str::plural('title', $items->count()) }}</small>
+                        </div>
+                        
+                        <div class="checkout-items-preview" style="margin-bottom: 16px; border-bottom: 1px dashed var(--border); padding-bottom: 14px; max-height: 220px; overflow-y: auto;">
+                            @foreach($items as $item)
+                                @php
+                                    $currencyService = app(\App\Services\CurrencyService::class);
+                                    $priceData = $currencyService->resolveBookPrice($item->book, $selectedCountry);
+                                @endphp
+                                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                                        @if($item->book->cover_url)
+                                            <img src="{{ $item->book->cover_url }}" alt="{{ $item->book->title }}" style="width:36px; height:46px; object-fit:contain; border-radius:4px; border:1px solid var(--border); background:#f8fafc;">
+                                        @else
+                                            <div style="width:36px; height:46px; border-radius:4px; border:1px solid var(--border); background:#f1f5f9; display:grid; place-items:center; font-size:0.7rem; color:var(--text-muted);">📖</div>
+                                        @endif
+                                        <div style="min-width:0;">
+                                            <strong style="display:block; font-size:0.82rem; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{{ $item->book->title }}</strong>
+                                            <small style="color:var(--text-secondary); font-size:0.72rem;">Qty: {{ $item->quantity }}</small>
+                                        </div>
+                                    </div>
+                                    <span style="font-weight:700; font-size:0.85rem; color:var(--text-primary); white-space:nowrap;">
+                                        {{ $priceData['symbol'] }}{{ number_format($item->quantity * $priceData['price'], 2) }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+
                         <div class="summary-line"><span>Subtotal</span><span data-checkout-subtotal>{{ $quote['symbol'] }}{{ number_format($quote['subtotal'], 2) }}</span></div>
                         <div class="summary-line"><span>Shipping</span><span data-checkout-shipping>{{ $quote['shipping'] == 0 ? 'Free' : $quote['symbol'] . number_format($quote['shipping'], 2) }}</span></div>
                         <div class="summary-line" data-checkout-discount-row style="{{ $quote['discount'] > 0 ? '' : 'display:none;' }}"><span>Discount</span><span data-checkout-discount>−{{ $quote['symbol'] }}{{ number_format($quote['discount'], 2) }}</span></div>
@@ -198,17 +227,17 @@
                         </div>
 
                         <div class="form-group" style="margin-top:16px;">
-                            <label>Coupon Code</label>
+                            <label style="font-weight:700; font-size:0.78rem; text-transform:uppercase; color:var(--text-muted);">Promo Coupon</label>
                             <div style="display:flex;gap:8px;">
-                                <input name="coupon_code" value="{{ old('coupon_code', $appliedCoupon?->code) }}" class="form-control" placeholder="Enter coupon code">
-                                <button type="button" class="btn btn-outline" data-apply-coupon data-url="{{ route('checkout.coupon') }}">Apply</button>
+                                <input name="coupon_code" value="{{ old('coupon_code', $appliedCoupon?->code) }}" class="form-control" placeholder="Enter coupon code" style="border-radius:8px;">
+                                <button type="button" class="btn btn-outline" data-apply-coupon data-url="{{ route('checkout.coupon') }}" style="border-radius:8px;">Apply</button>
                             </div>
                             <small data-coupon-message style="display:block;margin-top:8px;"></small>
                         </div>
 
-                        <button class="btn btn-primary" style="width:100%;margin-top:16px;">Place Order</button>
-                        <div class="summary-assurance">&#128274; Price snapshot saved upon placement</div>
-                        <p style="font-size:.74rem;color:var(--text-secondary);margin-top:8px;">Your order will be verified by admin after submitting the transaction reference.</p>
+                        <button class="btn btn-primary" style="width:100%;margin-top:16px;padding:12px 16px;font-size:0.95rem;font-weight:700;border-radius:10px;">🔒 Place Order &rarr;</button>
+                        <div class="summary-assurance" style="margin-top:12px;">&#128274; Price snapshot saved upon placement</div>
+                        <p style="font-size:.74rem;color:var(--text-secondary);margin-top:8px;text-align:center;">Your order will be verified by admin after submitting the transaction reference.</p>
                     </div>
                 </div>
             </form>

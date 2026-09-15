@@ -25,7 +25,7 @@
             @if($discount)
                 <span class="discount-badge">{{ $discount }}% off</span>
             @endif</div>
-        <a href="{{ route('books.show', $book) }}" class="title">{{ $book->title }}</a>
+        <a href="{{ route('books.show', $book) }}" class="title">{{ Str::title($book->title) }}</a>
         <span class="author">by {{ $book->author->name ?? 'Unknown' }}</span>
         <div class="price-row">
             <span class="price">{{ $priceData['symbol'] }}{{ number_format($priceData['price'], $priceData['currency'] === 'INR' ? 0 : 2) }}</span>

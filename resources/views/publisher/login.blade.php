@@ -29,40 +29,50 @@
         </section>
 
         <section class="admin-login-form-panel">
-            <div class="admin-login-form-wrap">
-                <div class="admin-login-mobile-logo"><img src="{{ asset('images/logo-square.jpg') }}"
-                        alt="College Street Online"></div>
-                <span class="admin-login-kicker">Publisher Panel</span>
-                <h2>Welcome back</h2>
-                <p class="admin-login-subtitle">Sign in to manage your publishing business.</p>
+            <div class="admin-login-card-wrap">
+                <div class="admin-login-form-wrap">
+                    <div class="admin-login-mobile-logo"><img src="{{ asset('images/logo-square.jpg') }}"
+                            alt="College Street Online"></div>
+                    <span class="admin-login-kicker">Publisher Panel</span>
+                    <h2>Welcome back</h2>
+                    <p class="admin-login-subtitle">Sign in to manage your publishing business.</p>
 
-                @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>@endif
-                @if($errors->any())
-                <div class="alert alert-danger">{{ $errors->first() }}</div>@endif
+                    @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>@endif
+                    @if($errors->any())
+                    <div class="alert alert-danger">{{ $errors->first() }}</div>@endif
 
-                <form method="POST" action="{{ route('publisher.login.submit') }}">
-                    @csrf
-                    <div class="a-form-group">
-                        <label for="publisher-email">Email address</label>
-                        <input id="publisher-email" type="email" name="email" value="{{ old('email') }}" class="a-input"
-                            autocomplete="email" placeholder="publisher@example.com" required autofocus>
-                    </div>
-                    <div class="a-form-group">
-                        <label for="publisher-password">Password</label>
-                        <div class="admin-password-field">
-                            <input id="publisher-password" type="password" name="password" class="a-input"
-                                autocomplete="current-password" placeholder="Enter your password" required>
-                            <button type="button" data-password-toggle aria-label="Show password">Show</button>
+                    <form method="POST" action="{{ route('publisher.login.submit') }}">
+                        @csrf
+                        <div class="a-form-group">
+                            <label for="publisher-email">Email address</label>
+                            <input id="publisher-email" type="email" name="email" value="{{ old('email') }}" class="a-input"
+                                autocomplete="email" placeholder="publisher@example.com" required autofocus>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary admin-login-submit">Sign in to dashboard</button>
-                </form>
+                        <div class="a-form-group">
+                            <label for="publisher-password">Password</label>
+                            <div class="admin-password-field">
+                                <input id="publisher-password" type="password" name="password" class="a-input"
+                                    autocomplete="current-password" placeholder="Enter your password" required>
+                                <button type="button" data-password-toggle aria-label="Show password">Show</button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary admin-login-submit">Sign in to dashboard →</button>
+                    </form>
 
-                <div class="security-note">Your account is protected with secure sessions and login rate limiting.</div>
-                <p class="admin-back-link">New publisher? <a href="{{ route('publisher.register') }}">Apply to join</a>
-                </p>
-                <a href="{{ route('home') }}" class="admin-back-link">Return to website</a>
+                    <div class="security-note">
+                        <span style="font-size:1.05rem; margin-right:4px;">🔒</span>
+                        <span>Your account is protected with 256-bit secure sessions and login rate limiting.</span>
+                    </div>
+                    
+                    <div class="login-footer-actions">
+                        <div class="login-register-prompt">
+                            <span>New publisher?</span>
+                            <a href="{{ route('publisher.register') }}" class="btn-link-action">Apply to join</a>
+                        </div>
+                        <a href="{{ route('home') }}" class="admin-back-link">← Return to main website</a>
+                    </div>
+                </div>
             </div>
         </section>
     </main>

@@ -1163,12 +1163,12 @@ html.dark .stat-number {
 #bestsellers .section-head { margin-bottom: 40px; }
 #bestsellers .section-head p { max-width: 520px; margin: 10px auto 0; }
 #bestsellers .book-card { position: relative; border-color: color-mix(in srgb, var(--brand-primary) 20%, var(--border)); box-shadow: 0 10px 28px rgba(17,51,80,.08); }
-#bestsellers .book-card::before { position: absolute; top: 12px; left: 12px; z-index: 3; display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid rgba(255,255,255,.8); border-radius: 50%; background: var(--brand-primary); color: #fff; font-size: .72rem; font-weight: 800; box-shadow: var(--shadow-sm); }
-#bestsellers .book-card:nth-child(1)::before { content: "#1"; background: var(--accent-gold); color: #12242b; }
-#bestsellers .book-card:nth-child(2)::before { content: "#2"; }
-#bestsellers .book-card:nth-child(3)::before { content: "#3"; }
-#bestsellers .book-card:nth-child(4)::before { content: "#4"; }
-#bestsellers .book-card:hover { border-color: var(--brand-primary); box-shadow: 0 18px 40px rgba(17,51,80,.15); }
+#bestsellers .book-card::before { position: absolute; top: 12px; left: 12px; z-index: 5; display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 10px; border-radius: 99px; font-family: var(--font-heading); font-size: .82rem; font-weight: 800; color: #fff; background: linear-gradient(135deg, #1e293b, #334155); border: 2px solid rgba(255,255,255,.9); box-shadow: 0 8px 18px rgba(0,0,0,.22); }
+#bestsellers .book-card:nth-child(1)::before { content: "#1 🏆"; background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; border-color: rgba(255,253,231,.95); box-shadow: 0 8px 20px rgba(217,119,6,.4); }
+#bestsellers .book-card:nth-child(2)::before { content: "#2 🥈"; background: linear-gradient(135deg, #475569, #64748b); color: #fff; box-shadow: 0 8px 20px rgba(71,85,105,.35); }
+#bestsellers .book-card:nth-child(3)::before { content: "#3 🥉"; background: linear-gradient(135deg, #92400e, #b45309); color: #fff; box-shadow: 0 8px 20px rgba(146,64,14,.35); }
+#bestsellers .book-card:nth-child(4)::before { content: "#4 ⭐"; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; box-shadow: 0 8px 20px rgba(15,118,110,.35); }
+#bestsellers .book-card:hover { border-color: var(--brand-primary); box-shadow: 0 20px 45px rgba(17,51,80,.18); }
 
 /* ---------------- Customer Welcome Bar & Active Orders ---------------- */
 .customer-welcome {
@@ -4303,7 +4303,165 @@ html.dark .status-step.current .dot {
 }
 
 /* Refined public catalogue cards */
-.book-card{border-radius:16px;overflow:hidden;border-color:color-mix(in srgb,var(--brand-primary) 12%,var(--border));box-shadow:0 8px 24px rgba(17,51,80,.07);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.book-card:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--brand-primary) 35%,var(--border));box-shadow:0 18px 38px rgba(17,51,80,.14)}.book-card>a:first-child{display:block;overflow:hidden;background:linear-gradient(145deg,#edf3f8,#f8fafc)}.book-card .book-cover{aspect-ratio:4/5}.book-card .book-cover-image{transition:transform .28s ease}.book-card:hover .book-cover-image{transform:scale(1.025)}.book-card-body{padding:14px 15px 15px;gap:5px}.book-card-meta{min-height:21px;margin-bottom:1px}.book-card-meta .badge-tag-outline{padding:3px 8px;background:var(--surface-alt);font-size:.63rem}.book-card .discount-badge{padding:3px 7px;border-radius:999px;background:rgba(31,157,108,.11);font-size:.65rem}.book-card-body .title{min-height:2.55em;font-size:.9rem;line-height:1.28}.book-card-body .author{font-size:.72rem}.book-card-body .price-row{margin-top:3px;gap:7px}.book-card-body .price{font-size:1.12rem}.book-card .stock-pill{margin-top:1px;padding:3px 8px}.book-card-action{margin-top:auto;padding-top:10px;border-top:1px solid var(--border);transition:color .18s ease}.book-card-action span{transition:transform .18s ease}.book-card:hover .book-card-action span{transform:translateX(3px)}
+.book-card {
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--surface, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, var(--border));
+    box-shadow: 0 10px 25px -5px rgba(20, 45, 70, 0.07);
+    transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.28s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.28s ease;
+}
+.book-card:hover {
+    transform: translateY(-7px);
+    border-color: color-mix(in srgb, var(--brand-primary) 40%, var(--border));
+    box-shadow: 0 22px 48px -10px rgba(20, 45, 70, 0.16);
+}
+.book-card > a:first-child {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden;
+    background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+    position: relative;
+    width: 100%;
+}
+html.dark .book-card > a:first-child {
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+}
+.book-card .book-cover {
+    width: 100%;
+    height: 250px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 0 auto !important;
+    text-align: center !important;
+}
+.book-card .book-cover-image {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    margin: 0 auto !important;
+    display: block !important;
+    border-radius: 6px;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.16));
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), filter 0.35s ease;
+}
+.book-card:hover .book-cover-image {
+    transform: scale(1.05) translateY(-3px);
+    filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.24));
+}
+.book-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+}
+.book-card-meta {
+    min-height: 22px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.book-card-meta .badge-tag-outline {
+    padding: 3px 9px;
+    background: var(--surface-alt, #f8fafc);
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.book-card .discount-badge {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(31, 157, 108, 0.12);
+    color: #078657;
+    font-size: 0.67rem;
+    font-weight: 800;
+}
+.book-card-body .title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.98rem;
+    line-height: 1.35;
+    color: var(--text-primary);
+    text-decoration: none;
+    min-height: 2.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.book-card-body .title:hover {
+    color: var(--brand-primary);
+}
+.book-card-body .author {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.book-card-body .price-row {
+    margin-top: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.book-card-body .price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--brand-primary);
+    letter-spacing: -0.01em;
+}
+.book-card-body .price-strike {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+.book-card .stock-pill {
+    margin-top: 2px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: fit-content;
+}
+.book-card .stock-pill.in {
+    background: rgba(31, 157, 108, 0.1);
+    color: #078657;
+}
+.book-card .stock-pill.low {
+    background: rgba(217, 119, 6, 0.1);
+    color: #b45309;
+}
+.book-card-action {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--brand-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.book-card-action span {
+    transition: transform 0.2s ease;
+}
+.book-card:hover .book-card-action span {
+    transform: translateX(4px);
+}
 
 /* Customer Coupons & Offers Bar */
 .customer-coupons-bar {

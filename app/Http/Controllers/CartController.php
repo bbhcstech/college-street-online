@@ -45,10 +45,14 @@ class CartController extends Controller
         return back();
     }
 
-    public function destroy(Cart $cart)
+    public function destroy($id)
     {
-        abort_unless($cart->customer_id === auth()->id(), 403);
-        $cart->delete();
-        return back()->with('success', 'Removed from cart.');
+        $cart = Cart::where('customer_id', auth()->id())->where('id', $id)->first();
+        if ($cart) {
+            $cart->delete();
+            return redirect()->route('cart.index')->with('success', 'Removed item from your cart.');
+        }
+
+        return redirect()->route('cart.index')->with('info', 'Item was already removed from your cart.');
     }
 }
