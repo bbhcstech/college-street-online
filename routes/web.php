@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController, SupportController};
+use App\Http\Controllers\{HomeController, BookController, BookReviewController, CartController, CheckoutController, AccountController, NewsletterController, PageController, ProfileController, SupportController, CountryCurrencyController};
 use App\Http\Controllers\Auth\{CustomerAuthController, PublisherAuthController, AdminAuthController};
 use App\Http\Controllers\Publisher as Pub;
 use App\Http\Controllers\Admin;
@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Route;
 
 //CUSTOMER ROUTES
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/country/switch', [CountryCurrencyController::class, 'switchCountry'])->name('country.switch');
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
+Route::get('/books/suggestions', [BookController::class, 'suggestions']);
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/bulk-orders', [PageController::class, 'bulkOrders'])->name('bulk-orders');
@@ -30,15 +32,20 @@ Route::middleware('role:customer')->group(function () {
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::get('/cart/remove/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
+    Route::get('/cart/{cart}', [CartController::class, 'destroy']);
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.coupon');
     Route::post('/checkout/quote', [CheckoutController::class, 'quote'])->name('checkout.quote');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('/account/orders/{order}/invoice', [AccountController::class, 'downloadInvoice'])->name('account.orders.invoice');
+    Route::get('/account/notifications', [AccountController::class, 'notifications'])->name('account.notifications');
     Route::get('/account/profile', [ProfileController::class, 'customerEdit'])->name('account.profile');
     Route::put('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
     Route::put('/account/password', [ProfileController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/books/{book}/reviews', [BookReviewController::class, 'store'])->name('books.reviews.store');
+    Route::post('/reviews/{review}/report', [BookReviewController::class, 'report'])->middleware('throttle:5,1')->name('reviews.report');
     Route::get('/account/support', [SupportController::class, 'index'])->name('account.support');
     Route::post('/account/support', [SupportController::class, 'store'])->middleware('throttle:5,1')->name('account.support.store');
 });
@@ -53,8 +60,9 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
 
     Route::middleware('role:publisher')->group(function () {
         Route::get('/dashboard', [Pub\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/analytics', [Pub\AnalyticsController::class, 'index'])->name('analytics.index');
-        Route::get('/analytics/export/{type}', [Pub\AnalyticsController::class, 'export'])->name('analytics.export');
+        Route::redirect('/analytics', '/publisher/analytics-reports');
+        Route::get('/analytics-reports', [Pub\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics-reports/export/{type}', [Pub\AnalyticsController::class, 'export'])->name('analytics.export');
         Route::get('/profile', [ProfileController::class, 'publisherEdit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
@@ -68,8 +76,12 @@ Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::post('/inventory/{book}/adjust', [Pub\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::get('/coupons', [Pub\CouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [Pub\CouponController::class, 'store'])->name('coupons.store');
-        Route::get('/payments', [Pub\PaymentController::class, 'index'])->name('payments.index');
-        Route::get('/payments/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
+        Route::redirect('/payments', '/publisher/sales-earnings');
+        Route::get('/sales-earnings', [Pub\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/notifications', [Pub\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/sales-earnings/orders/{order}/invoice', [Pub\PaymentController::class, 'invoice'])->name('payments.invoice');
+        Route::get('/sales-earnings/statement', [Pub\PaymentController::class, 'statement'])->name('payments.statement');
+        Route::post('/payouts', [Pub\PayoutController::class, 'store'])->name('payouts.store');
         Route::get('/orders/export/{type}', [Pub\OrderController::class, 'export'])->name('orders.export');
         Route::get('/orders', [Pub\OrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/items/{orderItem}/status', [Pub\OrderController::class, 'updateStatus'])->name('orders.items.status');
@@ -95,9 +107,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/administrators/{administrator}', [Admin\AdministratorController::class, 'update'])->name('administrators.update');
         Route::patch('/administrators/{administrator}/status', [Admin\AdministratorController::class, 'updateStatus'])->name('administrators.status');
         Route::get('/analytics', [Admin\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/export/{type}', [Admin\AnalyticsController::class, 'export'])->name('analytics.export');
+
+        // Admin Currency & Country Management
+        Route::get('/currencies', [Admin\CurrencyController::class, 'index'])->name('currencies.index');
+        Route::post('/currencies', [Admin\CurrencyController::class, 'store'])->name('currencies.store');
+        Route::put('/currencies/{currency}', [Admin\CurrencyController::class, 'update'])->name('currencies.update');
+        Route::delete('/currencies/{currency}', [Admin\CurrencyController::class, 'destroy'])->name('currencies.destroy');
+
+        Route::get('/countries', [Admin\CountryController::class, 'index'])->name('countries.index');
+        Route::post('/countries', [Admin\CountryController::class, 'store'])->name('countries.store');
+        Route::put('/countries/{country}', [Admin\CountryController::class, 'update'])->name('countries.update');
+        Route::delete('/countries/{country}', [Admin\CountryController::class, 'destroy'])->name('countries.destroy');
+
+        // Admin Payment Settings
         Route::get('/payment-settings', [Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('/payment-settings', [Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
+        Route::put('/payment-settings/bank', [Admin\PaymentSettingController::class, 'updateBankDetails'])->name('payment-settings.bank');
         Route::put('/payment-settings/commission', [Admin\PaymentSettingController::class, 'updateCommission'])->name('payment-settings.commission');
+        Route::get('/payouts', [Admin\PayoutController::class, 'index'])->name('payouts.index');
+        Route::patch('/payouts/{payout}', [Admin\PayoutController::class, 'update'])->name('payouts.update');
 
         Route::get('/publishers', [Admin\PublisherController::class, 'index'])->name('publishers.index');
         Route::get('/publishers/create', [Admin\PublisherController::class, 'create'])->name('publishers.create');
@@ -118,6 +147,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/books/{id}/restore', [Admin\BookController::class, 'restore'])->name('books.restore');
         Route::delete('/books/{id}/force', [Admin\BookController::class, 'forceDestroy'])->name('books.force-destroy');
         Route::delete('/books/{book}', [Admin\BookController::class, 'destroy'])->name('books.destroy');
+
+        Route::get('/inventory', [Admin\InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/inventory/export/{type}', [Admin\InventoryController::class, 'export'])->name('inventory.export');
+        Route::put('/inventory/{book}', [Admin\InventoryController::class, 'update'])->name('inventory.update');
 
         Route::get('/categories', [Admin\CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [Admin\CategoryController::class, 'storeCategory'])->name('categories.store');
@@ -148,6 +181,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
         Route::patch('/payments/{payment}/verify', [Admin\OrderController::class, 'verifyPayment'])->name('payments.verify');
         Route::get('/payments/{payment}/proof', [Admin\OrderController::class, 'paymentProof'])->name('payments.proof');
+
+        Route::get('/reviews', [Admin\ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('/reviews/{review}', [Admin\ReviewController::class, 'show'])->name('reviews.show');
+        Route::patch('/reviews/{review}/response', [Admin\ReviewController::class, 'updateResponse'])->name('reviews.response');
+        Route::delete('/reviews/{review}', [Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
         Route::get('/newsletter', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
         Route::post('/newsletter/send', [Admin\NewsletterController::class, 'send'])->name('newsletter.send');

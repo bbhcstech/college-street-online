@@ -9,4 +9,7 @@ class Publisher extends Model
 
     public function user() { return $this->belongsTo(User::class); }
     public function books() { return $this->hasMany(Book::class); }
+    public function ledgerEntries() { return $this->hasMany(PublisherLedgerEntry::class); }
+    public function payoutRequests() { return $this->hasMany(PublisherPayoutRequest::class); }
+    public function activities() { return $this->hasMany(PublisherActivity::class); }
 }

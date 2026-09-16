@@ -14,10 +14,17 @@ class PageController extends Controller
             'institution_name' => 'required|string|max:200',
             'contact_name' => 'required|string|max:150',
             'email' => 'required|email|max:150',
-            'phone' => 'required|string|max:30',
+            'phone' => 'nullable|string|max:40',
+            'phone_number' => 'nullable|string|max:30',
+            'phone_code' => 'nullable|string|max:10',
             'requirements' => 'required|string|min:10|max:10000',
             'notes' => 'nullable|string|max:3000',
         ]);
+
+        $phoneCode = $request->input('phone_code', '+91');
+        $phoneNumber = $request->input('phone_number', $request->input('phone'));
+        $data['phone'] = !empty($data['phone']) ? $data['phone'] : trim($phoneCode . ' ' . ltrim($phoneNumber, '+'));
+
         $bulkOrder = BulkOrderRequest::create($data + ['customer_id' => auth()->id()]);
 
         return redirect()->route('bulk-orders')->with('success', "Quote request #BOR{$bulkOrder->id} submitted. Our team will contact you soon.");

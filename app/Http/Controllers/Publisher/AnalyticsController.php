@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Publisher;
 
 use App\Http\Controllers\Controller;
+use App\Models\Book;
+use App\Models\PublisherLedgerEntry;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +23,9 @@ class AnalyticsController extends Controller
     {
         abort_unless(in_array($type, ['csv', 'excel', 'print', 'pdf'], true), 404);
         $data = $this->reportData($request, false);
-        $filename = 'publisher-sales-' . $data['period'] . '-' . now()->format('Y-m-d');
+        $report = in_array($request->query('report'), ['sales', 'inventory', 'orders', 'books'], true) ? $request->query('report') : 'sales';
+        $data['report'] = $report;
+        $filename = 'publisher-' . $report . '-' . $data['period'] . '-' . now()->format('Y-m-d');
 
         if ($type === 'csv') {
             return new StreamedResponse(function () use ($data) {
@@ -42,12 +46,14 @@ class AnalyticsController extends Controller
     private function reportData(Request $request, bool $limitBooks = true): array
     {
         $publisherId = auth()->user()->publisher->id;
-        $period = in_array($request->query('period'), ['week', 'month', 'year'], true) ? $request->query('period') : 'month';
-        [$start, $end, $points] = $this->periodDetails($period);
+        $period = in_array($request->query('period'), ['day', 'week', 'month', 'year', 'custom'], true) ? $request->query('period') : 'month';
+        [$start, $end, $points] = $this->periodDetails($period, $request);
 
+        $validStatuses = self::SALE_STATUSES;
         $sales = DB::table('order_items')->join('books', 'books.id', '=', 'order_items.book_id')
-            ->join('orders', 'orders.id', '=', 'order_items.order_id')->where('books.publisher_id', $publisherId)
-            ->whereBetween('orders.created_at', [$start, $end])->whereIn('orders.status', self::SALE_STATUSES);
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('books.publisher_id', $publisherId)->whereBetween('orders.created_at', [$start, $end])
+            ->whereIn('orders.status', $validStatuses);
 
         $bucketExpression = match ($period) {
             'year' => "DATE_FORMAT(orders.created_at, '%Y-%m')",
@@ -73,17 +79,56 @@ class AnalyticsController extends Controller
 
         $revenue = (float) (clone $sales)->sum(DB::raw('order_items.quantity * COALESCE(order_items.base_unit_price, order_items.unit_price)'));
         $orders = (int) (clone $sales)->distinct()->count('orders.id');
+        $rangeDays = max(1, $start->diffInDays($end) + 1);
+        $previousEnd = $start->copy()->subSecond();
+        $previousStart = $previousEnd->copy()->subDays($rangeDays - 1)->startOfDay();
+        $previousRevenue = (float) DB::table('order_items')->join('books', 'books.id', '=', 'order_items.book_id')->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('books.publisher_id', $publisherId)->whereBetween('orders.created_at', [$previousStart, $previousEnd])->whereIn('orders.status', $validStatuses)
+            ->sum(DB::raw('order_items.quantity * COALESCE(order_items.base_unit_price, order_items.unit_price)'));
+        $salesGrowth = $previousRevenue > 0 ? (($revenue - $previousRevenue) / $previousRevenue) * 100 : ($revenue > 0 ? 100 : 0);
+        $validOrderIds = (clone $sales)->distinct()->pluck('orders.id');
+        $netRevenue = (float) PublisherLedgerEntry::where('publisher_id', $publisherId)->where('type', 'earning')->whereIn('order_id', $validOrderIds)->sum('amount');
 
-        return compact('period', 'start', 'end', 'series', 'topBooks', 'statusMix', 'revenue', 'orders') + [
+        $bookPerformance = Book::where('publisher_id', $publisherId)->leftJoin('order_items', 'books.id', '=', 'order_items.book_id')
+            ->leftJoin('orders', function ($join) use ($validStatuses, $start, $end) {
+                $join->on('orders.id', '=', 'order_items.order_id')
+                     ->whereIn('orders.status', $validStatuses)
+                     ->whereBetween('orders.created_at', [$start, $end]);
+            })
+            ->selectRaw('books.id, books.title, books.isbn, books.view_count, COALESCE(SUM(CASE WHEN orders.id IS NOT NULL THEN order_items.quantity ELSE 0 END), 0) as units')
+            ->groupBy('books.id', 'books.title', 'books.isbn', 'books.view_count')->get();
+        $leastSellingBooks = $bookPerformance->sortBy('units')->take(5)->values();
+        $mostViewedBooks = $bookPerformance->sortByDesc('view_count')->take(5)->values();
+
+        $inventory = DB::table('books')->leftJoin('inventories', 'inventories.book_id', '=', 'books.id')->where('books.publisher_id', $publisherId)
+            ->selectRaw('COUNT(books.id) as total_books, COALESCE(SUM(inventories.quantity),0) as current_stock, SUM(CASE WHEN inventories.quantity > 0 AND inventories.quantity <= inventories.low_stock_threshold THEN 1 ELSE 0 END) as low_stock, SUM(CASE WHEN inventories.quantity IS NULL OR inventories.quantity <= 0 THEN 1 ELSE 0 END) as out_of_stock')->first();
+        $stockMovement = (int) DB::table('inventory_transactions')->join('books', 'books.id', '=', 'inventory_transactions.book_id')->where('books.publisher_id', $publisherId)->whereBetween('inventory_transactions.created_at', [$start, $end])->sum(DB::raw('ABS(inventory_transactions.change_qty)'));
+        $inventoryBooks = Book::where('publisher_id', $publisherId)->with('inventory')->orderBy('title')->get();
+
+        $allOrders = DB::table('orders')->join('order_items', 'order_items.order_id', '=', 'orders.id')->join('books', 'books.id', '=', 'order_items.book_id')->where('books.publisher_id', $publisherId)->whereBetween('orders.created_at', [$start, $end]);
+        $orderAnalytics = ['total' => (clone $allOrders)->distinct()->count('orders.id'), 'pending' => (clone $allOrders)->whereIn('orders.status', ['pending_payment', 'confirmed', 'processing', 'packed'])->distinct()->count('orders.id'), 'completed' => (clone $allOrders)->whereIn('orders.status', ['delivered', 'completed'])->distinct()->count('orders.id'), 'cancelled' => (clone $allOrders)->where('orders.status', 'cancelled')->distinct()->count('orders.id')];
+        $customerOrders = (clone $allOrders)->select('orders.customer_id')->selectRaw('COUNT(DISTINCT orders.id) as order_count')->groupBy('orders.customer_id')->get();
+        $customerAnalytics = ['total' => $customerOrders->count(), 'new' => $customerOrders->where('order_count', 1)->count(), 'repeat' => $customerOrders->where('order_count', '>', 1)->count()];
+
+        return compact('period', 'start', 'end', 'series', 'topBooks', 'statusMix', 'revenue', 'orders', 'netRevenue', 'salesGrowth', 'leastSellingBooks', 'mostViewedBooks', 'inventory', 'inventoryBooks', 'stockMovement', 'orderAnalytics', 'customerAnalytics') + [
             'units' => (int) (clone $sales)->sum('order_items.quantity'),
             'averageOrder' => $orders ? $revenue / $orders : 0,
         ];
     }
 
-    private function periodDetails(string $period): array
+    private function periodDetails(string $period, Request $request): array
     {
         $end = now()->endOfDay();
-        if ($period === 'week') {
+        if ($period === 'custom' && $request->filled(['date_from', 'date_to'])) {
+            $start = Carbon::parse($request->date_from)->startOfDay();
+            $end = Carbon::parse($request->date_to)->endOfDay();
+            if ($start->gt($end)) [$start, $end] = [$end->copy()->startOfDay(), $start->copy()->endOfDay()];
+            $days = min(31, $start->diffInDays($end));
+            $points = collect(range(0, $days))->map(fn ($i) => ['key' => $start->copy()->addDays($i)->toDateString(), 'label' => $start->copy()->addDays($i)->format('d M')]);
+        } elseif ($period === 'day') {
+            $start = now()->startOfDay();
+            $points = collect([['key' => $start->toDateString(), 'label' => 'Today']]);
+        } elseif ($period === 'week') {
             $start = now()->subDays(6)->startOfDay();
             $points = collect(range(0, 6))->map(fn($i) => ['key' => $start->copy()->addDays($i)->toDateString(), 'label' => $start->copy()->addDays($i)->format('D')]);
         } elseif ($period === 'year') {

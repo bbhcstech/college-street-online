@@ -3,51 +3,8 @@
     $brandLabel = 'Publisher Panel';
     $crumb = 'Sales';
 $logoutRoute = route('publisher.logout'); @endphp
-@section('title', 'Payments & Invoices')
-@section('nav')
-    <div class="nav-group">
-        <div class="nav-group-title">Overview</div>
-        <a href="{{ route('publisher.dashboard') }}" class="nav-link">
-            <span class="nav-icon">&#9635;</span>
-            <span>Dashboard</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div>
-        <a href="{{ route('publisher.books.index') }}" class="nav-link">
-            <span class="nav-icon">&#128214;</span>
-            <span>My Books</span>
-        </a>
-        <a href="{{ route('publisher.inventory.index') }}" class="nav-link">
-            <span class="nav-icon">&#128230;</span>
-            <span>Inventory</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Marketing</div>
-        <a href="{{ route('publisher.coupons.index') }}" class="nav-link">
-            <span class="nav-icon">&#127991;</span>
-            <span>Coupons & Offers</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}" class="nav-link">
-            <span class="nav-icon">&#128666;</span>
-            <span>Orders</span>
-        </a>
-        <a href="{{ route('publisher.payments.index') }}" class="nav-link active">
-            <span class="nav-icon">&#8377;</span>
-            <span>Payments & Invoices</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Reports</div>
-        <a href="{{ route('publisher.analytics.index') }}" class="nav-link">
-            <span class="nav-icon">&#128200;</span>
-            <span>Analytics & Reports</span>
-        </a>
-    </div>
-@endsection
+@section('title', 'Sales & Earnings')
+@section('nav')@include('publisher.partials.nav', ['active' => 'payments'])@endsection
 @section('content')
 <style>
     .payment-page-head {
@@ -163,8 +120,8 @@ $logoutRoute = route('publisher.logout'); @endphp
 
 <div class="payment-page-head">
     <div>
-        <span class="analytics-eyebrow">Manual payment records</span>
-        <h2>Payments and invoices</h2>
+        <span class="analytics-eyebrow">Publisher finances</span>
+        <h2>Sales &amp; earnings</h2>
         <p>Amounts appear after the administrator verifies the customer's UTR payment.</p>
     </div>
     <span class="payment-manual-note">No payment gateway connected</span>
@@ -188,7 +145,7 @@ $logoutRoute = route('publisher.logout'); @endphp
     <div>
         <span>Publisher deductions</span>
         <strong>₹{{ number_format($totals->deductions ?? 0, 2) }}</strong>
-        <small>Saved when payments are verified</small>
+        <small>Commission deducted from verified sales</small>
     </div>
 </div>
 <section class="a-card publisher-payment-card">
@@ -255,13 +212,114 @@ $logoutRoute = route('publisher.logout'); @endphp
             @else
                 <span class="disabled">Previous</span>
             @endif
-            
+
             @if($orders->nextPageUrl())
                 <a href="{{ $orders->nextPageUrl() }}">Next</a>
             @else
                 <span class="disabled">Next</span>
             @endif
         </div>
+    </div>
+</section>
+
+<div class="a-grid a-grid-2" style="margin-top:18px;align-items:start;">
+    <section class="a-card" style="padding:20px;">
+        <div class="a-card-head dashboard-card-title">
+            <div>
+                <h3>Request payout</h3>
+                <p>Available after delivery plus the 7-day return window.</p>
+            </div>
+        </div>
+        <div class="payment-summary-grid" style="grid-template-columns:repeat(3,1fr);margin:12px 0;">
+            <div>
+                <span>Available</span><strong>₹{{ number_format(max(0, $availableBalance - $reservedBalance), 2) }}</strong>
+            </div>
+            <div><span>Pending release</span><strong>₹{{ number_format($pendingBalance, 2) }}</strong></div>
+            <div><span>Reserved</span><strong>₹{{ number_format($reservedBalance, 2) }}</strong></div>
+        </div>
+        <form method="POST" action="{{ route('publisher.payouts.store') }}">@csrf
+            <label class="a-label">Amount</label><input class="a-input" type="number" name="amount" min="1" step="0.01"
+                required>
+            <label class="a-label" style="margin-top:10px;">Bank / UPI payment details</label><textarea class="a-input"
+                name="payment_details" rows="3" maxlength="1000" required
+                placeholder="Account holder, bank, account number and IFSC, or UPI ID"></textarea>
+            <button class="btn btn-primary" style="margin-top:12px;">Submit payout request</button>
+        </form>
+    </section>
+    <section class="a-card">
+        <div class="a-card-head dashboard-card-title">
+            <div>
+                <h3>Payout history</h3>
+                <p>Manual settlement status and references.</p>
+            </div>
+        </div>
+        <div class="publisher-table-scroll">
+            <table class="a-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Reference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($payouts as $payout)
+                        <tr>
+                            <td>{{ $payout->created_at->format('d M Y') }}</td>
+                            <td>₹{{ number_format($payout->amount, 2) }}</td>
+                            <td><span class="badge badge-info">{{ ucfirst($payout->status) }}</span></td>
+                            <td>{{ $payout->reference ?? '—' }}</td>
+                        </tr>
+                    @empty<tr>
+                        <td colspan="4">No payout requests yet.</td>
+                    </tr>@endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<section class="a-card" style="margin-top:18px;">
+    <div class="a-card-head dashboard-card-title">
+        <div>
+            <h3>Earnings ledger</h3>
+            <p>Auditable sales, discounts, commission, refunds, and payouts.</p>
+        </div><a class="btn btn-outline btn-sm" href="{{ route('publisher.payments.statement') }}">Download
+            statement</a>
+    </div>
+    <div class="publisher-table-scroll">
+        <table class="a-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Gross</th>
+                    <th>Discount</th>
+                    <th>Commission</th>
+                    <th>Net change</th>
+                    <th>Available</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($ledgerEntries as $entry)
+                    <tr>
+                        <td>{{ $entry->created_at->format('d M Y') }}</td>
+                        <td>{{ ucfirst($entry->type) }}</td>
+                        <td>{{ $entry->description }}</td>
+                        <td>₹{{ number_format($entry->gross_amount, 2) }}</td>
+                        <td>₹{{ number_format($entry->discount_amount, 2) }}</td>
+                        <td>₹{{ number_format($entry->commission_amount, 2) }}</td>
+                        <td style="color:{{ $entry->amount < 0 ? '#c43d3d' : '#078657' }};font-weight:700;">
+                            {{ $entry->amount < 0 ? '−' : '+' }}₹{{ number_format(abs($entry->amount), 2) }}</td>
+                        <td>{{ $entry->available_at?->format('d M Y') ?? 'After delivery' }}</td>
+                    </tr>
+                @empty<tr>
+                    <td colspan="8">No ledger entries yet. New entries appear when payments are verified.</td>
+                </tr>@endforelse
+            </tbody>
+        </table>
     </div>
 </section>
 @endsection

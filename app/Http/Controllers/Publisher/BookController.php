@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Publisher;
 use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
+use App\Models\BookMarket;
 use App\Models\Category;
+use App\Models\Country;
 use App\Models\Inventory;
+use App\Models\PublisherActivity;
 use App\Services\PublicImageStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +57,7 @@ class BookController extends Controller
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $request->validate(['status' => 'required|in:active,inactive']);
         $book->update($data);
+        PublisherActivity::record(auth()->user()->publisher, 'book_status', $book->title, 'Status changed to '.ucfirst($data['status']).'.', $book);
         return back()->with('success', 'Book status updated.');
     }
 
@@ -79,7 +83,6 @@ class BookController extends Controller
         return $this->formView(new Book());
     }
 
-    /** FR-2: ISBN validated for format/uniqueness; cover image validated by MIME/size before storage. */
     public function store(Request $request, PublicImageStorageService $images)
     {
         $data = $this->validated($request);
@@ -97,6 +100,9 @@ class BookController extends Controller
                 unset($data['new_author_name']);
                 $book = Book::create($data);
                 Inventory::create(['book_id' => $book->id, 'quantity' => (int) $request->input('initial_stock', 0)]);
+                PublisherActivity::record(auth()->user()->publisher, 'book_created', $book->title, 'Book added with '.(int) $request->input('initial_stock', 0).' units in stock.', $book);
+
+                $this->syncMarkets($request, $book);
             });
         } catch (\Throwable $exception) {
             if ($cover) $images->delete($cover);
@@ -108,7 +114,7 @@ class BookController extends Controller
 
     public function edit(Book $book)
     {
-        abort_unless($book->publisher_id === auth()->user()->publisher->id, 403); // ownership check, Section 4.2
+        abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         return $this->formView($book);
     }
 
@@ -130,6 +136,9 @@ class BookController extends Controller
                 $data['author_id'] = $this->resolveAuthorId($request, $data['author_id'] ?? null);
                 unset($data['new_author_name']);
                 $book->update($data);
+                PublisherActivity::record(auth()->user()->publisher, 'book_updated', $book->title, 'Book details updated.', $book);
+
+                $this->syncMarkets($request, $book);
             });
         } catch (\Throwable $exception) {
             if ($cover) $images->delete($cover);
@@ -147,10 +156,27 @@ class BookController extends Controller
         return redirect()->route('publisher.books.index')->with('success', 'Book updated.');
     }
 
-    /** FR-2: soft-delete to preserve historical order-line integrity, never hard-delete. */
+    protected function syncMarkets(Request $request, Book $book): void
+    {
+        $marketsData = $request->input('markets', []);
+        foreach ($marketsData as $countryCode => $mData) {
+            BookMarket::updateOrCreate(
+                ['book_id' => $book->id, 'country_code' => $countryCode],
+                [
+                    'is_available' => !empty($mData['is_available']),
+                    'price' => isset($mData['price']) && $mData['price'] !== '' ? (float) $mData['price'] : null,
+                    'mrp' => isset($mData['mrp']) && $mData['mrp'] !== '' ? (float) $mData['mrp'] : null,
+                    'max_order_qty' => isset($mData['max_order_qty']) ? (int) $mData['max_order_qty'] : 10,
+                    'dispatch_days' => $mData['dispatch_days'] ?? null,
+                ]
+            );
+        }
+    }
+
     public function destroy(Book $book)
     {
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
+        PublisherActivity::record(auth()->user()->publisher, 'book_deleted', $book->title, 'Book removed from the catalogue.', $book);
         $book->delete();
         return back()->with('success', 'Book removed from catalogue.');
     }
@@ -182,10 +208,15 @@ class BookController extends Controller
 
     protected function formView(Book $book)
     {
+        $countries = Country::where('is_active', true)->orderBy('name')->get();
+        $bookMarkets = $book->exists ? $book->markets->keyBy('country_code') : collect();
+
         return view('publisher.books.form', [
             'book' => $book,
             'authors' => Author::orderBy('name')->get(),
             'categories' => Category::orderBy('name')->get(),
+            'countries' => $countries,
+            'bookMarkets' => $bookMarkets,
         ]);
     }
 }

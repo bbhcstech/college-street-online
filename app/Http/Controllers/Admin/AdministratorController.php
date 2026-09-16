@@ -12,7 +12,7 @@ class AdministratorController extends Controller
     public function index(Request $request)
     {
         $administrators = User::query()
-            ->where('role', 'admin')
+            ->whereIn('role', ['super_admin', 'admin'])
             ->when($request->filled('q'), function ($query) use ($request) {
                 $term = trim($request->query('q'));
                 $query->where(fn ($search) => $search->where('name', 'like', "%{$term}%")
@@ -22,7 +22,14 @@ class AdministratorController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.administrators.index', compact('administrators'));
+        $stats = [
+            'total' => User::whereIn('role', ['super_admin', 'admin'])->count(),
+            'super_admins' => User::where('role', 'super_admin')->count(),
+            'standard_admins' => User::where('role', 'admin')->count(),
+            'active' => User::whereIn('role', ['super_admin', 'admin'])->where('status', 'active')->count(),
+        ];
+
+        return view('admin.administrators.index', compact('administrators', 'stats'));
     }
 
     public function create()
@@ -32,14 +39,21 @@ class AdministratorController extends Controller
 
     public function store(Request $request)
     {
+        $roleRules = auth()->user()->isSuperAdmin()
+            ? ['required', Rule::in(['admin', 'super_admin'])]
+            : ['nullable'];
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => $roleRules,
         ]);
 
+        $role = (auth()->user()->isSuperAdmin() && isset($data['role'])) ? $data['role'] : 'admin';
+
         User::create($data + [
-            'role' => 'admin',
+            'role' => $role,
             'status' => 'active',
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
@@ -59,14 +73,23 @@ class AdministratorController extends Controller
     {
         $this->ensureAdministrator($administrator);
 
+        $roleRules = auth()->user()->isSuperAdmin()
+            ? ['required', Rule::in(['admin', 'super_admin'])]
+            : ['nullable'];
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($administrator->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'role' => $roleRules,
         ]);
 
         if (blank($data['password'] ?? null)) {
             unset($data['password']);
+        }
+
+        if (!auth()->user()->isSuperAdmin() || !isset($data['role'])) {
+            unset($data['role']);
         }
 
         $administrator->update($data + ['updated_by' => auth()->id()]);
@@ -83,8 +106,13 @@ class AdministratorController extends Controller
             return back()->withErrors(['status' => 'You cannot deactivate your own administrator account.']);
         }
 
-        if ($data['status'] === 'suspended' && User::where('role', 'admin')->where('status', 'active')->count() <= 1) {
-            return back()->withErrors(['status' => 'The last active administrator cannot be deactivated.']);
+        if ($data['status'] === 'suspended') {
+            if ($administrator->isSuperAdmin() && User::where('role', 'super_admin')->where('status', 'active')->count() <= 1) {
+                return back()->withErrors(['status' => 'The last active Super Administrator cannot be deactivated.']);
+            }
+            if (User::whereIn('role', ['super_admin', 'admin'])->where('status', 'active')->count() <= 1) {
+                return back()->withErrors(['status' => 'The last active administrator cannot be deactivated.']);
+            }
         }
 
         $administrator->update(['status' => $data['status'], 'updated_by' => auth()->id()]);
@@ -95,5 +123,9 @@ class AdministratorController extends Controller
     private function ensureAdministrator(User $administrator): void
     {
         abort_unless($administrator->isAdmin(), 404);
+
+        if ($administrator->isSuperAdmin() && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'Unauthorized. Only Super Administrators can manage Super Admin accounts.');
+        }
     }
 }

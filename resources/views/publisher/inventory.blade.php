@@ -4,40 +4,37 @@
     $crumb = 'Catalogue';
     $logoutRoute = route('publisher.logout'); @endphp
 @section('title', 'Inventory')
-@section('nav')
-    <div class="nav-group">
-        <div class="nav-group-title">Overview</div>
-        <a href="{{ route('publisher.dashboard') }}" class="nav-link">
-            <span class="nav-icon">▣</span>
-            <span>Dashboard</span></a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div>
-        <a href="{{ route('publisher.books.index') }}" class="nav-link">
-            <span class="nav-icon">📖</span>
-            <span>My Books</span>
-        </a>
-        <a href="{{ route('publisher.inventory.index') }}" class="nav-link active">
-            <span class="nav-icon">📦</span>
-            <span>Inventory</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Marketing</div>
-        <a href="{{ route('publisher.coupons.index') }}" class="nav-link">
-            <span class="nav-icon">🏷</span>
-            <span>Coupons & Offers</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Sales</div>
-        <a href="{{ route('publisher.orders.index') }}" class="nav-link">
-            <span class="nav-icon">🚚</span>
-            <span>Orders</span>
-        </a>
-    </div>
-@endsection
+@section('nav')@include('publisher.partials.nav', ['active' => 'inventory'])@endsection
 @section('content')
+<style>
+    html.dark .publisher-page-head {
+        background: var(--a-surface-alt, #12314e) !important;
+        border: 1px solid var(--a-border, #1d3e5c) !important;
+        border-radius: 14px;
+        padding: 16px 18px;
+    }
+    html.dark .publisher-inventory-summary > div {
+        background: var(--a-surface, #0f2a44) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-inventory-summary span {
+        color: var(--a-text-muted, #93a3be) !important;
+    }
+    html.dark .publisher-inventory-summary strong {
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .inventory-row-low {
+        background: rgba(245, 158, 11, 0.08) !important;
+    }
+    html.dark .status-pill.status-success {
+        background: rgba(16, 185, 129, 0.18) !important;
+        color: #34d399 !important;
+    }
+    html.dark .status-pill.status-muted {
+        background: rgba(148, 163, 184, 0.18) !important;
+        color: #94a3b8 !important;
+    }
+</style>
 <div class="publisher-page-head">
     <div>
         <span class="analytics-eyebrow">Stock control</span>
@@ -46,18 +43,22 @@
     </div>
     <a href="{{ route('publisher.books.create') }}" class="btn btn-primary">+ Add my book</a>
 </div>
-<div class="publisher-book-summary">
+<div class="publisher-book-summary publisher-inventory-summary">
     <div>
-        <span>Total titles</span>
+        <span>Total books</span>
         <strong>{{ $totalBooks }}</strong>
     </div>
     <div>
-        <span>Need restocking</span>
+        <span>In stock</span>
+        <strong>{{ $inStockCount }}</strong>
+    </div>
+    <div>
+        <span>Low stock</span>
         <strong>{{ $lowStockCount }}</strong>
     </div>
     <div>
-        <span>Healthy stock</span>
-        <strong>{{ max(0, $totalBooks - $lowStockCount) }}</strong>
+        <span>Out of stock</span>
+        <strong>{{ $outOfStockCount }}</strong>
     </div>
 </div>
 
@@ -112,11 +113,16 @@
                     <th>
                         <input type="checkbox" data-select-all aria-label="Select all inventory rows">
                     </th>
-                    <th>Book</th>
-                    <th>Current stock</th>
-                    <th>Threshold</th>
-                    <th>Stock status</th>
-                    <th>Adjustment</th>
+                    <th>Cover</th>
+                    <th>ISBN</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock quantity</th>
+                    <th>Status</th>
+                    <th>Published date</th>
+                    <th>Stock update</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,32 +134,25 @@
                     <td>
                         <input type="checkbox" data-row-select aria-label="Select {{ $book->title }}">
                     </td>
-                    <td>
-                        <div class="a-book-title">
-                            @if($book->cover_url)<img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="a-book-cover-thumb">
-                            @else
-                            <div class="a-book-cover-thumb a-book-cover-placeholder">📖</div>@endif<div><strong
-                                    data-cell>{{ $book->title }}</strong><small data-cell>ISBN:
-                                    {{ $book->isbn }}</small></div>
-                        </div>
-                    </td>
-                    <td data-cell><strong class="inventory-count">{{ $quantity }}</strong><small>copies
-                            available</small></td>
-                    <td data-cell>{{ $threshold }} copies</td>
-                    <td><span class="status-pill {{ $isLow ? 'inventory-status-low' : 'status-success' }}"
-                            data-cell>{{ $quantity === 0 ? 'Out of stock' : ($isLow ? 'Low stock' : 'Healthy') }}</span>
-                    </td>
+                    <td>@if($book->cover_url)<img src="{{ $book->cover_url }}" alt="{{ $book->title }} cover" class="a-book-cover-thumb">@else<div class="a-book-cover-thumb a-book-cover-placeholder">📖</div>@endif</td>
+                    <td data-cell>{{ $book->isbn }}</td>
+                    <td data-cell><strong>{{ $book->title }}</strong></td>
+                    <td data-cell>{{ $book->author?->name ?? '—' }}</td>
+                    <td data-cell>{{ $book->category?->name ?? '—' }}</td>
+                    <td data-cell>₹{{ number_format($book->price, 2) }}</td>
+                    <td data-cell><strong class="inventory-count">{{ $quantity }}</strong><small>{{ $quantity === 0 ? 'Out of stock' : ($isLow ? 'Low stock' : 'In stock') }}</small></td>
+                    <td><span class="status-pill {{ $book->status === 'active' ? 'status-success' : 'status-muted' }}" data-cell>{{ ucfirst($book->status) }}</span></td>
+                    <td data-cell>{{ optional($book->published_at ?? $book->created_at)->format('d M Y') ?? '—' }}</td>
                     <td>
                         <form method="POST" action="{{ route('publisher.inventory.adjust', $book) }}"
                             class="inventory-inline-adjust">@csrf<input type="number" name="quantity" class="a-input"
-                                placeholder="+10 or -3" required
+                                placeholder="± Qty" required title="Use a positive number to add stock or a negative number to reduce it"
                                 aria-label="Stock adjustment for {{ $book->title }}"><button
-                                class="btn btn-primary btn-sm">Apply</button></form><small
-                            class="inventory-adjust-help">Positive adds · negative reduces</small>
+                                class="btn btn-primary btn-sm">Save</button></form>
                     </td>
                 </tr>
                 @empty<tr>
-                    <td colspan="6">
+                    <td colspan="11">
                         <div class="analytics-empty">No inventory records match your filters.</div>
                     </td>
                 </tr>@endforelse

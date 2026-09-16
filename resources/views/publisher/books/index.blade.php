@@ -6,42 +6,265 @@
     $logoutRoute = route('publisher.logout'); 
 @endphp
 @section('title', 'My Books')
-@section('nav')
-    <div class="nav-group">
-        <div class="nav-group-title">Overview</div>
-        <a href="{{ route('publisher.dashboard') }}" class="nav-link">
-            <span class="nav-icon">▣</span>
-            <span>Dashboard</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div>
-        <a href="{{ route('publisher.books.index') }}" class="nav-link active">
-            <span class="nav-icon">📖</span>
-            <span>My Books</span>
-        </a>
-        <a href="{{ route('publisher.inventory.index') }}" class="nav-link">
-            <span class="nav-icon">📦</span>
-            <span>Inventory</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Marketing</div>
-        <a href="{{ route('publisher.coupons.index') }}" class="nav-link">
-            <span class="nav-icon">🏷</span>
-            <span>Coupons & Offers</span>
-        </a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Sales</div>
-        <a href="{{ route('publisher.orders.index') }}" class="nav-link">
-            <span class="nav-icon">🚚</span>
-            <span>Orders</span>
-        </a>
-    </div>
-@endsection
+@section('nav')@include('publisher.partials.nav', ['active' => 'books'])@endsection
 @section('content')
-    <div class="publisher-page-head">
+    <style>
+        .publisher-table-card {
+            padding: 0;
+            overflow: hidden;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(22, 58, 92, .05);
+        }
+        .publisher-book-toolbar {
+            display: grid;
+            grid-template-columns: minmax(250px, 1.7fr) repeat(4, minmax(120px, .8fr)) auto auto;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 16px;
+            margin: 0;
+            background: color-mix(in srgb, var(--a-surface-alt) 38%, var(--a-surface));
+            border-bottom: 1px solid var(--a-border);
+        }
+        .publisher-search {
+            flex: 1 1 200px;
+            min-width: 170px;
+        }
+        .publisher-book-toolbar .a-select {
+            width: 100%;
+            min-width: 0;
+            padding: 5px 8px;
+            font-size: 0.78rem;
+            height: 32px;
+        }
+        .publisher-export-bar {
+            padding: 8px 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .publisher-table-scroll {
+            overflow-x: auto;
+            padding: 0 16px 8px;
+        }
+        .publisher-book-table {
+            width: 100%;
+            min-width: 0 !important;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+        .publisher-book-table th,
+        .publisher-book-table td {
+            padding: 7px 10px !important;
+            font-size: 0.82rem;
+            vertical-align: middle;
+        }
+        .publisher-book-table th {
+            font-size: 0.69rem;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .publisher-book-table th:first-child,
+        .publisher-book-table td:first-child { width: 38px; }
+        .publisher-book-table th:nth-child(2) { width: 22%; }
+        .publisher-book-table th:nth-child(3) { width: 17%; }
+        .publisher-book-table th:nth-child(4) { width: 13%; }
+        .publisher-book-table th:nth-child(5),
+        .publisher-book-table th:nth-child(6),
+        .publisher-book-table th:nth-child(7) { width: 9%; }
+        .publisher-book-table th:last-child { width: 170px; }
+        .publisher-book-table .a-book-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 130px;
+        }
+        .publisher-book-table .a-book-cover-thumb,
+        .publisher-book-table .a-book-cover-placeholder {
+            width: 32px !important;
+            height: 42px !important;
+            border-radius: 4px;
+            object-fit: cover;
+            flex: 0 0 32px;
+        }
+        .publisher-book-table .a-book-title strong {
+            font-size: 0.84rem;
+            line-height: 1.2;
+            display: block;
+        }
+        .publisher-book-table .a-book-title small {
+            font-size: 0.7rem;
+            margin-top: 1px;
+            display: block;
+            color: var(--a-text-muted);
+        }
+        .publisher-book-table .book-status-select {
+            padding: 3px 6px;
+            font-size: 0.72rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            height: 26px;
+        }
+        .publisher-book-table .book-row-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .publisher-book-table .book-row-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            line-height: 1.3;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .publisher-book-table .publisher-stock {
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .publisher-books-head {
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--a-border);
+            border-radius: 14px;
+            background: var(--a-surface-alt);
+            box-shadow: 0 5px 16px rgba(22, 58, 92, .04);
+        }
+        .publisher-books-head h2 { margin: 4px 0 2px; font-size: 1.5rem; color: var(--a-text); }
+        .publisher-books-head p { color: var(--a-text-muted); }
+        .publisher-books-head .btn { min-height: 38px; box-shadow: 0 5px 12px rgba(22, 58, 92, .14); }
+        .publisher-book-summary { gap: 11px; margin-bottom: 14px; }
+        .publisher-book-summary > div { padding: 13px 16px; border-radius: 11px; background: var(--a-surface); border: 1px solid var(--a-border); box-shadow: 0 3px 12px rgba(22, 58, 92, .035); }
+        .publisher-book-summary > div span { color: var(--a-text-muted); }
+        .publisher-book-summary > div strong { color: var(--a-text); }
+        .publisher-book-summary > div:nth-child(1) { border-left: 3px solid #3b82f6; }
+        .publisher-book-summary > div:nth-child(2) { border-left: 3px solid #10b981; }
+        .publisher-book-summary > div:nth-child(3) { border-left: 3px solid #f59e0b; }
+        .publisher-table-scroll {
+            padding: 0 14px 6px;
+        }
+        .publisher-book-table thead th {
+            padding-top: 9px !important;
+            padding-bottom: 9px !important;
+            background: var(--a-surface-alt);
+            color: var(--a-text-muted);
+            border-top: 1px solid var(--a-border);
+        }
+        .publisher-book-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .publisher-book-table thead th:last-child { border-radius: 0 8px 8px 0; }
+        .publisher-book-table tbody td {
+            height: 48px;
+            border-bottom: 1px solid var(--a-border);
+            color: var(--a-text);
+        }
+        .publisher-book-table tbody tr:nth-child(even) {
+            background: color-mix(in srgb, var(--a-surface-alt) 25%, var(--a-surface));
+        }
+        .publisher-book-table tbody tr:hover {
+            background: color-mix(in srgb, var(--a-primary) 10%, var(--a-surface));
+            box-shadow: inset 3px 0 var(--a-primary);
+        }
+        .publisher-book-table th:first-child,
+        .publisher-book-table td:first-child { text-align: center; padding-inline: 5px !important; }
+        .publisher-book-table td:nth-child(3) {
+            color: var(--a-text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+        .publisher-book-table td:nth-child(5) strong { color: var(--a-text); }
+        .publisher-book-table .a-book-cover-thumb,
+        .publisher-book-table .a-book-cover-placeholder {
+            border: 1px solid var(--a-border);
+            box-shadow: 0 2px 6px rgba(22, 58, 92, .12);
+        }
+        .publisher-book-table .book-status-select {
+            border: 0;
+            background-color: #e3f4ed;
+            color: #087c55;
+            box-shadow: inset 0 0 0 1px rgba(8, 124, 85, .06);
+        }
+        .publisher-book-table .book-status-select:has(option[value="inactive"]:checked) {
+            background-color: #eef1f5;
+            color: #5c6878;
+        }
+        .publisher-book-table .book-row-actions {
+            padding: 3px;
+            border: 1px solid var(--a-border);
+            border-radius: 8px;
+            background: var(--a-surface-alt);
+        }
+        .publisher-book-table .book-row-actions .btn {
+            border-radius: 6px;
+        }
+
+        /* Dark Mode explicit overrides */
+        html.dark .publisher-books-head {
+            background: var(--a-surface-alt, #12314e) !important;
+            border-color: var(--a-border, #1d3e5c) !important;
+        }
+        html.dark .publisher-book-table thead th {
+            background: var(--a-surface-alt, #12314e) !important;
+            color: var(--a-text-muted, #93a3be) !important;
+            border-color: var(--a-border, #1d3e5c) !important;
+        }
+        html.dark .publisher-book-table tbody td {
+            border-color: var(--a-border, #1d3e5c) !important;
+            color: var(--a-text, #edf1fa) !important;
+        }
+        html.dark .publisher-book-table tbody td:nth-child(3) {
+            color: var(--a-text-muted, #93a3be) !important;
+        }
+        html.dark .publisher-book-table tbody td:nth-child(5) strong {
+            color: var(--a-text, #edf1fa) !important;
+        }
+        html.dark .publisher-book-table tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+        html.dark .publisher-book-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        html.dark .publisher-book-table .book-row-actions {
+            background: var(--a-surface, #0f2a44) !important;
+            border-color: var(--a-border, #1d3e5c) !important;
+        }
+        html.dark .publisher-book-table .book-status-select {
+            background-color: rgba(16, 185, 129, 0.18) !important;
+            color: #34d399 !important;
+        }
+        html.dark .publisher-book-table .book-status-select:has(option[value="inactive"]:checked) {
+            background-color: rgba(148, 163, 184, 0.18) !important;
+            color: #94a3b8 !important;
+        }
+        html.dark .publisher-stock {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(52, 211, 153, 0.3) !important;
+        }
+        html.dark .publisher-stock.low {
+            background-color: rgba(245, 158, 11, 0.2) !important;
+            color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
+        }
+        .publisher-book-table .book-row-actions .btn {
+            border-radius: 6px;
+        }
+        @media (max-width: 1150px) {
+            .publisher-book-toolbar { grid-template-columns: repeat(3, 1fr); }
+            .publisher-book-toolbar .publisher-search { grid-column: 1 / -1; }
+        }
+        @media (max-width: 700px) {
+            .publisher-books-head { align-items: flex-start; flex-direction: column; }
+            .publisher-books-head .btn { width: 100%; justify-content: center; }
+            .publisher-book-toolbar { grid-template-columns: 1fr; }
+            .publisher-book-toolbar .publisher-search { grid-column: auto; }
+            .publisher-book-summary { grid-template-columns: 1fr; }
+        }
+    </style>
+    <div class="publisher-page-head publisher-books-head">
         <div><span class="analytics-eyebrow">Catalogue</span>
             <h2>My book catalogue</h2>
             <p>Search, export, and manage every title you sell.</p>

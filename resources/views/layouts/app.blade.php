@@ -23,23 +23,24 @@
     @include('partials.header')
     <main>
         @if (session('success'))
-            <div class="container" style="padding-top:20px;">
-                <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="container" style="padding-top:10px;">
+                <div class="alert alert-success" style="margin-bottom:0;">{{ session('success') }}</div>
             </div>
         @endif
         @if (session('info'))
-            <div class="container" style="padding-top:20px;">
-                <div class="alert alert-info">{{ session('info') }}</div>
+            <div class="container" style="padding-top:10px;">
+                <div class="alert alert-info" style="margin-bottom:0;">{{ session('info') }}</div>
             </div>
         @endif
         @if ($errors->any() && !View::hasSection('errors-inside-content'))
-            <div class="container" style="padding-top:20px;">
-                <div class="alert alert-danger">{{ $errors->first() }}</div>
+            <div class="container" style="padding-top:10px;">
+                <div class="alert alert-danger" style="margin-bottom:0;">{{ $errors->first() }}</div>
             </div>
         @endif
         @yield('content')
     </main>
     @include('partials.footer')
+    @include('partials.guest-country-modal')
     <script src="{{ asset('js/site.js') }}"></script>
 </body>
 

@@ -14,8 +14,11 @@ class CategoryController extends Controller
     public function index()
     {
         return view('admin.categories', [
-            'categories' => Category::withTrashed()->withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->get(),
-            'authors' => Author::withTrashed()->withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->get(),
+            'categories' => Category::withTrashed()->withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->paginate(8, ['*'], 'categories_page')->withQueryString(),
+            'authors' => Author::withTrashed()->withCount(['books' => fn ($query) => $query->withTrashed()])->orderBy('name')->paginate(8, ['*'], 'authors_page')->withQueryString(),
+            'activeCategories' => Category::count(),
+            'activeAuthors' => Author::count(),
+            'archivedTotal' => Category::onlyTrashed()->count() + Author::onlyTrashed()->count(),
         ]);
     }
 

@@ -45,19 +45,25 @@
                             </svg>
                         </span>
                     </button>
+                    @if(auth()->user()?->isPublisher())
+                        @php($unreadNotifications = auth()->user()->unreadNotifications()->count())
+                        <a href="{{ route('publisher.notifications.index') }}" class="topbar-notification" aria-label="Notifications">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+                            @if($unreadNotifications)<span>{{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}</span>@endif
+                        </a>
+                    @endif
                     <a href="{{ route('home') }}" target="_blank" class="btn btn-outline btn-sm">View Site &#8599;</a>
                     @php($profileRoute = auth()->user()?->isAdmin() ? route('admin.profile.edit') : route('publisher.profile.edit'))
                     <a href="{{ $profileRoute }}" class="user-chip">
-                        <div class="avatar" style="overflow:hidden;flex:0 0 30px;">
+                        <div class="avatar" style="overflow:hidden;flex:0 0 30px;height:30px;width:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--a-primary);color:#fff;font-weight:700;font-size:0.85rem;">
                             @if(auth()->user()->profile_image_url)
-                                <img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}"style="display:block;width:30px;height:30px;max-width:30px;object-fit:cover;border-radius:50%;">
-                            @else{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                            
+                                <img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}" style="display:block;width:30px;height:30px;max-width:30px;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';">
                             @endif
+                            <span>{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
                         </div>
                         <div class="meta">
                             <strong>{{ auth()->user()->name ?? 'User' }}</strong>
-                            <span>Profile</span>
+                            <span>{{ auth()->user()->isSuperAdmin() ? '👑 Super Admin' : (auth()->user()->isAdmin() ? '🛡️ Admin' : 'Profile') }}</span>
                         </div>
                     </a>
                     <form method="POST" action="{{ $logoutRoute }}">

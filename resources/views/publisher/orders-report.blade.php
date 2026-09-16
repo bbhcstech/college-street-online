@@ -65,14 +65,19 @@
         </thead>
         <tbody>
             @foreach($items as $item) 
-                @php($price = $item->base_unit_price ?? $item->unit_price)
+                @php($baseGross = $item->quantity * ($item->base_unit_price ?? ($item->unit_price / ($item->order->exchange_rate_to_inr ?: 1))))
                     <tr>
                         <td>#CSO{{ $item->order_id }}</td>
                         <td>{{ $item->order->created_at->format('d M Y') }}</td>
                         <td>{{ $item->order->customer?->name }}</td>
                         <td>{{ $item->book?->title }}</td>
                         <td>{{ $item->quantity }}</td>
-                        <td>₹{{ number_format($item->quantity * $price, 2) }}</td>
+                        <td>
+                            ₹{{ number_format($baseGross, 2) }}
+                            @if(($item->order->currency ?? 'INR') !== 'INR')
+                                ({{ $item->order->currency_symbol }}{{ number_format($item->quantity * $item->unit_price, 2) }} {{ $item->order->currency }})
+                            @endif
+                        </td>
                         <td>{{ ucfirst($item->order->payment?->verified_status ?? 'No payment') }}</td>
                         <td>{{ str($item->order->status)->replace('_', ' ')->title() }}</td>
                         <td>{{ ucfirst($item->fulfillment_status) }}</td>

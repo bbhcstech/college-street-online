@@ -5,31 +5,7 @@
     $logoutRoute = route('publisher.logout');
 $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 'delivered', 'completed', 'cancelled', 'return_requested', 'returned']; @endphp
 @section('title', 'Orders')
-@section('nav')
-    <div class="nav-group">
-        <div class="nav-group-title">Overview</div><a href="{{ route('publisher.dashboard') }}" class="nav-link"><span
-                class="nav-icon">&#9635;</span><span>Dashboard</span></a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Catalogue</div><a href="{{ route('publisher.books.index') }}" class="nav-link"><span
-                class="nav-icon">&#128214;</span><span>My Books</span></a><a href="{{ route('publisher.inventory.index') }}"
-            class="nav-link"><span class="nav-icon">&#128230;</span><span>Inventory</span></a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Marketing</div><a href="{{ route('publisher.coupons.index') }}" class="nav-link"><span
-                class="nav-icon">&#127991;</span><span>Coupons & Offers</span></a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Sales</div><a href="{{ route('publisher.orders.index') }}"
-            class="nav-link active"><span class="nav-icon">&#128666;</span><span>Orders</span></a><a
-            href="{{ route('publisher.payments.index') }}" class="nav-link"><span
-                class="nav-icon">&#8377;</span><span>Payments & Invoices</span></a>
-    </div>
-    <div class="nav-group">
-        <div class="nav-group-title">Reports</div><a href="{{ route('publisher.analytics.index') }}" class="nav-link"><span
-                class="nav-icon">&#128200;</span><span>Analytics & Reports</span></a>
-    </div>
-@endsection
+@section('nav')@include('publisher.partials.nav', ['active' => 'orders'])@endsection
 @section('content')
 <style>
     .publisher-order-summary {
@@ -59,11 +35,20 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         font: italic 600 1.5rem var(--font-display)
     }
 
+    .publisher-order-summary>div {
+        border-left: 3px solid var(--a-primary);
+        background: linear-gradient(135deg, var(--a-surface) 75%, #f4f8fc);
+        box-shadow: 0 4px 14px rgba(20, 45, 70, .05)
+    }
+
+    .publisher-order-summary>div:nth-child(2) { border-left-color: #eda13a }
+    .publisher-order-summary>div:nth-child(3) { border-left-color: #1f9d6c }
+
     .publisher-order-toolbar {
         display: grid;
         grid-template-columns: repeat(12, minmax(0, 1fr));
         gap: 10px;
-        padding: 18px 20px;
+        padding: 14px 18px;
         background: var(--a-surface);
         border-bottom: 1px solid var(--a-border)
     }
@@ -119,12 +104,14 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
     }
 
     .publisher-order-table {
-        min-width: 1240px
+        min-width: 1080px;
+        table-layout: fixed
     }
 
     .publisher-order-table th,
     .publisher-order-table td {
-        padding: 13px 12px
+        padding: 10px 9px;
+        vertical-align: middle
     }
 
     .publisher-order-table tbody tr:hover {
@@ -145,7 +132,8 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         z-index: 2;
         background: var(--a-surface);
         box-shadow: -8px 0 14px rgba(20, 45, 70, .07);
-        min-width: 145px
+        width: 118px;
+        min-width: 118px
     }
 
     .publisher-order-table th:last-child {
@@ -162,12 +150,43 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         text-align: center
     }
 
+    .publisher-order-table th:nth-child(2) { width:68px }
+    .publisher-order-table th:nth-child(3) { width:124px }
+    .publisher-order-table th:nth-child(4) { width:200px }
+    .publisher-order-table th:nth-child(5) { width:90px }
+    .publisher-order-table th:nth-child(6) { width:48px }
+    .publisher-order-table th:nth-child(7) { width:76px }
+    .publisher-order-table th:nth-child(8) { width:78px }
+    .publisher-order-table th:nth-child(9) { width:94px }
+    .publisher-order-table th:nth-child(10) { width:94px }
+    .publisher-order-table th:nth-child(3) { width:90px }
+    .publisher-order-table th:nth-child(4) { width:124px }
+    .publisher-order-table th:nth-child(5) { width:200px }
+    .publisher-order-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--a-surface-alt) 25%, var(--a-surface)) }
+    .publisher-order-table td:last-child .btn { width:100%; padding:7px 8px; line-height:1.2 }
+    .publisher-export-bar { padding-top:10px; padding-bottom:10px }
+
+    .publisher-table-card { overflow:hidden; border-radius:14px; box-shadow:0 5px 18px rgba(20,45,70,.05) }
+    .publisher-order-toolbar { background: var(--a-surface-alt); gap:9px; border-bottom: 1px solid var(--a-border); }
+    .publisher-order-toolbar .a-input,.publisher-order-toolbar .a-select,.publisher-order-toolbar .publisher-search { height:38px; border-radius:9px; background: var(--a-surface); color: var(--a-text); border: 1px solid var(--a-border); }
+    .publisher-order-toolbar .btn { min-height:38px; border-radius:9px }
+    .publisher-export-bar { background: var(--a-surface-alt); border-top:1px solid var(--a-border) }
+    .publisher-export-buttons { gap:6px }
+    .publisher-export-buttons .btn { min-width:52px; border-radius:8px }
+    .publisher-order-table thead th { background: var(--a-surface-alt); color: var(--a-text-muted); letter-spacing:.055em; border-bottom:1px solid var(--a-border) }
+    .publisher-order-table tbody td { height:58px; border-bottom-color: var(--a-border); color: var(--a-text); }
+    .publisher-order-table tbody td:nth-child(2) strong { color:var(--a-text); font-size:.8rem }
+    .publisher-order-table .a-muted { display:inline-flex; align-items:center; padding:5px 9px; border-radius:99px; background: var(--a-surface-alt); color: var(--a-text-muted); font-size:.66rem; font-weight:700; white-space:nowrap }
+    .publisher-order-table .badge,.publisher-order-table .fulfillment-badge,.publisher-order-table .order-payment { white-space:nowrap }
+    .publisher-order-table th:nth-child(3),.publisher-order-table td:nth-child(3) { width:110px; white-space:nowrap }
+    .publisher-order-table th:nth-child(5),.publisher-order-table td:nth-child(5) { width:180px }
+
     .fulfillment-badge {
         display: inline-flex;
         padding: 6px 10px;
         border-radius: 99px;
-        background: #e9eef4;
-        color: #53677c;
+        background: var(--a-surface-alt);
+        color: var(--a-text-muted);
         font-size: .67rem;
         font-weight: 800
     }
@@ -185,6 +204,54 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
     .fulfillment-shipped {
         background: #e3f6ed;
         color: #078657
+    }
+
+    /* Dark Mode explicit overrides */
+    html.dark .publisher-order-summary > div {
+        background: var(--a-surface, #0f2a44) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-order-toolbar,
+    html.dark .publisher-export-bar {
+        background: var(--a-surface-alt, #12314e) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-order-table thead th {
+        background: var(--a-surface-alt, #12314e) !important;
+        color: var(--a-text-muted, #93a3be) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-order-table tbody td {
+        border-color: var(--a-border, #1d3e5c) !important;
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .publisher-order-table tbody td:nth-child(2) strong {
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .publisher-order-table tbody tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02) !important;
+    }
+    html.dark .publisher-order-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    html.dark .publisher-order-table th:last-child,
+    html.dark .publisher-order-table td:last-child {
+        background: var(--a-surface, #0f2a44) !important;
+    }
+    html.dark .publisher-order-table tbody tr:hover td:last-child {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    html.dark .fulfillment-badge {
+        background: rgba(148, 163, 184, 0.18) !important;
+        color: #94a3b8 !important;
+    }
+    html.dark .fulfillment-processing {
+        background: rgba(103, 69, 174, 0.25) !important;
+        color: #c084fc !important;
+    }
+    html.dark .fulfillment-shipped {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
     }
 
     @media(max-width:1050px) {
@@ -295,9 +362,9 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                 <tr>
                     <th><input type="checkbox" data-select-all></th>
                     <th>Order</th>
+                    <th>Order date</th>
                     <th>Customer</th>
                     <th>Book</th>
-                    <th>Date</th>
                     <th>Qty</th>
                     <th>Gross</th>
                     <th>Payment</th>
@@ -313,14 +380,20 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
                 <tr data-export-row data-id="{{ $item->id }}">
                     <td><input type="checkbox" data-row-select></td>
                     <td><strong data-cell>#CSO{{ $item->order_id }}</strong></td>
-                    <td><strong data-cell>{{ $item->order->customer?->name ?? '—' }}</strong><small
-                            data-cell>{{ $item->order->customer?->email }}</small></td>
-                    <td><strong data-cell>{{ $item->book?->title ?? 'Book unavailable' }}</strong></td>
                     <td data-cell>
                         {{ $item->order->created_at->format('d M Y') }}<small>{{ $item->order->created_at->format('h:i A') }}</small>
                     </td>
+                    <td><strong data-cell>{{ $item->order->customer?->name ?? '—' }}</strong><small
+                            data-cell>{{ $item->order->customer?->email }}</small></td>
+                    <td><strong data-cell>{{ $item->book?->title ?? 'Book unavailable' }}</strong></td>
                     <td data-cell>{{ $item->quantity }}</td>
-                    <td data-cell>₹{{ number_format($item->quantity * $price, 2) }}</td>
+                    <td data-cell>
+                        @php($baseGross = $item->quantity * ($item->base_unit_price ?? ($item->unit_price / ($item->order->exchange_rate_to_inr ?: 1))))
+                        <strong>₹{{ number_format($baseGross, 2) }}</strong>
+                        @if(($item->order->currency ?? 'INR') !== 'INR')
+                            <small>({{ $item->order->currency_symbol }}{{ number_format($item->quantity * $item->unit_price, 2) }} {{ $item->order->currency }})</small>
+                        @endif
+                    </td>
                     <td><span class="order-payment payment-{{ $item->order->payment?->verified_status ?? 'none' }}"
                             data-cell>{{ ucfirst($item->order->payment?->verified_status ?? 'No payment') }}</span></td>
                     <td><span class="badge badge-muted"

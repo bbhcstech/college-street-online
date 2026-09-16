@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Publisher;
 
+use App\Models\PublisherActivity;
+
 use App\Http\Controllers\Controller;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
@@ -12,13 +14,19 @@ class InventoryController extends Controller
     {
         $publisher = auth()->user()->publisher;
         $totalBooks = $publisher->books()->count();
+        $inStockCount = $publisher->books()
+            ->whereHas('inventory', fn ($query) => $query->where('quantity', '>', 0))
+            ->count();
         $lowStockCount = $publisher->books()
-            ->whereHas('inventory', fn ($query) => $query->whereColumn('quantity', '<=', 'low_stock_threshold'))
+            ->whereHas('inventory', fn ($query) => $query->where('quantity', '>', 0)->whereColumn('quantity', '<=', 'low_stock_threshold'))
+            ->count();
+        $outOfStockCount = $publisher->books()
+            ->where(fn ($query) => $query->doesntHave('inventory')->orWhereHas('inventory', fn ($inventory) => $inventory->where('quantity', '<=', 0)))
             ->count();
         $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
         $inventory = $this->filteredQuery($request)->orderBy('title')->paginate($perPage)->withQueryString();
 
-        return view('publisher.inventory', compact('inventory', 'totalBooks', 'lowStockCount'));
+        return view('publisher.inventory', compact('inventory', 'totalBooks', 'inStockCount', 'lowStockCount', 'outOfStockCount'));
     }
 
     public function export(Request $request, string $type)
@@ -52,7 +60,7 @@ class InventoryController extends Controller
 
     private function filteredQuery(Request $request)
     {
-        return auth()->user()->publisher->books()->with('inventory')
+        return auth()->user()->publisher->books()->with(['inventory', 'author', 'category'])
             ->when($request->filled('q'), fn ($query) => $query->search(trim($request->query('q'))))
             ->when($request->status === 'active', fn ($query) => $query->where('status', 'active'))
             ->when($request->status === 'inactive', fn ($query) => $query->where('status', 'inactive'))
@@ -66,6 +74,8 @@ class InventoryController extends Controller
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $request->validate(['quantity' => 'required|integer|min:1']);
         $inventoryService->recordRestock($book, $data['quantity']);
+        $book->load('inventory');
+        PublisherActivity::record(auth()->user()->publisher, 'stock_updated', $book->title, '+'.$data['quantity'].' units added; '.$book->inventory->quantity.' now in stock.', $book);
         return back()->with('success', 'Stock updated.');
     }
 
@@ -74,6 +84,8 @@ class InventoryController extends Controller
         abort_unless($book->publisher_id === auth()->user()->publisher->id, 403);
         $data = $request->validate(['quantity' => 'required|integer|min:1']);
         $inventoryService->recordAdjustment($book, -$data['quantity']);
+        $book->load('inventory');
+        PublisherActivity::record(auth()->user()->publisher, 'stock_updated', $book->title, $data['quantity'].' units removed; '.$book->inventory->quantity.' now in stock.', $book);
         return back()->with('success', 'Stock reduced.');
     }
 
@@ -92,6 +104,9 @@ class InventoryController extends Controller
         } else {
             $inventoryService->recordAdjustment($book, $quantity);
         }
+
+        $book->load('inventory');
+        PublisherActivity::record(auth()->user()->publisher, 'stock_updated', $book->title, ($quantity > 0 ? '+' : '').$quantity.' unit adjustment; '.$book->inventory->quantity.' now in stock.', $book);
 
         return back()->with('success', 'Stock adjusted successfully.');
     }

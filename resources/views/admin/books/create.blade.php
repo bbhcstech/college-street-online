@@ -4,7 +4,7 @@
     $crumb = 'Marketplace';
 $logoutRoute = route('admin.logout'); @endphp
 @section('title', 'Add Book')
-@section('nav')@include('admin.partials.nav', ['active' => 'books'])@endsection
+@section('nav')@include('admin.partials.nav', ['active' => 'books_create'])@endsection
 @section('content')
     <div class="book-form-head">
         <div><span class="analytics-eyebrow">Catalogue entry</span>

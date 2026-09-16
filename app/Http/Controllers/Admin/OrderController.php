@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Models\InventoryTransaction;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\SiteSetting;
 use App\Services\InventoryService;
+use App\Services\PublisherSettlementService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -18,10 +20,22 @@ class OrderController extends Controller
         $perPage = in_array((int) $request->query('per_page'), [10, 25, 50, 100], true) ? (int) $request->query('per_page') : 10;
         $orders = $this->filteredQuery($request)->latest()->paginate($perPage)->withQueryString();
 
+        $statusCounts = Order::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $countries = Order::whereNotNull('country')->where('country', '!=', '')->distinct()->pluck('country')->sort()->values();
+
         return view('admin.orders.index', [
             'orders' => $orders,
+            'countries' => $countries,
             'totalOrders' => Order::count(),
-            'pendingOrders' => Order::where('status', 'pending_payment')->count(),
+            'pendingOrders' => (int) ($statusCounts['pending_payment'] ?? 0),
+            'processingOrders' => (int) ($statusCounts['processing'] ?? 0),
+            'shippedOrders' => (int) ($statusCounts['shipped'] ?? 0),
+            'deliveredOrders' => (int) ($statusCounts['delivered'] ?? 0) + (int) ($statusCounts['completed'] ?? 0),
+            'cancelledOrders' => (int) ($statusCounts['cancelled'] ?? 0),
+            'returnedOrders' => (int) ($statusCounts['return_requested'] ?? 0) + (int) ($statusCounts['returned'] ?? 0),
             'totalRevenue' => Order::whereHas('payment', fn ($query) => $query->where('verified_status', 'verified'))->sum('base_total_amount'),
         ]);
     }
@@ -55,7 +69,7 @@ class OrderController extends Controller
 
     private function filteredQuery(Request $request)
     {
-        return Order::query()->with(['customer', 'payment'])
+        return Order::query()->with(['customer', 'payment'])->withCount('items')
             ->when($request->filled('q'), function ($query) use ($request) {
                 $term = trim($request->query('q'));
                 $orderId = preg_replace('/\D/', '', $term);
@@ -70,6 +84,9 @@ class OrderController extends Controller
                     ? $query->whereDoesntHave('payment')
                     : $query->whereHas('payment', fn ($payment) => $payment->where('verified_status', $request->payment));
             })
+            ->when($request->filled('country'), fn ($query) => $query->where('country', $request->query('country')))
+            ->when($request->filled('min_price'), fn ($query) => $query->where('base_total_amount', '>=', (float) $request->query('min_price')))
+            ->when($request->filled('max_price'), fn ($query) => $query->where('base_total_amount', '<=', (float) $request->query('max_price')))
             ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->query('date_from')))
             ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->query('date_to')));
     }
@@ -80,12 +97,18 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    /** FR-8 fix: writes to order_status_history via Order::transitionTo(), not just the column. */
     public function updateStatus(Request $request, Order $order)
     {
-        $data = $request->validate(['status' => 'required|in:pending_payment,confirmed,processing,packed,shipped,delivered,completed,cancelled,return_requested,returned']);
+        $data = $request->validate([
+            'status' => 'required|in:pending_payment,confirmed,processing,packed,shipped,delivered,completed,cancelled,return_requested,returned',
+            'tracking_number' => 'nullable|string|max:100',
+        ]);
 
         DB::transaction(function () use ($order, $data) {
+            if (!empty($data['tracking_number'])) {
+                $order->tracking_number = $data['tracking_number'];
+            }
+
             if ($data['status'] === 'cancelled') {
                 $order->load('items.book');
                 $inventory = app(InventoryService::class);
@@ -103,28 +126,51 @@ class OrderController extends Controller
             }
 
             $order->transitionTo($data['status'], auth()->id());
+            if (in_array($data['status'], ['delivered', 'completed'], true)) {
+                $order->load('items');
+                foreach ($order->items as $item) {
+                    if ($item->fulfillment_status === $data['status']) continue;
+                    $oldFulfillment = $item->fulfillment_status;
+                    $item->update(['fulfillment_status' => $data['status']]);
+                    $item->statusHistory()->create([
+                        'from_status' => $oldFulfillment,
+                        'to_status' => $data['status'],
+                        'changed_by' => auth()->id(),
+                    ]);
+                }
+            }
+            if (in_array($data['status'], ['delivered', 'completed'], true)) app(PublisherSettlementService::class)->scheduleRelease($order);
+            if (in_array($data['status'], ['cancelled', 'returned'], true)) app(PublisherSettlementService::class)->recordReversal($order, ucfirst($data['status']).' order #CSO'.$order->id);
         });
 
-        return back()->with('success', 'Order status updated.');
+        return back()->with('success', 'Order status updated successfully.');
     }
 
-    /** FR-7: manual UTR verification — this is the confirmation gate until a payment gateway is integrated (Section 10.2). */
     public function verifyPayment(Request $request, Payment $payment)
     {
-        $data = $request->validate(['decision' => 'required|in:verified,rejected']);
-        $payment->update(['verified_status' => $data['decision'], 'verified_by' => auth()->id(), 'verified_at' => now()]);
+        $data = $request->validate([
+            'decision' => 'required|in:verified,rejected',
+            'rejection_reason' => 'nullable|string|max:500',
+            'admin_notes' => 'nullable|string|max:500',
+        ]);
+
+        $payment->update([
+            'verified_status' => $data['decision'],
+            'rejection_reason' => $data['rejection_reason'] ?? null,
+            'admin_notes' => $data['admin_notes'] ?? null,
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
         if ($data['decision'] === 'verified') {
             $commissionRate = (float) (SiteSetting::where('key', 'publisher_commission_rate')->value('value') ?? 0);
-            foreach ($payment->order->items as $item) {
-                $gross = $item->quantity * ($item->base_unit_price ?? $item->unit_price);
-                $item->update([
-                    'publisher_commission_rate' => $commissionRate,
-                    'publisher_commission_amount' => round($gross * $commissionRate / 100, 2),
-                ]);
-            }
+            app(PublisherSettlementService::class)->recordVerifiedOrder($payment->order, $commissionRate);
             $payment->order->transitionTo('confirmed', auth()->id());
+        } elseif ($payment->order) {
+            app(PublisherSettlementService::class)->recordReversal($payment->order, 'Payment rejected for order #CSO'.$payment->order_id);
         }
-        return back()->with('success', 'Payment ' . $data['decision'] . '.');
+
+        return back()->with('success', 'Payment status updated to ' . $data['decision'] . '.');
     }
 
     public function paymentProof(Payment $payment)

@@ -1,7 +1,9 @@
-@php $inv = $book->inventory; @endphp
-@php
-    $discount = $book->mrp && $book->mrp > $book->price
-        ? (int) round((($book->mrp - $book->price) / $book->mrp) * 100)
+@php 
+    $inv = $book->inventory;
+    $currencyService = app(\App\Services\CurrencyService::class);
+    $priceData = $currencyService->resolveBookPrice($book);
+    $discount = $priceData['mrp'] && $priceData['mrp'] > $priceData['price']
+        ? (int) round((($priceData['mrp'] - $priceData['price']) / $priceData['mrp']) * 100)
         : null;
 @endphp
 <article class="book-card reveal">
@@ -23,12 +25,12 @@
             @if($discount)
                 <span class="discount-badge">{{ $discount }}% off</span>
             @endif</div>
-        <a href="{{ route('books.show', $book) }}" class="title">{{ $book->title }}</a>
+        <a href="{{ route('books.show', $book) }}" class="title">{{ Str::title($book->title) }}</a>
         <span class="author">by {{ $book->author->name ?? 'Unknown' }}</span>
         <div class="price-row">
-            <span class="price">&#8377;{{ number_format($book->price, 0) }}</span>
-            @if($book->mrp)
-                <span class="price-strike">&#8377;{{ number_format($book->mrp, 0) }}</span>
+            <span class="price">{{ $priceData['symbol'] }}{{ number_format($priceData['price'], $priceData['currency'] === 'INR' ? 0 : 2) }}</span>
+            @if($priceData['mrp'])
+                <span class="price-strike">{{ $priceData['symbol'] }}{{ number_format($priceData['mrp'], $priceData['currency'] === 'INR' ? 0 : 2) }}</span>
             @endif
         </div>
         @if($inv)
