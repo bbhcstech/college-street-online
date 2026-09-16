@@ -16,11 +16,9 @@
 
 @section('content')
 <!-- Page Header -->
-<div class="publisher-page-head publisher-management-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+<div class="publisher-page-head publisher-management-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
     <div>
-        <span class="analytics-eyebrow" style="color: #6366f1; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Marketplace Partners</span>
-        <h2 style="font-size: 1.35rem; font-weight: 700; color: #111827; margin: 2px 0;">Publisher Management</h2>
-        <p style="color: #6b7280; font-size: 0.82rem; margin: 0;">Search, review, approve, export, and manage publisher accounts.</p>
+        <p style="color: var(--a-text-muted); font-size: 0.85rem; margin: 0;">Search, review, approve, export, and manage publisher accounts.</p>
     </div>
     <a href="{{ route('admin.publishers.create') }}" class="btn btn-primary" style="height: 34px; padding: 0 14px; display: inline-flex; align-items: center; gap: 5px; font-size: 0.82rem; border-radius: 6px;">
         + Add Publisher
@@ -28,45 +26,45 @@
 </div>
 
 @if(session('success'))
-    <div style="padding: 10px 14px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; color: #065f46; margin-bottom: 16px; font-weight: 500; display: flex; align-items: center; gap: 6px; font-size: 0.85rem;">
+    <div style="padding: 10px 14px; background: var(--a-success-bg, #ecfdf5); border: 1px solid color-mix(in srgb, var(--a-success) 30%, transparent); border-radius: 6px; color: var(--a-success); margin-bottom: 16px; font-weight: 500; display: flex; align-items: center; gap: 6px; font-size: 0.85rem;">
         <span style="font-size: 1rem;">✓</span> {{ session('success') }}
     </div>
 @endif
 
 <!-- Summary KPI Cards -->
 <div class="publisher-kpi-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;">
-    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #3b82f6; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #6b7280; letter-spacing: 0.5px;">Total Publishers</span>
-        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-top: 2px;">{{ number_format($totalCount) }}</strong>
+    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #3b82f6; background: var(--a-surface); border: 1px solid var(--a-border); border-left-width: 3.5px; box-shadow: var(--a-shadow-sm);">
+        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: var(--a-text-muted); letter-spacing: 0.5px;">Total Publishers</span>
+        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: var(--a-text); margin-top: 2px;">{{ number_format($totalCount) }}</strong>
     </div>
-    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #10b981; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #047857; letter-spacing: 0.5px;">Approved Partners</span>
-        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: #065f46; margin-top: 2px;">{{ number_format($approvedCount) }}</strong>
+    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #10b981; background: var(--a-surface); border: 1px solid var(--a-border); border-left-width: 3.5px; box-shadow: var(--a-shadow-sm);">
+        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #10b981; letter-spacing: 0.5px;">Approved Partners</span>
+        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: var(--a-text); margin-top: 2px;">{{ number_format($approvedCount) }}</strong>
     </div>
-    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #f59e0b; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #b45309; letter-spacing: 0.5px;">Pending Approval</span>
-        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: #92400e; margin-top: 2px;">{{ number_format($pendingCount) }}</strong>
+    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #f59e0b; background: var(--a-surface); border: 1px solid var(--a-border); border-left-width: 3.5px; box-shadow: var(--a-shadow-sm);">
+        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #f59e0b; letter-spacing: 0.5px;">Pending Approval</span>
+        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: var(--a-text); margin-top: 2px;">{{ number_format($pendingCount) }}</strong>
     </div>
-    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #ef4444; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #b91c1c; letter-spacing: 0.5px;">Rejected</span>
-        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: #991b1b; margin-top: 2px;">{{ number_format($rejectedCount) }}</strong>
+    <div class="a-card" style="padding: 12px 16px; border-radius: 8px; border-left: 3.5px solid #ef4444; background: var(--a-surface); border: 1px solid var(--a-border); border-left-width: 3.5px; box-shadow: var(--a-shadow-sm);">
+        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600; color: #ef4444; letter-spacing: 0.5px;">Rejected</span>
+        <strong style="display: block; font-size: 1.4rem; font-weight: 700; color: var(--a-text); margin-top: 2px;">{{ number_format($rejectedCount) }}</strong>
     </div>
 </div>
 
 <!-- Main Table Card Container -->
-<div class="a-card publisher-management-card" style="border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid var(--a-border, #e5e7eb); box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-publisher-table data-export-base="{{ route('admin.publishers.export', 'csv') }}">
+<div class="a-card publisher-management-card" style="border-radius: 8px; overflow: hidden; background: var(--a-surface); border: 1px solid var(--a-border); box-shadow: var(--a-shadow-sm);" data-publisher-table data-export-base="{{ route('admin.publishers.export', 'csv') }}">
     
     <!-- SINGLE ROW COMPACT FILTER BAR -->
-    <form method="GET" class="publisher-management-filters" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; width: 100%; flex-wrap: nowrap; overflow-x: auto; background: #ffffff; border-bottom: 1px solid #e5e7eb;">
+    <form method="GET" class="publisher-management-filters" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; width: 100%; flex-wrap: nowrap; overflow-x: auto; background: var(--a-surface); border-bottom: 1px solid var(--a-border);">
         <!-- Search Input -->
-        <div style="flex: 0 1 240px; min-width: 180px; display: flex; align-items: center; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 8px; height: 34px;">
-            <span style="color: #9ca3af; margin-right: 6px; font-size: 0.85rem;">🔍</span>
+        <div style="flex: 0 1 240px; min-width: 180px; display: flex; align-items: center; background: var(--a-surface-alt); border: 1px solid var(--a-border); border-radius: 6px; padding: 0 8px; height: 34px;">
+            <span style="color: var(--a-text-muted); margin-right: 6px; font-size: 0.85rem;">🔍</span>
             <input name="q" value="{{ request('q') }}" placeholder="Search business, contact, email..." 
-                   style="border: none; background: transparent; width: 100%; height: 100%; outline: none; font-size: 0.82rem; color: #1f2937;">
+                   style="border: none; background: transparent; width: 100%; height: 100%; outline: none; font-size: 0.82rem; color: var(--a-text);">
         </div>
 
         <!-- Approval Status Dropdown -->
-        <select name="status" style="width: 130px; height: 34px; padding: 0 8px; border: 1px solid #d1d5db; border-radius: 6px; background: #ffffff; font-size: 0.82rem; color: #374151; outline: none; cursor: pointer;">
+        <select name="status" style="width: 130px; height: 34px; padding: 0 8px; border: 1px solid var(--a-border); border-radius: 6px; background: var(--a-surface-alt); font-size: 0.82rem; color: var(--a-text); outline: none; cursor: pointer;">
             <option value="">All Statuses</option>
             <option value="pending" @selected(request('status') === 'pending')>Pending</option>
             <option value="approved" @selected(request('status') === 'approved')>Approved</option>
@@ -74,7 +72,7 @@
         </select>
 
         <!-- Per Page Dropdown -->
-        <select name="per_page" style="width: 110px; height: 34px; padding: 0 8px; border: 1px solid #d1d5db; border-radius: 6px; background: #ffffff; font-size: 0.82rem; color: #374151; outline: none; cursor: pointer;">
+        <select name="per_page" style="width: 110px; height: 34px; padding: 0 8px; border: 1px solid var(--a-border); border-radius: 6px; background: var(--a-surface-alt); font-size: 0.82rem; color: var(--a-text); outline: none; cursor: pointer;">
             <option value="10" @selected($publishers->perPage() === 10)>10 entries</option>
             <option value="25" @selected($publishers->perPage() === 25)>25 entries</option>
             <option value="50" @selected($publishers->perPage() === 50)>50 entries</option>
@@ -95,10 +93,10 @@
     </form>
 
     <!-- EXPORT TOOLBAR -->
-    <div class="publisher-export-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+    <div class="publisher-export-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: var(--a-surface-alt); border-bottom: 1px solid var(--a-border);">
         <div>
-            <strong data-selection-count style="font-size: 0.82rem; color: #374151;">0 selected</strong>
-            <span style="font-size: 0.78rem; color: #6b7280; margin-left: 6px;">
+            <strong data-selection-count style="font-size: 0.82rem; color: var(--a-text);">0 selected</strong>
+            <span style="font-size: 0.78rem; color: var(--a-text-muted); margin-left: 6px;">
                 Export filtered publishers or selected rows.
             </span>
         </div>
@@ -115,7 +113,7 @@
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="a-table publisher-management-table" style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.84rem;">
             <thead>
-                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                <tr style="background: var(--a-surface-alt); border-bottom: 1px solid var(--a-border); color: var(--a-text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                     <th style="width: 36px; text-align: center; padding: 10px 6px;"><input type="checkbox" data-select-all aria-label="Select all publishers"></th>
                     <th style="padding: 10px 12px;">Publisher / Business</th>
                     <th style="padding: 10px 12px;">Contact Details</th>
@@ -127,31 +125,31 @@
             </thead>
             <tbody>
                 @forelse($publishers as $publisher)
-                    <tr data-export-row data-id="{{ $publisher->id }}" style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                    <tr data-export-row data-id="{{ $publisher->id }}" style="border-bottom: 1px solid var(--a-border); transition: background 0.15s ease;" onmouseover="this.style.background='var(--a-surface-alt)'" onmouseout="this.style.background='transparent'">
                         <td style="text-align: center; padding: 10px 6px;">
                             <input type="checkbox" data-row-select aria-label="Select {{ $publisher->business_name }}">
                         </td>
                         <td style="padding: 10px 12px;">
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #3b82f6; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--a-primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;">
                                     {{ strtoupper(substr($publisher->business_name, 0, 1)) }}
                                 </div>
                                 <div>
-                                    <strong data-cell style="display: block; font-size: 0.88rem; color: #0f172a; line-height: 1.25;">{{ $publisher->business_name }}</strong>
-                                    <span style="font-size: 0.75rem; color: #64748b;">{{ $publisher->contact_details ?: 'No address details' }}</span>
+                                    <strong data-cell style="display: block; font-size: 0.88rem; color: var(--a-text); line-height: 1.25;">{{ $publisher->business_name }}</strong>
+                                    <span style="font-size: 0.75rem; color: var(--a-text-muted);">{{ $publisher->contact_details ?: 'No address details' }}</span>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 10px 12px;">
-                            <strong data-cell style="display: block; font-size: 0.84rem; color: #1e293b;">{{ $publisher->user->name ?? '—' }}</strong>
-                            <span data-cell style="font-size: 0.75rem; color: #64748b;">{{ $publisher->user->email ?? '—' }}</span>
+                            <strong data-cell style="display: block; font-size: 0.84rem; color: var(--a-text);">{{ $publisher->user->name ?? '—' }}</strong>
+                            <span data-cell style="font-size: 0.75rem; color: var(--a-text-muted);">{{ $publisher->user->email ?? '—' }}</span>
                         </td>
                         <td data-cell style="padding: 10px 12px;">
-                            <span style="display: inline-block; padding: 2px 7px; border-radius: 10px; background: #e2e8f0; color: #334155; font-weight: 600; font-size: 0.75rem;">
+                            <span style="display: inline-block; padding: 2px 7px; border-radius: 10px; background: var(--a-surface-alt); color: var(--a-text); border: 1px solid var(--a-border); font-weight: 600; font-size: 0.75rem;">
                                 {{ number_format($publisher->books_count) }} titles
                             </span>
                         </td>
-                        <td data-cell style="padding: 10px 12px; font-size: 0.82rem; color: #475569;">
+                        <td data-cell style="padding: 10px 12px; font-size: 0.82rem; color: var(--a-text-muted);">
                             {{ $publisher->created_at->format('d M Y') }}
                         </td>
                         <td style="padding: 10px 12px;">
@@ -159,7 +157,7 @@
                                 @csrf 
                                 @method('PATCH')
                                 <select name="approval_status" 
-                                        style="padding: 3px 6px; border-radius: 5px; font-size: 0.75rem; font-weight: 600; border: 1px solid #cbd5e1; outline: none; cursor: pointer; background: {{ $publisher->approval_status === 'approved' ? '#ecfdf5' : ($publisher->approval_status === 'pending' ? '#fffbeb' : '#fef2f2') }}; color: {{ $publisher->approval_status === 'approved' ? '#065f46' : ($publisher->approval_status === 'pending' ? '#92400e' : '#991b1b') }};"
+                                        style="padding: 3px 6px; border-radius: 5px; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--a-border); outline: none; cursor: pointer; background: {{ $publisher->approval_status === 'approved' ? 'var(--a-success-bg, #ecfdf5)' : ($publisher->approval_status === 'pending' ? 'rgba(242,169,59,0.15)' : 'var(--a-danger-bg, #fef2f2)') }}; color: {{ $publisher->approval_status === 'approved' ? 'var(--a-success)' : ($publisher->approval_status === 'pending' ? 'var(--a-gold-light, #d97706)' : 'var(--a-danger)') }};"
                                         onchange="if(confirm('Change approval status for {{ addslashes($publisher->business_name) }}?')) this.form.submit(); else this.value=this.dataset.current" 
                                         data-current="{{ $publisher->approval_status }}">
                                     <option value="pending" @selected($publisher->approval_status === 'pending')>⏳ Pending</option>
@@ -185,7 +183,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px; color: #64748b;">
+                        <td colspan="7" style="text-align: center; padding: 30px; color: var(--a-text-muted);">
                             No publishers match your filters.
                         </td>
                     </tr>
@@ -195,8 +193,8 @@
     </div>
 
     <!-- PAGINATION FOOTER -->
-    <div style="padding: 10px 14px; border-top: 1px solid #e2e8f0; background: #ffffff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <span style="font-size: 0.78rem; color: #64748b;">
+    <div style="padding: 10px 14px; border-top: 1px solid var(--a-border); background: var(--a-surface); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span style="font-size: 0.78rem; color: var(--a-text-muted);">
             Showing {{ $publishers->firstItem() ?? 0 }}–{{ $publishers->lastItem() ?? 0 }} of {{ $publishers->total() }} publishers
         </span>
         @if($publishers->hasPages())
