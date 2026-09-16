@@ -19,6 +19,15 @@
         @csrf @method('PUT')
         <div class="a-form-group"><label for="admin-name">Full name</label><input id="admin-name" class="a-input" name="name" value="{{ old('name', $administrator->name) }}" required></div>
         <div class="a-form-group"><label for="admin-email">Email address</label><input id="admin-email" class="a-input" type="email" name="email" value="{{ old('email', $administrator->email) }}" required></div>
+        @if(auth()->user()->isSuperAdmin())
+            <div class="a-form-group">
+                <label for="admin-role">Administrator Role</label>
+                <select id="admin-role" name="role" class="a-input" required>
+                    <option value="admin" {{ old('role', $administrator->role) === 'admin' ? 'selected' : '' }}>Standard Admin</option>
+                    <option value="super_admin" {{ old('role', $administrator->role) === 'super_admin' ? 'selected' : '' }}>👑 Super Admin (Full System Access)</option>
+                </select>
+            </div>
+        @endif
         <div class="a-form-group"><label for="admin-password">New password</label><input id="admin-password" class="a-input" type="password" name="password" minlength="8"><small>Leave blank to keep the current password. Minimum 8 characters.</small></div>
         <div class="a-form-group"><label for="admin-password-confirmation">Confirm new password</label><input id="admin-password-confirmation" class="a-input" type="password" name="password_confirmation"></div>
         <button class="btn btn-primary" type="submit">Save Changes</button>

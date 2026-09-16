@@ -19,6 +19,15 @@
         @csrf
         <div class="a-form-group"><label for="admin-name">Full name</label><input id="admin-name" class="a-input" name="name" value="{{ old('name') }}" required></div>
         <div class="a-form-group"><label for="admin-email">Email address</label><input id="admin-email" class="a-input" type="email" name="email" value="{{ old('email') }}" required></div>
+        @if(auth()->user()->isSuperAdmin())
+            <div class="a-form-group">
+                <label for="admin-role">Administrator Role</label>
+                <select id="admin-role" name="role" class="a-input" required>
+                    <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Standard Admin</option>
+                    <option value="super_admin" {{ old('role') === 'super_admin' ? 'selected' : '' }}>👑 Super Admin (Full System Access)</option>
+                </select>
+            </div>
+        @endif
         <div class="a-form-group"><label for="admin-password">Password</label><input id="admin-password" class="a-input" type="password" name="password" minlength="8" required><small>Minimum 8 characters.</small></div>
         <div class="a-form-group"><label for="admin-password-confirmation">Confirm password</label><input id="admin-password-confirmation" class="a-input" type="password" name="password_confirmation" required></div>
         <button class="btn btn-primary" type="submit">Create Administrator</button>

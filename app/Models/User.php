@@ -23,7 +23,8 @@ class User extends Authenticatable
     public function cart() { return $this->hasMany(Cart::class, 'customer_id'); }
     public function supportTickets() { return $this->hasMany(SupportTicket::class); }
 
-    public function isAdmin(): bool { return $this->role === 'admin'; }
+    public function isSuperAdmin(): bool { return $this->role === 'super_admin'; }
+    public function isAdmin(): bool { return in_array($this->role, ['super_admin', 'admin'], true); }
     public function isPublisher(): bool { return $this->role === 'publisher'; }
     public function isCustomer(): bool { return $this->role === 'customer'; }
     public function getProfileImageUrlAttribute(): ?string

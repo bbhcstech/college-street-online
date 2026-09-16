@@ -26,21 +26,35 @@
             <tbody>
             @forelse($administrators as $administrator)
                 <tr>
-                    <td><strong>{{ $administrator->name }}</strong>@if($administrator->is(auth()->user())) <small>(You)</small>@endif</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <strong>{{ $administrator->name }}</strong>
+                            @if($administrator->isSuperAdmin())
+                                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px;">👑 Super Admin</span>
+                            @else
+                                <span class="badge badge-info" style="font-size: 0.7rem; padding: 2px 8px; border-radius: 12px;">Admin</span>
+                            @endif
+                            @if($administrator->is(auth()->user())) <small style="color: var(--a-primary); font-weight: 600;">(You)</small>@endif
+                        </div>
+                    </td>
                     <td>{{ $administrator->email }}</td>
                     <td><span class="status-badge {{ $administrator->status === 'active' ? 'status-success' : 'status-danger' }}">{{ ucfirst($administrator->status) }}</span></td>
                     <td>{{ $administrator->created_at->format('d M Y') }}</td>
                     <td>
-                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                            <a href="{{ route('admin.administrators.edit', $administrator) }}" class="btn btn-outline btn-sm">Edit</a>
-                            @if(! $administrator->is(auth()->user()))
-                                <form method="POST" action="{{ route('admin.administrators.status', $administrator) }}">
-                                    @csrf @method('PATCH')
-                                    <input type="hidden" name="status" value="{{ $administrator->status === 'active' ? 'suspended' : 'active' }}">
-                                    <button type="submit" class="btn btn-sm {{ $administrator->status === 'active' ? 'btn-danger' : 'btn-primary' }}" onclick="return confirm('Change this administrator status?')">{{ $administrator->status === 'active' ? 'Deactivate' : 'Activate' }}</button>
-                                </form>
-                            @endif
-                        </div>
+                        @if($administrator->isSuperAdmin() && !auth()->user()->isSuperAdmin())
+                            <span style="font-size: 0.75rem; color: var(--a-text-muted); font-style: italic;">Protected</span>
+                        @else
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                <a href="{{ route('admin.administrators.edit', $administrator) }}" class="btn btn-outline btn-sm">Edit</a>
+                                @if(! $administrator->is(auth()->user()))
+                                    <form method="POST" action="{{ route('admin.administrators.status', $administrator) }}">
+                                        @csrf @method('PATCH')
+                                        <input type="hidden" name="status" value="{{ $administrator->status === 'active' ? 'suspended' : 'active' }}">
+                                        <button type="submit" class="btn btn-sm {{ $administrator->status === 'active' ? 'btn-danger' : 'btn-primary' }}" onclick="return confirm('Change this administrator status?')">{{ $administrator->status === 'active' ? 'Deactivate' : 'Activate' }}</button>
+                                    </form>
+                                @endif
+                            </div>
+                        @endif
                     </td>
                 </tr>
             @empty

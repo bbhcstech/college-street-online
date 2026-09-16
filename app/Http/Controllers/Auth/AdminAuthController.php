@@ -19,10 +19,14 @@ class AdminAuthController extends Controller
         }
         $remember = (bool) ($creds['remember'] ?? false);
         unset($creds['remember']);
-        if (Auth::attempt($creds + ['role' => 'admin'], $remember)) {
-            $request->session()->regenerate();
-            RateLimiter::clear($key);
-            return redirect()->intended(route('admin.dashboard'));
+        if (Auth::attempt($creds, $remember)) {
+            if (Auth::user()->isAdmin()) {
+                $request->session()->regenerate();
+                RateLimiter::clear($key);
+                return redirect()->intended(route('admin.dashboard'));
+            }
+            Auth::logout();
+            return back()->withErrors(['email' => 'Access denied for non-admin accounts.']);
         }
         RateLimiter::hit($key, 300);
         return back()->withErrors(['email' => 'Invalid credentials.']);

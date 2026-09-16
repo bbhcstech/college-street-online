@@ -63,7 +63,7 @@
                         </div>
                         <div class="meta">
                             <strong>{{ auth()->user()->name ?? 'User' }}</strong>
-                            <span>Profile</span>
+                            <span>{{ auth()->user()->isSuperAdmin() ? '👑 Super Admin' : (auth()->user()->isAdmin() ? '🛡️ Admin' : 'Profile') }}</span>
                         </div>
                     </a>
                     <form method="POST" action="{{ $logoutRoute }}">
