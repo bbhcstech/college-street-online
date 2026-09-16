@@ -161,11 +161,16 @@
             class="badge {{ ($health['Pending payments'] + $health['Low-stock books']) > 0 ? 'badge-gold' : 'badge-success' }}">Live
             status</span>
     </div>
-    <div class="analytics-health-grid">@foreach($health as $label => $value)
-        <div
-            class="analytics-health-item {{ in_array($label, ['Pending payments', 'Low-stock books']) && $value > 0 ? 'needs-attention' : '' }}">
-            <div class="analytics-health-icon">{{ $healthIcons[$label] }}</div>
-    </div>@endforeach
+    <div class="analytics-health-grid">
+        @foreach($health as $label => $value)
+            <div class="analytics-health-item {{ in_array($label, ['Pending payments', 'Low-stock books']) && $value > 0 ? 'needs-attention' : '' }}">
+                <div class="analytics-health-icon">{{ $healthIcons[$label] }}</div>
+                <div>
+                    <strong style="color: var(--a-text);">{{ number_format($value) }}</strong>
+                    <span style="color: var(--a-text-muted);">{{ $label }}</span>
+                </div>
+            </div>
+        @endforeach
     </div>
 </div>
 
