@@ -456,7 +456,7 @@
             <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--a-text); margin: 0;">Order Operations</h3>
             <span style="font-size: 0.78rem; color: var(--a-text-muted);">Recent orders & payment verifications</span>
         </div>
-        <div class="a-grid a-grid-2 dashboard-bottom-grid" style="grid-template-columns: 3fr 2fr; gap: 20px;">
+        <div class="a-grid a-grid-2 dashboard-bottom-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="a-card">
                 <div class="a-card-head dashboard-card-title">
                     <div>
@@ -464,62 +464,120 @@
                         <p>Latest customer activity</p>
                     </div><a href="{{ route('admin.orders.index') }}">View all →</a>
                 </div>
-            <div class="dashboard-table-scroll">
-                <table class="a-table">
-                    <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>@forelse($recentOrders as $order)
-                        <tr>
-                            <td><a href="{{ route('admin.orders.show', $order) }}"><strong>#CSO{{ $order->id }}</strong></a>
-                            </td>
-                            <td>{{ $order->customer->name ?? '—' }}</td>
-                            <td>{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</td>
-                            <td><span
-                                    class="badge {{ $order->status === 'cancelled' ? 'badge-danger' : ($order->status === 'completed' ? 'badge-success' : 'badge-info') }}">{{ ucfirst(str_replace('_', ' ', $order->status)) }}</span>
-                            </td>
-                    </tr>@empty<tr>
-                            <td colspan="4">No orders yet.</td>
-                        </tr>@endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="a-card">
-            <div class="a-card-head dashboard-card-title">
-                <div>
-                    <h3>Payment verification</h3>
-                    <p>Pending manual payments</p>
+                <div class="dashboard-table-scroll">
+                    <table class="a-table" style="width: 100%; font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Order</th>
+                                <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Customer</th>
+                                <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Amount</th>
+                                <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentOrders as $order)
+                                <tr style="border-bottom: 1px solid var(--a-border, rgba(0,0,0,0.05));">
+                                    <td style="padding: 8px 12px; vertical-align: middle;"><a href="{{ route('admin.orders.show', $order) }}" style="font-weight: 700; color: var(--a-primary); text-decoration: none;">#CSO{{ $order->id }}</a></td>
+                                    <td style="padding: 8px 12px; vertical-align: middle; color: var(--a-text);">{{ $order->customer->name ?? '—' }}</td>
+                                    <td style="padding: 8px 12px; vertical-align: middle; font-weight: 600; color: var(--a-text);">{{ $order->currency_symbol }}{{ number_format($order->total_amount, 2) }}</td>
+                                    <td style="padding: 8px 12px; vertical-align: middle;">
+                                        <span class="badge {{ $order->status === 'cancelled' ? 'badge-danger' : ($order->status === 'completed' ? 'badge-success' : 'badge-info') }}" style="font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 600;">
+                                            {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--a-text-muted); padding: 16px;">No orders yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="dashboard-table-scroll">
-                <table class="a-table">
-                    <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>UTR</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>@forelse($recentPayments as $payment)
-                        <tr>
-                            <td><strong>#CSO{{ $payment->order_id }}</strong><small>{{ $payment->order->currency_symbol }}{{ number_format($payment->order->total_amount, 2) }}</small>
-                            </td>
-                            <td>{{ $payment->utr_number }}</td>
-                            <td><a href="{{ route('admin.orders.show', $payment->order) }}"
-                                    class="btn btn-outline btn-sm">Review</a></td>
-                    </tr>@empty<tr>
-                            <td colspan="3">No pending verifications.</td>
-                        </tr>@endforelse
-                    </tbody>
-                </table>
+
+            <div class="a-card">
+                <div class="a-card-head dashboard-card-title" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.05rem;">
+                            Payment Verification
+                            @if(count($recentPayments) > 0)
+                                <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 600;">{{ count($recentPayments) }} Pending</span>
+                            @endif
+                        </h3>
+                        <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--a-text-muted);">Pending manual payments (UPI QR / Bank Wire)</p>
+                    </div>
+                </div>
+                <div class="dashboard-table-scroll">
+                    <table class="a-table" style="width: 100%; font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 10px 12px;">Order Details</th>
+                                <th style="padding: 10px 12px;">Payment Info</th>
+                                <th style="padding: 10px 12px; text-align: right;">Quick Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentPayments as $payment)
+                                <tr style="border-bottom: 1px solid var(--a-border, rgba(0,0,0,0.06));">
+                                    <td style="vertical-align: middle; padding: 12px;">
+                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <a href="{{ route('admin.orders.show', $payment->order) }}" style="font-weight: 700; color: var(--a-primary); text-decoration: none; font-size: 0.88rem;">#CSO{{ $payment->order_id }}</a>
+                                                <span style="font-weight: 700; color: var(--a-text); font-size: 0.88rem;">{{ $payment->order->currency_symbol }}{{ number_format($payment->order->total_amount, 2) }}</span>
+                                            </div>
+                                            <div style="font-size: 0.76rem; color: var(--a-text-muted); display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                                    {{ $payment->order->customer->name ?? 'Guest' }}
+                                                </span>
+                                                <span style="opacity: 0.5;">•</span>
+                                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                    {{ $payment->created_at ? $payment->created_at->diffForHumans() : 'Recently' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle; padding: 12px;">
+                                        <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: nowrap;">
+                                                <span class="badge badge-info" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; white-space: nowrap;">{{ str_replace('_', ' ', $payment->payment_method ?? 'UPI QR') }}</span>
+                                                <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--a-surface-alt, rgba(0,0,0,0.03)); border: 1px solid var(--a-border, rgba(0,0,0,0.1)); padding: 2px 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem; font-weight: 600; color: var(--a-text); white-space: nowrap;">
+                                                    <span>UTR: {{ $payment->utr_number }}</span>
+                                                    <button type="button" onclick="copyUtr('{{ $payment->utr_number }}', this)" title="Copy UTR" style="background: none; border: none; padding: 0; cursor: pointer; color: var(--a-text-muted); display: inline-flex; align-items: center;">
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @if($payment->proof_url)
+                                                <a href="{{ route('admin.payments.proof', $payment) }}" target="_blank" style="font-size: 0.72rem; color: var(--a-primary); font-weight: 500; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                    View Proof Receipt
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle; padding: 12px;">
+                                        <a href="{{ route('admin.orders.show', $payment->order) }}" class="btn btn-outline btn-sm" style="padding: 6px 14px; font-size: 0.78rem; font-weight: 600; white-space: nowrap;">
+                                            View →
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: var(--a-text-muted); padding: 24px;">
+                                        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                            <span style="font-size: 1.5rem;">🎉</span>
+                                            <span>No pending payment verifications. All clear!</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 
@@ -540,23 +598,23 @@
                 <table class="a-table" style="width: 100%; font-size: 0.85rem;">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Total Orders</th>
-                            <th>Joined Date</th>
+                            <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Name</th>
+                            <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Email</th>
+                            <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Total Orders</th>
+                            <th style="padding: 8px 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--a-text-muted);">Joined Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($recentCustomers as $customer)
-                            <tr>
-                                <td><strong style="color: var(--a-text);">{{ $customer->name }}</strong></td>
-                                <td>{{ $customer->email }}</td>
-                                <td><span class="badge badge-info">{{ $customer->orders_count }} orders</span></td>
-                                <td>{{ $customer->created_at->format('d M Y') }}</td>
+                            <tr style="border-bottom: 1px solid var(--a-border, rgba(0,0,0,0.05));">
+                                <td style="padding: 8px 12px; vertical-align: middle;"><strong style="color: var(--a-text);">{{ $customer->name }}</strong></td>
+                                <td style="padding: 8px 12px; vertical-align: middle; color: var(--a-text-muted);">{{ $customer->email }}</td>
+                                <td style="padding: 8px 12px; vertical-align: middle;"><span class="badge badge-info" style="font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 600;">{{ $customer->orders_count }} orders</span></td>
+                                <td style="padding: 8px 12px; vertical-align: middle; color: var(--a-text-muted);">{{ $customer->created_at->format('d M Y') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" style="text-align: center; color: var(--a-text-muted); padding: 20px;">No registered customers yet.</td>
+                                <td colspan="4" style="text-align: center; color: var(--a-text-muted); padding: 16px;">No registered customers yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -644,7 +702,7 @@
 
             <a href="{{ route('admin.payment-settings.edit') }}" class="a-card quick-action-card" style="padding: 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease;">
                 <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(31, 157, 108, 0.12); color: #1F9D6C; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 </div>
                 <div>
                     <strong style="display: block; font-size: 0.88rem; color: var(--a-text); font-weight: 600;">Payment Settings</strong>
@@ -653,4 +711,28 @@
             </a>
         </div>
     </div>
+
+    <script>
+    function copyUtr(utr, btn) {
+        if (!utr) return;
+        navigator.clipboard.writeText(utr).then(() => {
+            const origText = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            btn.style.color = '#10b981';
+            setTimeout(() => {
+                btn.innerHTML = origText;
+                btn.style.color = '';
+            }, 1500);
+        }).catch(() => {
+            alert('UTR: ' + utr);
+        });
+    }
+
+    function handlePaymentReject(form, orderId) {
+        const reason = prompt('Enter rejection reason for Order #CSO' + orderId + ' (Optional):');
+        if (reason === null) return false;
+        form.querySelector('.reject-reason-input').value = reason;
+        return true;
+    }
+    </script>
 @endsection

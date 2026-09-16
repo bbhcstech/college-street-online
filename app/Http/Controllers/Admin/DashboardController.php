@@ -65,7 +65,7 @@ class DashboardController extends Controller
                 ->whereHas('payment', fn ($query) => $query->where('verified_status', 'verified'))
                 ->sum('base_total_amount'),
             'totalOrders' => Order::count(),
-            'pendingOrders' => Order::whereIn('status', ['pending_payment', 'processing'])->count(),
+            'pendingOrders' => Order::where('status', 'pending_payment')->count(),
             'publisherCount' => Publisher::where('approval_status', 'approved')->count(),
             'bookCount' => Book::active()->count(),
             'orderCount' => Order::where('created_at', '>=', $startOfMonth)->count(),
