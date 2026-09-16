@@ -126,14 +126,14 @@
 </div>
 
 <!-- ⚙️ Settings -->
-<div class="nav-group {{ $active === 'profile' ? 'has-active' : '' }}">
-    <a href="{{ route('admin.payment-settings.edit') }}" class="nav-link {{ $active === 'profile' ? 'active' : '' }}">
+<div class="nav-group {{ in_array($active, ['profile', 'administrators']) || request()->routeIs('admin.administrators.*') ? 'has-active' : '' }}">
+    <a href="{{ route('admin.administrators.index') }}" class="nav-link {{ in_array($active, ['profile', 'administrators']) || request()->routeIs('admin.administrators.*') ? 'active' : '' }}">
         <span class="nav-icon">⚙️</span><span>Settings</span>
     </a>
     <div class="nav-sub-items">
-        <a href="{{ route('admin.payment-settings.edit') }}" class="nav-sub-link">General Settings</a>
+        <a href="{{ route('admin.administrators.index') }}" class="nav-sub-link {{ $active === 'administrators' || request()->routeIs('admin.administrators.*') ? 'active' : '' }}">👑 Manage Admins</a>
         <a href="{{ route('admin.profile.edit') }}" class="nav-sub-link {{ $active === 'profile' ? 'active' : '' }}">Admin Profile</a>
-        <a href="{{ route('admin.payment-settings.edit') }}" class="nav-sub-link">System Settings</a>
+        <a href="{{ route('admin.payment-settings.edit') }}" class="nav-sub-link {{ $active === 'payment-settings' || request()->routeIs('admin.payment-settings.*') ? 'active' : '' }}">Payment Settings</a>
     </div>
 </div>
 

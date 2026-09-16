@@ -38,7 +38,7 @@
             <i class="icon-total">#</i>
             <span>Total orders<small>All orders</small></span>
             <strong>{{ $totalOrders }}</strong>
-        </a>
+        </a>`
         <a href="{{ route('admin.orders.index', ['status' => 'pending_payment']) }}"
             class="summary-card pending {{ request('status') === 'pending_payment' ? 'active' : '' }}">
             <i class="icon-pending">!</i>

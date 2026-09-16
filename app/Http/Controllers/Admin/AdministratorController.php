@@ -22,7 +22,14 @@ class AdministratorController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.administrators.index', compact('administrators'));
+        $stats = [
+            'total' => User::whereIn('role', ['super_admin', 'admin'])->count(),
+            'super_admins' => User::where('role', 'super_admin')->count(),
+            'standard_admins' => User::where('role', 'admin')->count(),
+            'active' => User::whereIn('role', ['super_admin', 'admin'])->where('status', 'active')->count(),
+        ];
+
+        return view('admin.administrators.index', compact('administrators', 'stats'));
     }
 
     public function create()
