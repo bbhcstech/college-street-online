@@ -927,3 +927,251 @@ html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark 
 html.dark p, html.dark span, html.dark label, html.dark small {
   color: #cbd5e1;
 }
+
+/* Taxonomy & Dark Mode Component Overrides */
+.taxonomy-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.taxonomy-summary > div {
+    background-color: var(--a-surface);
+    border: 1px solid var(--a-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: var(--a-shadow-sm);
+}
+.taxonomy-summary span { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--a-text-muted); letter-spacing: 0.5px; }
+.taxonomy-summary strong { display: block; font-size: 1.6rem; font-weight: 800; color: var(--a-text); margin-top: 4px; }
+.taxonomy-summary small { color: var(--a-text-muted); font-size: 0.75rem; }
+
+.taxonomy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; margin-bottom: 24px; }
+.taxonomy-card { background-color: var(--a-surface); border: 1px solid var(--a-border); border-radius: 12px; padding: 22px; box-shadow: var(--a-shadow-sm); }
+.taxonomy-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--a-border); }
+.taxonomy-heading h3 { margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--a-text); }
+.taxonomy-heading p { margin: 2px 0 0 0; font-size: 0.85rem; color: var(--a-text-muted); }
+.taxonomy-heading-actions { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--a-text-muted); font-weight: 600; }
+.taxonomy-heading-actions span {
+    background-color: var(--a-surface-alt);
+    color: var(--a-text-muted);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--a-border);
+}
+.taxonomy-actions { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
+
+.btn-outline {
+    background-color: var(--a-surface);
+    color: var(--a-text);
+    border: 1px solid var(--a-border);
+}
+.btn-outline:hover {
+    background-color: var(--a-surface-alt);
+    border-color: var(--a-primary);
+}
+.btn-danger-outline {
+    background-color: var(--a-surface);
+    color: var(--a-danger);
+    border: 1px solid var(--a-border);
+}
+.btn-danger-outline:hover {
+    background-color: var(--a-danger-bg);
+    border-color: var(--a-danger);
+}
+
+html.dark .taxonomy-summary > div,
+html.dark .taxonomy-card,
+html.dark dialog.taxonomy-modal {
+    background-color: var(--a-surface) !important;
+    border-color: var(--a-border) !important;
+    color: var(--a-text) !important;
+}
+
+html.dark .taxonomy-heading-actions span {
+    background-color: var(--a-surface-alt) !important;
+    color: var(--a-text-muted) !important;
+    border-color: var(--a-border) !important;
+}
+
+html.dark .btn-outline,
+html.dark .btn-danger-outline {
+    background-color: var(--a-surface-alt) !important;
+    border-color: var(--a-border) !important;
+    color: var(--a-text) !important;
+}
+
+html.dark .btn-danger-outline {
+    color: var(--a-danger) !important;
+}
+
+html.dark .btn-outline:hover,
+html.dark .btn-danger-outline:hover {
+    background-color: var(--a-border) !important;
+}
+
+html.dark dialog.taxonomy-modal {
+    box-shadow: 0 20px 48px rgba(0,0,0,0.6);
+}
+html.dark .taxonomy-modal-head {
+    border-bottom-color: var(--a-border) !important;
+}
+
+/* Order Summary Cards Dark & Light Mode Styles */
+.order-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.order-summary .summary-card {
+    background-color: var(--a-surface);
+    border: 1px solid var(--a-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--a-text);
+    box-shadow: var(--a-shadow-sm);
+    transition: all 0.2s ease;
+}
+.order-summary .summary-card:hover {
+    border-color: var(--a-primary);
+    transform: translateY(-1px);
+}
+.order-summary .summary-card.active {
+    background-color: var(--a-surface-alt) !important;
+    border-color: var(--a-primary) !important;
+    box-shadow: 0 0 0 2px var(--a-primary) !important;
+}
+.order-summary .summary-card i {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-style: normal;
+    font-weight: 800;
+    flex-shrink: 0;
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+.order-summary .summary-card span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--a-text);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.order-summary .summary-card span small {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--a-text-muted);
+}
+.order-summary .summary-card strong {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--a-text);
+}
+
+html.dark .order-summary .summary-card {
+    background-color: var(--a-surface) !important;
+    border-color: var(--a-border) !important;
+    color: var(--a-text) !important;
+}
+html.dark .order-summary .summary-card.active {
+    background-color: var(--a-surface-alt) !important;
+    border-color: var(--a-primary) !important;
+    color: var(--a-text) !important;
+}
+html.dark .order-summary .summary-card span,
+html.dark .order-summary .summary-card strong {
+    color: var(--a-text) !important;
+}
+
+/* Payment Settings Dark Mode Overrides */
+html.dark .payment-drop-zone {
+    background-color: var(--a-surface-alt) !important;
+    border-color: var(--a-border) !important;
+}
+html.dark .payment-drop-zone:hover {
+    background-color: var(--a-surface) !important;
+    border-color: var(--a-gold-light) !important;
+}
+html.dark .payment-drop-zone strong {
+    color: var(--a-text) !important;
+}
+html.dark .payment-drop-zone span {
+    color: var(--a-text-muted) !important;
+}
+html.dark .payment-warning {
+    background: rgba(242, 169, 59, 0.1) !important;
+    border-color: rgba(242, 169, 59, 0.25) !important;
+}
+html.dark .payment-warning strong {
+    color: var(--a-gold-light) !important;
+}
+html.dark .payment-warning p {
+    color: var(--a-text-muted) !important;
+}
+html.dark .payment-card-head > span {
+    background: rgba(242, 169, 59, 0.14) !important;
+    color: var(--a-gold-light) !important;
+}
+html.dark .payment-method-options {
+    background-color: var(--a-surface-alt) !important;
+    border-color: var(--a-border) !important;
+}
+html.dark .payment-bank-card {
+    background-color: var(--a-surface) !important;
+    border-color: var(--a-border) !important;
+}
+html.dark .payment-file-preview {
+    background-color: var(--a-surface-alt) !important;
+    border-color: var(--a-border) !important;
+}
+html.dark .payment-empty {
+    border-color: var(--a-border) !important;
+    background-color: var(--a-surface-alt) !important;
+}
+
+/* Currency & Country Management Dark Mode Overrides */
+html.dark .currency-page-head,
+html.dark .country-page-head,
+html.dark .publisher-management-head {
+    background: var(--a-surface) !important;
+    border-color: var(--a-border) !important;
+    box-shadow: none !important;
+}
+
+html.dark .currency-table td:first-child strong {
+    background: rgba(115, 82, 180, 0.22) !important;
+    color: #c4b5fd !important;
+}
+
+html.dark .currency-table code,
+html.dark .country-table code {
+    background: var(--a-surface-alt) !important;
+    color: var(--a-gold-light) !important;
+}
+
+html.dark .currency-form-card,
+html.dark .country-form-card {
+    background: var(--a-surface) !important;
+    border-color: var(--a-border) !important;
+}
+
+html.dark .currency-form-card form > div:first-of-type > div,
+html.dark .country-form-card form > div:first-of-type > div {
+    background: var(--a-surface-alt) !important;
+    border-color: var(--a-border) !important;
+}
+
+

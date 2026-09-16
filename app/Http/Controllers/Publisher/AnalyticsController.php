@@ -49,18 +49,16 @@ class AnalyticsController extends Controller
         $period = in_array($request->query('period'), ['day', 'week', 'month', 'year', 'custom'], true) ? $request->query('period') : 'month';
         [$start, $end, $points] = $this->periodDetails($period, $request);
 
-        $deliveryDates = DB::table('order_status_histories')->whereIn('to_status', ['delivered', 'completed'])
-            ->selectRaw('order_id, MIN(created_at) as delivered_at')->groupBy('order_id');
+        $validStatuses = self::SALE_STATUSES;
         $sales = DB::table('order_items')->join('books', 'books.id', '=', 'order_items.book_id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->joinSub($deliveryDates, 'delivery_dates', fn ($join) => $join->on('delivery_dates.order_id', '=', 'orders.id'))
-            ->where('books.publisher_id', $publisherId)->whereBetween('delivery_dates.delivered_at', [$start, $end])
-            ->whereIn('orders.status', ['delivered', 'completed']);
+            ->where('books.publisher_id', $publisherId)->whereBetween('orders.created_at', [$start, $end])
+            ->whereIn('orders.status', $validStatuses);
 
         $bucketExpression = match ($period) {
-            'year' => "DATE_FORMAT(delivery_dates.delivered_at, '%Y-%m')",
-            'month' => 'CEIL(DAY(delivery_dates.delivered_at) / 7)',
-            default => 'DATE(delivery_dates.delivered_at)',
+            'year' => "DATE_FORMAT(orders.created_at, '%Y-%m')",
+            'month' => 'CEIL(DAY(orders.created_at) / 7)',
+            default => 'DATE(orders.created_at)',
         };
         $grouped = (clone $sales)->selectRaw("$bucketExpression as bucket, SUM(order_items.quantity) as units, SUM(order_items.quantity * COALESCE(order_items.base_unit_price, order_items.unit_price)) as revenue")
             ->groupBy('bucket')->get()->keyBy('bucket');
@@ -85,17 +83,19 @@ class AnalyticsController extends Controller
         $previousEnd = $start->copy()->subSecond();
         $previousStart = $previousEnd->copy()->subDays($rangeDays - 1)->startOfDay();
         $previousRevenue = (float) DB::table('order_items')->join('books', 'books.id', '=', 'order_items.book_id')->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->joinSub($deliveryDates, 'previous_delivery_dates', fn ($join) => $join->on('previous_delivery_dates.order_id', '=', 'orders.id'))
-            ->where('books.publisher_id', $publisherId)->whereBetween('previous_delivery_dates.delivered_at', [$previousStart, $previousEnd])->whereIn('orders.status', ['delivered', 'completed'])
+            ->where('books.publisher_id', $publisherId)->whereBetween('orders.created_at', [$previousStart, $previousEnd])->whereIn('orders.status', $validStatuses)
             ->sum(DB::raw('order_items.quantity * COALESCE(order_items.base_unit_price, order_items.unit_price)'));
         $salesGrowth = $previousRevenue > 0 ? (($revenue - $previousRevenue) / $previousRevenue) * 100 : ($revenue > 0 ? 100 : 0);
-        $deliveredOrderIds = (clone $sales)->distinct()->pluck('orders.id');
-        $netRevenue = (float) PublisherLedgerEntry::where('publisher_id', $publisherId)->where('type', 'earning')->whereIn('order_id', $deliveredOrderIds)->sum('amount');
+        $validOrderIds = (clone $sales)->distinct()->pluck('orders.id');
+        $netRevenue = (float) PublisherLedgerEntry::where('publisher_id', $publisherId)->where('type', 'earning')->whereIn('order_id', $validOrderIds)->sum('amount');
 
         $bookPerformance = Book::where('publisher_id', $publisherId)->leftJoin('order_items', 'books.id', '=', 'order_items.book_id')
-            ->leftJoin('orders', function ($join) { $join->on('orders.id', '=', 'order_items.order_id')->whereIn('orders.status', ['delivered', 'completed']); })
-            ->leftJoinSub($deliveryDates, 'book_delivery_dates', fn ($join) => $join->on('book_delivery_dates.order_id', '=', 'orders.id')->whereBetween('book_delivery_dates.delivered_at', [$start, $end]))
-            ->selectRaw('books.id, books.title, books.isbn, books.view_count, COALESCE(SUM(CASE WHEN book_delivery_dates.order_id IS NOT NULL THEN order_items.quantity ELSE 0 END), 0) as units')
+            ->leftJoin('orders', function ($join) use ($validStatuses, $start, $end) {
+                $join->on('orders.id', '=', 'order_items.order_id')
+                     ->whereIn('orders.status', $validStatuses)
+                     ->whereBetween('orders.created_at', [$start, $end]);
+            })
+            ->selectRaw('books.id, books.title, books.isbn, books.view_count, COALESCE(SUM(CASE WHEN orders.id IS NOT NULL THEN order_items.quantity ELSE 0 END), 0) as units')
             ->groupBy('books.id', 'books.title', 'books.isbn', 'books.view_count')->get();
         $leastSellingBooks = $bookPerformance->sortBy('units')->take(5)->values();
         $mostViewedBooks = $bookPerformance->sortByDesc('view_count')->take(5)->values();

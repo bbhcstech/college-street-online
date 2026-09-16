@@ -12,15 +12,6 @@
 @endsection
 
 @section('content')
-    <div class="publisher-page-head payment-settings-head">
-        <div>
-            <span class="analytics-eyebrow">Payment settings</span>
-            <h2>Payment Methods, QR &amp; Bank Transfer Settings</h2>
-            <p>Configure active checkout payment methods, domestic bank details, and international wire transfer instructions.</p>
-        </div>
-        <span class="payment-live-pill"><i></i>{{ $qrUrl ? 'QR active' : 'Setup required' }}</span>
-    </div>
-
     <!-- Active Methods & Bank Details Form -->
     <div class="a-card payment-methods-card" style="margin-bottom:28px;">
         <h3 style="margin-top:0;margin-bottom:18px;font-size:1.15rem;">Enabled Checkout Payment Methods</h3>
@@ -28,10 +19,6 @@
             @csrf @method('PUT')
 
             <div class="payment-method-options" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;padding:16px;background:var(--a-bg-surface-alt, #f8fafc);border-radius:10px;margin-bottom:24px;border:1px solid var(--a-border);">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.92rem;">
-                    <input type="checkbox" name="method_upi_qr" value="1" @checked($enabledMethods['upi_qr']) style="width:18px;height:18px;cursor:pointer;">
-                    <strong>Enable UPI / QR Payment</strong>
-                </label>
                 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.92rem;">
                     <input type="checkbox" name="method_bank_transfer" value="1" @checked($enabledMethods['bank_transfer']) style="width:18px;height:18px;cursor:pointer;">
                     <strong>Enable Domestic Bank Transfer</strong>

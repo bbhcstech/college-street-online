@@ -27,18 +27,12 @@
 @section('title', $pageTitle)
 @section('nav')@include('admin.partials.nav', ['active' => 'orders'])@endsection
 @section('content')
-    <div class="publisher-page-head">
-        <div><span class="analytics-eyebrow">Order operations</span>
-            <h2>{{ $pageTitle }}</h2>
-            <p>Search, export, and manage orders from one table.</p>
-        </div>
-    </div>
     <div class="order-summary">
         <a href="{{ route('admin.orders.index') }}" class="summary-card {{ !request('status') ? 'active' : '' }}">
             <i class="icon-total">#</i>
             <span>Total orders<small>All orders</small></span>
             <strong>{{ $totalOrders }}</strong>
-        </a>`
+        </a>
         <a href="{{ route('admin.orders.index', ['status' => 'pending_payment']) }}"
             class="summary-card pending {{ request('status') === 'pending_payment' ? 'active' : '' }}">
             <i class="icon-pending">!</i>

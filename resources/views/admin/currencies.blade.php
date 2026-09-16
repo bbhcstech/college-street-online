@@ -14,9 +14,7 @@
 @section('content')
     <div class="publisher-page-head currency-page-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
         <div>
-            <span class="analytics-eyebrow">Settings / Currencies</span>
-            <h2>Currency &amp; Exchange Rate Management</h2>
-            <p>Base system currency is <strong>INR (₹)</strong>. Define foreign exchange rates used to calculate international book prices.</p>
+            <p style="margin:0;font-size:0.92rem;color:var(--a-text-muted);">Base system currency is <strong>INR (₹)</strong>. Define foreign exchange rates used to calculate international book prices.</p>
         </div>
         <div>
             <button type="button" class="btn btn-primary" onclick="toggleCurrencyForm()">
