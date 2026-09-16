@@ -162,21 +162,21 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
     .publisher-order-table th:nth-child(3) { width:90px }
     .publisher-order-table th:nth-child(4) { width:124px }
     .publisher-order-table th:nth-child(5) { width:200px }
-    .publisher-order-table tbody tr:nth-child(even) { background:#fbfcfe }
+    .publisher-order-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--a-surface-alt) 25%, var(--a-surface)) }
     .publisher-order-table td:last-child .btn { width:100%; padding:7px 8px; line-height:1.2 }
     .publisher-export-bar { padding-top:10px; padding-bottom:10px }
 
     .publisher-table-card { overflow:hidden; border-radius:14px; box-shadow:0 5px 18px rgba(20,45,70,.05) }
-    .publisher-order-toolbar { background:#fbfcfe; gap:9px }
-    .publisher-order-toolbar .a-input,.publisher-order-toolbar .a-select,.publisher-order-toolbar .publisher-search { height:38px; border-radius:9px; background:#fff }
+    .publisher-order-toolbar { background: var(--a-surface-alt); gap:9px; border-bottom: 1px solid var(--a-border); }
+    .publisher-order-toolbar .a-input,.publisher-order-toolbar .a-select,.publisher-order-toolbar .publisher-search { height:38px; border-radius:9px; background: var(--a-surface); color: var(--a-text); border: 1px solid var(--a-border); }
     .publisher-order-toolbar .btn { min-height:38px; border-radius:9px }
-    .publisher-export-bar { background:#f1f5fa; border-top:1px solid #e0e7f0 }
+    .publisher-export-bar { background: var(--a-surface-alt); border-top:1px solid var(--a-border) }
     .publisher-export-buttons { gap:6px }
     .publisher-export-buttons .btn { min-width:52px; border-radius:8px }
-    .publisher-order-table thead th { background:#f8fafc; color:#425572; letter-spacing:.055em; border-bottom:1px solid #dbe4ee }
-    .publisher-order-table tbody td { height:58px; border-bottom-color:#e5ebf2 }
-    .publisher-order-table tbody td:nth-child(2) strong { color:var(--a-primary); font-size:.8rem }
-    .publisher-order-table .a-muted { display:inline-flex; align-items:center; padding:5px 9px; border-radius:99px; background:#f1f4f8; color:#718096; font-size:.66rem; font-weight:700; white-space:nowrap }
+    .publisher-order-table thead th { background: var(--a-surface-alt); color: var(--a-text-muted); letter-spacing:.055em; border-bottom:1px solid var(--a-border) }
+    .publisher-order-table tbody td { height:58px; border-bottom-color: var(--a-border); color: var(--a-text); }
+    .publisher-order-table tbody td:nth-child(2) strong { color:var(--a-text); font-size:.8rem }
+    .publisher-order-table .a-muted { display:inline-flex; align-items:center; padding:5px 9px; border-radius:99px; background: var(--a-surface-alt); color: var(--a-text-muted); font-size:.66rem; font-weight:700; white-space:nowrap }
     .publisher-order-table .badge,.publisher-order-table .fulfillment-badge,.publisher-order-table .order-payment { white-space:nowrap }
     .publisher-order-table th:nth-child(3),.publisher-order-table td:nth-child(3) { width:110px; white-space:nowrap }
     .publisher-order-table th:nth-child(5),.publisher-order-table td:nth-child(5) { width:180px }
@@ -185,8 +185,8 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
         display: inline-flex;
         padding: 6px 10px;
         border-radius: 99px;
-        background: #e9eef4;
-        color: #53677c;
+        background: var(--a-surface-alt);
+        color: var(--a-text-muted);
         font-size: .67rem;
         font-weight: 800
     }
@@ -204,6 +204,54 @@ $statuses = ['pending_payment', 'confirmed', 'processing', 'packed', 'shipped', 
     .fulfillment-shipped {
         background: #e3f6ed;
         color: #078657
+    }
+
+    /* Dark Mode explicit overrides */
+    html.dark .publisher-order-summary > div {
+        background: var(--a-surface, #0f2a44) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-order-toolbar,
+    html.dark .publisher-export-bar {
+        background: var(--a-surface-alt, #12314e) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-order-table thead th {
+        background: var(--a-surface-alt, #12314e) !important;
+        color: var(--a-text-muted, #93a3be) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-order-table tbody td {
+        border-color: var(--a-border, #1d3e5c) !important;
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .publisher-order-table tbody td:nth-child(2) strong {
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .publisher-order-table tbody tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02) !important;
+    }
+    html.dark .publisher-order-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    html.dark .publisher-order-table th:last-child,
+    html.dark .publisher-order-table td:last-child {
+        background: var(--a-surface, #0f2a44) !important;
+    }
+    html.dark .publisher-order-table tbody tr:hover td:last-child {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    html.dark .fulfillment-badge {
+        background: rgba(148, 163, 184, 0.18) !important;
+        color: #94a3b8 !important;
+    }
+    html.dark .fulfillment-processing {
+        background: rgba(103, 69, 174, 0.25) !important;
+        color: #c084fc !important;
+    }
+    html.dark .fulfillment-shipped {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
     }
 
     @media(max-width:1050px) {

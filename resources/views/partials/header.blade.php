@@ -274,7 +274,7 @@
     .cso-search-box {
         display: flex;
         align-items: center;
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--surface-alt, #f8fafc);
         border: 1px solid var(--border, #cbd5e1);
         border-radius: 50px !important;
         padding: 4px 6px 4px 14px;
@@ -283,7 +283,7 @@
     .cso-search-box:focus-within {
         border-color: var(--brand-primary, #1e3a8a);
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary, #1e3a8a) 15%, transparent);
-        background: #ffffff;
+        background: var(--surface, #ffffff);
     }
     .search-select-divider {
         width: 1px;
@@ -312,7 +312,7 @@
         padding: 6px 14px 6px 8px !important;
         border-radius: 50px !important;
         border: 1px solid var(--border, #e2e8f0) !important;
-        background: var(--bg-surface, #ffffff) !important;
+        background: var(--surface, #ffffff) !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
         color: var(--text-primary) !important;
@@ -331,7 +331,7 @@
         display: grid;
         place-items: center;
         border: 1px solid var(--border, #e2e8f0);
-        background: var(--bg-surface, #ffffff);
+        background: var(--surface, #ffffff);
         color: var(--text-primary);
         text-decoration: none;
         transition: all 0.2s ease;
@@ -351,7 +351,43 @@
         font-weight: 800 !important;
         padding: 2px 6px !important;
         border-radius: 20px !important;
-        border: 2px solid #ffffff !important;
+        border: 2px solid var(--surface, #ffffff) !important;
         box-shadow: 0 2px 6px rgba(239,68,68,0.4) !important;
+    }
+
+    html.dark .cso-profile-btn,
+    html.dark .cso-login-btn,
+    html.dark .customer-profile-trigger {
+        background: var(--surface-alt, #12314e) !important;
+        border-color: var(--border, #1d3e5c) !important;
+        color: var(--text-primary, #edf1fa) !important;
+    }
+    html.dark .cso-profile-btn:hover,
+    html.dark .cso-login-btn:hover,
+    html.dark .customer-profile-trigger:hover {
+        background: var(--surface, #0f2a44) !important;
+        border-color: var(--brand-primary, #5b8dc4) !important;
+        color: var(--text-primary, #edf1fa) !important;
+    }
+    html.dark .cso-search-box {
+        background: var(--surface-alt, #12314e) !important;
+        border-color: var(--border, #1d3e5c) !important;
+    }
+    html.dark .cso-search-box:focus-within {
+        background: var(--surface, #0f2a44) !important;
+        border-color: var(--brand-primary, #5b8dc4) !important;
+    }
+    html.dark .cso-search-box input,
+    html.dark .cso-search-box select {
+        color: var(--text-primary, #edf1fa) !important;
+    }
+    html.dark .cso-search-box option {
+        background: var(--surface, #0f2a44) !important;
+        color: var(--text-primary, #edf1fa) !important;
+    }
+    html.dark .cso-cart-btn {
+        background: var(--surface-alt, #12314e) !important;
+        border-color: var(--border, #1d3e5c) !important;
+        color: var(--text-primary, #edf1fa) !important;
     }
 </style>

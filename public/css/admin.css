@@ -1174,4 +1174,56 @@ html.dark .country-form-card form > div:first-of-type > div {
     border-color: var(--a-border) !important;
 }
 
+html.dark .publisher-stock,
+html.dark .publisher-stock-chip {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+}
+html.dark .publisher-stock.low,
+html.dark .publisher-stock-chip.is-out {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+}
+
+html.dark .inventory-data-table tbody tr:nth-child(even),
+html.dark .publisher-book-table tbody tr:nth-child(even),
+html.dark .order-data-table tbody tr:nth-child(even),
+html.dark .bulk-data-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+html.dark .inventory-data-table tbody tr:hover,
+html.dark .publisher-book-table tbody tr:hover,
+html.dark .order-data-table tbody tr:hover,
+html.dark .bulk-data-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+html.dark .inventory-data-table thead th,
+html.dark .publisher-book-table thead th,
+html.dark .order-data-table thead th {
+    background: var(--a-surface-alt, #12314e) !important;
+    color: var(--a-text-muted, #93a3be) !important;
+    border-color: var(--a-border, #1d3e5c) !important;
+}
+
+html.dark .inventory-data-table td,
+html.dark .publisher-book-table td,
+html.dark .order-data-table td {
+    color: var(--a-text, #edf1fa) !important;
+    border-color: var(--a-border, #1d3e5c) !important;
+}
+
+html.dark .inventory-data-table td strong,
+html.dark .publisher-book-table td strong {
+    color: var(--a-text, #edf1fa) !important;
+}
+
+html.dark .inventory-data-table td small,
+html.dark .publisher-book-table td small {
+    color: var(--a-text-muted, #93a3be) !important;
+}
+
 

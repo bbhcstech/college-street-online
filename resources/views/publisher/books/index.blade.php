@@ -132,50 +132,53 @@
             margin-bottom: 14px;
             border: 1px solid var(--a-border);
             border-radius: 14px;
-            background: linear-gradient(110deg, var(--a-surface), #f3f8fc);
+            background: var(--a-surface-alt);
             box-shadow: 0 5px 16px rgba(22, 58, 92, .04);
         }
-        .publisher-books-head h2 { margin: 4px 0 2px; font-size: 1.5rem; }
+        .publisher-books-head h2 { margin: 4px 0 2px; font-size: 1.5rem; color: var(--a-text); }
+        .publisher-books-head p { color: var(--a-text-muted); }
         .publisher-books-head .btn { min-height: 38px; box-shadow: 0 5px 12px rgba(22, 58, 92, .14); }
         .publisher-book-summary { gap: 11px; margin-bottom: 14px; }
-        .publisher-book-summary > div { padding: 13px 16px; border-radius: 11px; box-shadow: 0 3px 12px rgba(22, 58, 92, .035); }
+        .publisher-book-summary > div { padding: 13px 16px; border-radius: 11px; background: var(--a-surface); border: 1px solid var(--a-border); box-shadow: 0 3px 12px rgba(22, 58, 92, .035); }
+        .publisher-book-summary > div span { color: var(--a-text-muted); }
+        .publisher-book-summary > div strong { color: var(--a-text); }
         .publisher-book-summary > div:nth-child(1) { border-left: 3px solid #3b82f6; }
         .publisher-book-summary > div:nth-child(2) { border-left: 3px solid #10b981; }
         .publisher-book-summary > div:nth-child(3) { border-left: 3px solid #f59e0b; }
-        .publisher-book-table tbody tr:hover { background: color-mix(in srgb, var(--a-primary) 3%, var(--a-surface)); }
         .publisher-table-scroll {
             padding: 0 14px 6px;
         }
         .publisher-book-table thead th {
             padding-top: 9px !important;
             padding-bottom: 9px !important;
-            background: #f5f8fc;
-            color: #435774;
+            background: var(--a-surface-alt);
+            color: var(--a-text-muted);
             border-top: 1px solid var(--a-border);
         }
         .publisher-book-table thead th:first-child { border-radius: 8px 0 0 8px; }
         .publisher-book-table thead th:last-child { border-radius: 0 8px 8px 0; }
         .publisher-book-table tbody td {
             height: 48px;
-            border-bottom-color: #e4eaf1;
+            border-bottom: 1px solid var(--a-border);
+            color: var(--a-text);
         }
         .publisher-book-table tbody tr:nth-child(even) {
-            background: #fbfcfe;
+            background: color-mix(in srgb, var(--a-surface-alt) 25%, var(--a-surface));
         }
         .publisher-book-table tbody tr:hover {
-            background: #f2f7fb;
+            background: color-mix(in srgb, var(--a-primary) 10%, var(--a-surface));
             box-shadow: inset 3px 0 var(--a-primary);
         }
         .publisher-book-table th:first-child,
         .publisher-book-table td:first-child { text-align: center; padding-inline: 5px !important; }
         .publisher-book-table td:nth-child(3) {
-            color: #40536a;
+            color: var(--a-text-muted);
             font-variant-numeric: tabular-nums;
         }
-        .publisher-book-table td:nth-child(5) strong { color: #102f4c; }
+        .publisher-book-table td:nth-child(5) strong { color: var(--a-text); }
         .publisher-book-table .a-book-cover-thumb,
         .publisher-book-table .a-book-cover-placeholder {
-            border: 1px solid #d7e0ea;
+            border: 1px solid var(--a-border);
             box-shadow: 0 2px 6px rgba(22, 58, 92, .12);
         }
         .publisher-book-table .book-status-select {
@@ -190,9 +193,61 @@
         }
         .publisher-book-table .book-row-actions {
             padding: 3px;
-            border: 1px solid #e0e7ef;
+            border: 1px solid var(--a-border);
             border-radius: 8px;
-            background: #fff;
+            background: var(--a-surface-alt);
+        }
+        .publisher-book-table .book-row-actions .btn {
+            border-radius: 6px;
+        }
+
+        /* Dark Mode explicit overrides */
+        html.dark .publisher-books-head {
+            background: var(--a-surface-alt, #12314e) !important;
+            border-color: var(--a-border, #1d3e5c) !important;
+        }
+        html.dark .publisher-book-table thead th {
+            background: var(--a-surface-alt, #12314e) !important;
+            color: var(--a-text-muted, #93a3be) !important;
+            border-color: var(--a-border, #1d3e5c) !important;
+        }
+        html.dark .publisher-book-table tbody td {
+            border-color: var(--a-border, #1d3e5c) !important;
+            color: var(--a-text, #edf1fa) !important;
+        }
+        html.dark .publisher-book-table tbody td:nth-child(3) {
+            color: var(--a-text-muted, #93a3be) !important;
+        }
+        html.dark .publisher-book-table tbody td:nth-child(5) strong {
+            color: var(--a-text, #edf1fa) !important;
+        }
+        html.dark .publisher-book-table tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+        html.dark .publisher-book-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        html.dark .publisher-book-table .book-row-actions {
+            background: var(--a-surface, #0f2a44) !important;
+            border-color: var(--a-border, #1d3e5c) !important;
+        }
+        html.dark .publisher-book-table .book-status-select {
+            background-color: rgba(16, 185, 129, 0.18) !important;
+            color: #34d399 !important;
+        }
+        html.dark .publisher-book-table .book-status-select:has(option[value="inactive"]:checked) {
+            background-color: rgba(148, 163, 184, 0.18) !important;
+            color: #94a3b8 !important;
+        }
+        html.dark .publisher-stock {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(52, 211, 153, 0.3) !important;
+        }
+        html.dark .publisher-stock.low {
+            background-color: rgba(245, 158, 11, 0.2) !important;
+            color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
         }
         .publisher-book-table .book-row-actions .btn {
             border-radius: 6px;

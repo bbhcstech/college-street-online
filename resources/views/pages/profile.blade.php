@@ -228,10 +228,14 @@
             border-color: var(--border, #1d3e5c) !important;
             color: var(--text-primary, #edf1fa) !important;
         }
-        html.dark .profile-input-readonly {
-            background-color: var(--bg-shift, #0b1e33) !important;
+        html.dark .profile-input-readonly,
+        html.dark input:disabled,
+        html.dark select:disabled {
+            background-color: var(--surface-alt, #12314e) !important;
             border-color: var(--border, #1d3e5c) !important;
-            color: var(--text-secondary, #93a3be) !important;
+            color: var(--text-primary, #edf1fa) !important;
+            -webkit-text-fill-color: var(--text-primary, #edf1fa) !important;
+            opacity: 0.95 !important;
         }
         html.dark .btn-toggle-edit {
             background: var(--surface-alt, #12314e) !important;
@@ -321,7 +325,7 @@
                             @if(isset($countries))
                                 <div class="form-group">
                                     <label for="profile-country">Country / Region (Registered)</label>
-                                    <select id="profile-country" class="form-control profile-input-readonly" disabled style="background-color:var(--bg-secondary, #f8fafc) !important;cursor:not-allowed;">
+                                    <select id="profile-country" class="form-control profile-input-readonly" disabled style="cursor:not-allowed;">
                                         <option value="">-- Select Country --</option>
                                         @foreach($countries as $country)
                                             <option value="{{ $country->code }}" @selected(($user->country_code ?? session('customer_country', 'IN')) === $country->code)>

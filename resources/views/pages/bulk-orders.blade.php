@@ -23,9 +23,9 @@
             {{-- 2 Column Layout --}}
             <div class="bulk-order-grid">
                 {{-- Left: Quotation Form --}}
-                <div class="bulk-card-form" style="background:#ffffff; border:1px solid var(--border, #e2e8f0); border-radius:14px; padding:24px; box-shadow:0 4px 16px rgba(0,0,0,0.03);">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid #f1f5f9;">
-                        <div style="width:42px; height:42px; border-radius:10px; background:color-mix(in srgb, var(--brand-primary, #1e3a8a) 10%, #ffffff); display:grid; place-items:center; font-size:1.25rem; color:var(--brand-primary, #1e3a8a);">
+                <div class="bulk-card-form" style="background:var(--surface, #ffffff); border:1px solid var(--border, #e2e8f0); border-radius:14px; padding:24px; box-shadow:0 4px 16px rgba(0,0,0,0.03);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border, #f1f5f9);">
+                        <div style="width:42px; height:42px; border-radius:10px; background:color-mix(in srgb, var(--brand-primary, #1e3a8a) 10%, var(--surface, #ffffff)); display:grid; place-items:center; font-size:1.25rem; color:var(--brand-primary, #1e3a8a);">
                             📋
                         </div>
                         <div>
@@ -128,7 +128,7 @@
                 {{-- Right: How It Works & Benefits --}}
                 <div class="bulk-card-info" style="display:flex; flex-direction:column; gap:16px;">
                     {{-- How It Works --}}
-                    <div style="background:#ffffff; border:1px solid var(--border, #e2e8f0); border-radius:14px; padding:22px; box-shadow:0 4px 16px rgba(0,0,0,0.03);">
+                    <div class="bulk-card-info-box" style="background:var(--surface, #ffffff); border:1px solid var(--border, #e2e8f0); border-radius:14px; padding:22px; box-shadow:0 4px 16px rgba(0,0,0,0.03);">
                         <h3 style="margin:0 0 14px 0; font-size:1.05rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
                             <span>⚙️</span> How It Works
                         </h3>
@@ -165,7 +165,7 @@
                     </div>
 
                     {{-- Institutional Guarantee Callout --}}
-                    <div style="background:color-mix(in srgb, var(--brand-primary, #1e3a8a) 4%, #ffffff); border:1px solid color-mix(in srgb, var(--brand-primary, #1e3a8a) 18%, #ffffff); border-radius:14px; padding:18px;">
+                    <div class="bulk-guarantee-box" style="background:color-mix(in srgb, var(--brand-primary, #1e3a8a) 4%, var(--surface, #ffffff)); border:1px solid color-mix(in srgb, var(--brand-primary, #1e3a8a) 18%, var(--border, #e2e8f0)); border-radius:14px; padding:18px;">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; font-weight:700; font-size:0.88rem; color:var(--brand-primary, #1e3a8a);">
                             <span>🛡️</span> Zero Commitment Quote
                         </div>
@@ -189,6 +189,26 @@
             .bulk-order-grid {
                 grid-template-columns: 1fr;
             }
+        }
+        html.dark .bulk-card-form,
+        html.dark .bulk-card-info-box {
+            background: var(--surface, #0f2a44) !important;
+            border-color: var(--border, #1d3e5c) !important;
+        }
+        html.dark .bulk-guarantee-box {
+            background: rgba(91, 141, 196, 0.12) !important;
+            border-color: rgba(91, 141, 196, 0.3) !important;
+        }
+        html.dark .bulk-card-form input,
+        html.dark .bulk-card-form select,
+        html.dark .bulk-card-form textarea {
+            background: var(--surface-alt, #12314e) !important;
+            color: var(--text-primary, #edf1fa) !important;
+            border-color: var(--border, #1d3e5c) !important;
+        }
+        html.dark .bulk-card-form select option {
+            background: var(--surface, #0f2a44) !important;
+            color: var(--text-primary, #edf1fa) !important;
         }
     </style>
 @endsection

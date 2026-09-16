@@ -616,6 +616,11 @@ html.dark .dropdown-panel a:hover {
   font-size: 0.74rem;
   font-weight: 900;
 }
+html.dark .header-profile-avatar {
+  background: var(--surface-alt, #12314e);
+  color: var(--text-primary, #edf1fa);
+  border: 1px solid var(--border, #1d3e5c);
+}
 .header-profile-avatar img {
   width: 100%;
   height: 100%;
@@ -629,6 +634,14 @@ html.dark .dropdown-panel a:hover {
 .auth-portal-button:hover {
   background-color: var(--brand-primary-light);
   transform: translateY(-1px);
+}
+html.dark .auth-portal-button {
+  background-color: var(--surface-alt, #12314e);
+  color: var(--text-primary, #edf1fa);
+  border: 1px solid var(--border, #1d3e5c);
+}
+html.dark .auth-portal-button:hover {
+  background-color: var(--surface, #0f2a44);
 }
 .auth-portal-menu {
   position: absolute;
@@ -1951,12 +1964,33 @@ html.dark .mini-stat .num {
   position: relative;
   overflow: hidden;
 }
+html.dark .site-footer {
+  background: linear-gradient(180deg, #040c16 0%, #02070e 100%);
+  border-top: 1px solid var(--border, #1d3e5c);
+  box-shadow: inset 0 1px 0 rgba(237, 161, 58, 0.15);
+}
 .footer-cta {
   text-align: center;
   max-width: 720px;
   margin: 0 auto 72px;
   position: relative;
   z-index: 1;
+}
+html.dark .footer-cta {
+  background: rgba(15, 42, 68, 0.45);
+  border: 1px solid var(--border, #1d3e5c);
+  border-radius: 24px;
+  padding: 44px 28px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+html.dark .footer-cta input.form-control {
+  background: #081726 !important;
+  border-color: #1d3e5c !important;
+  color: #edf1fa !important;
+}
+html.dark .footer-cta input.form-control:focus {
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 0 0 3px rgba(237, 161, 58, 0.2) !important;
 }
 .footer-cta h2 {
   color: #fff;
@@ -1972,10 +2006,20 @@ html.dark .mini-stat .num {
   font-size: 0.95rem;
   margin-bottom: 18px;
 }
+html.dark .site-footer h4 {
+  color: #edf1fa;
+}
 .site-footer a {
   color: #9bb9c1;
 }
+html.dark .site-footer a {
+  color: #93a3be;
+  transition: color 0.2s ease;
+}
 .site-footer a:hover {
+  color: var(--accent-gold-light);
+}
+html.dark .site-footer a:hover {
   color: var(--accent-gold-light);
 }
 .footer-grid {
@@ -1998,6 +2042,10 @@ html.dark .mini-stat .num {
   gap: 12px;
   font-size: 0.85rem;
   color: #6e93a0;
+}
+html.dark .footer-bottom {
+  border-top-color: rgba(255, 255, 255, 0.1);
+  color: #64748b;
 }
 .social-icons {
   display: flex;

@@ -42,11 +42,11 @@
 @section('content')
 <style>
     .pub-analytics-card {
-        background: #ffffff;
+        background: var(--a-surface, #ffffff);
         border-radius: 12px;
         padding: 24px;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-        border: 1px solid #f1f5f9;
+        border: 1px solid var(--a-border, #f1f5f9);
         margin-bottom: 24px;
     }
     .pub-stat-grid {
@@ -56,11 +56,11 @@
         margin-bottom: 24px;
     }
     .pub-stat-card {
-        background: #ffffff;
+        background: var(--a-surface, #ffffff);
         border-radius: 12px;
         padding: 20px;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        border: 1px solid #f1f5f9;
+        border: 1px solid var(--a-border, #f1f5f9);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -81,12 +81,65 @@
         width: 94px;
         height: 94px;
         border-radius: 50%;
-        background: #ffffff;
+        background: var(--a-surface, #ffffff);
     }
     .pub-donut-inner {
         position: relative;
         z-index: 2;
         text-align: center;
+    }
+
+    /* Dark Mode Overrides */
+    html.dark .pub-analytics-card,
+    html.dark .pub-stat-card {
+        background: var(--a-surface, #0f2a44) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .pub-donut::before {
+        background: var(--a-surface, #0f2a44) !important;
+    }
+    html.dark .pub-analytics-card h2,
+    html.dark .pub-analytics-card h3,
+    html.dark .pub-stat-card h2,
+    html.dark .pub-stat-card h3,
+    html.dark .pub-donut-inner div,
+    html.dark .pub-stat-card div[style*="font-size: 1.6rem"],
+    html.dark .pub-stat-card div[style*="font-size:1.6rem"] {
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .pub-analytics-card p,
+    html.dark .pub-stat-card p,
+    html.dark .pub-stat-card div[style*="font-size: 0.72rem"],
+    html.dark .pub-analytics-card p[style*="color: #64748b"],
+    html.dark .pub-analytics-card span[style*="color: #64748b"] {
+        color: var(--a-text-muted, #93a3be) !important;
+    }
+    html.dark .pub-analytics-card input,
+    html.dark .pub-analytics-card select {
+        background: var(--a-surface-alt, #12314e) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .pub-analytics-card table th {
+        background: var(--a-surface-alt, #12314e) !important;
+        color: var(--a-text-muted, #93a3be) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .pub-analytics-card table td {
+        border-color: var(--a-border, #1d3e5c) !important;
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .pub-analytics-card table tr {
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .pub-analytics-card div[style*="background: #f8fafc"],
+    html.dark .pub-analytics-card div[style*="background:#f8fafc"] {
+        background: var(--a-surface-alt, #12314e) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .pub-analytics-card div[style*="background: #f8fafc"] span,
+    html.dark .pub-analytics-card div[style*="background: #f8fafc"] strong {
+        color: var(--a-text, #edf1fa) !important;
     }
 </style>
 
@@ -194,7 +247,7 @@
                 </defs>
 
                 @foreach([0, 0.5, 1] as $grid)
-                    <line x1="{{ $trendPad }}" y1="{{ $trendPad + ($trendPlotHeight * $grid) }}" x2="{{ $trendWidth - $trendPad }}" y2="{{ $trendPad + ($trendPlotHeight * $grid) }}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4" />
+                    <line x1="{{ $trendPad }}" y1="{{ $trendPad + ($trendPlotHeight * $grid) }}" x2="{{ $trendWidth - $trendPad }}" y2="{{ $trendPad + ($trendPlotHeight * $grid) }}" stroke="var(--a-border, #e2e8f0)" stroke-width="1" stroke-dasharray="4" />
                 @endforeach
 
                 @if($series->count() > 1)
@@ -210,15 +263,15 @@
                     @php($revenueY = $trendPad + $trendPlotHeight - ($point['revenue'] / $maxRevenue * $trendPlotHeight))
                     @php($unitsY = $trendPad + $trendPlotHeight - ($point['units'] / $maxUnits * $trendPlotHeight))
 
-                    <circle cx="{{ $revenueX }}" cy="{{ $revenueY }}" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="2">
+                    <circle cx="{{ $revenueX }}" cy="{{ $revenueY }}" r="5" fill="#f59e0b" stroke="var(--a-surface, #ffffff)" stroke-width="2">
                         <title>{{ $point['label'] }}: ₹{{ number_format($point['revenue'], 2) }}</title>
                     </circle>
-                    <circle cx="{{ $unitsX }}" cy="{{ $unitsY }}" r="4" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5">
+                    <circle cx="{{ $unitsX }}" cy="{{ $unitsY }}" r="4" fill="#3b82f6" stroke="var(--a-surface, #ffffff)" stroke-width="1.5">
                         <title>{{ $point['label'] }}: {{ $point['units'] }} units</title>
                     </circle>
 
-                    <text x="{{ $revenueX }}" y="{{ max(14, $revenueY - 10) }}" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">₹{{ number_format($point['revenue'], 0) }}</text>
-                    <text x="{{ $x }}" y="{{ $trendHeight - 6 }}" text-anchor="middle" font-size="11" font-weight="600" fill="#64748b">{{ $point['label'] }}</text>
+                    <text x="{{ $revenueX }}" y="{{ max(14, $revenueY - 10) }}" text-anchor="middle" font-size="11" font-weight="700" fill="#f59e0b">₹{{ number_format($point['revenue'], 0) }}</text>
+                    <text x="{{ $x }}" y="{{ $trendHeight - 6 }}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--a-text-muted, #64748b)">{{ $point['label'] }}</text>
                 @endforeach
             </svg>
         </div>
@@ -227,8 +280,8 @@
     <!-- Order Distribution Donut -->
     <div class="pub-analytics-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
-            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">Order Distribution</h3>
-            <p style="color: #64748b; font-size: 0.85rem; margin: 2px 0 16px 0;">Breakdown of orders for your catalogue.</p>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--a-text, #0f172a); margin: 0;">Order Distribution</h3>
+            <p style="color: var(--a-text-muted, #64748b); font-size: 0.85rem; margin: 2px 0 16px 0;">Breakdown of orders for your catalogue.</p>
         </div>
 
         <div class="pub-donut" style="background: conic-gradient({{ implode(',', $gradient) ?: '#e2e8f0 0 100%' }}); margin-bottom: 16px;">

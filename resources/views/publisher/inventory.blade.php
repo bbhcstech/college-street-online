@@ -6,6 +6,35 @@
 @section('title', 'Inventory')
 @section('nav')@include('publisher.partials.nav', ['active' => 'inventory'])@endsection
 @section('content')
+<style>
+    html.dark .publisher-page-head {
+        background: var(--a-surface-alt, #12314e) !important;
+        border: 1px solid var(--a-border, #1d3e5c) !important;
+        border-radius: 14px;
+        padding: 16px 18px;
+    }
+    html.dark .publisher-inventory-summary > div {
+        background: var(--a-surface, #0f2a44) !important;
+        border-color: var(--a-border, #1d3e5c) !important;
+    }
+    html.dark .publisher-inventory-summary span {
+        color: var(--a-text-muted, #93a3be) !important;
+    }
+    html.dark .publisher-inventory-summary strong {
+        color: var(--a-text, #edf1fa) !important;
+    }
+    html.dark .inventory-row-low {
+        background: rgba(245, 158, 11, 0.08) !important;
+    }
+    html.dark .status-pill.status-success {
+        background: rgba(16, 185, 129, 0.18) !important;
+        color: #34d399 !important;
+    }
+    html.dark .status-pill.status-muted {
+        background: rgba(148, 163, 184, 0.18) !important;
+        color: #94a3b8 !important;
+    }
+</style>
 <div class="publisher-page-head">
     <div>
         <span class="analytics-eyebrow">Stock control</span>
