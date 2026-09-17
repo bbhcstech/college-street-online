@@ -95,6 +95,11 @@
                             </svg>
                         </summary>
                         <div class="auth-portal-menu">
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                            @elseif(auth()->user()->isPublisher())
+                                <a href="{{ route('publisher.dashboard') }}">Publisher Portal</a>
+                            @endif
                             <a href="{{ $profileRoute }}">My Profile</a>
                             <form method="POST" action="{{ route('account.logout') }}">
                                 @csrf

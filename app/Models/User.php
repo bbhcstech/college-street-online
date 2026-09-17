@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -29,6 +30,10 @@ class User extends Authenticatable
     public function isCustomer(): bool { return $this->role === 'customer'; }
     public function getProfileImageUrlAttribute(): ?string
     {
-        return $this->profile_image_path ? asset('storage/' . $this->profile_image_path) : null;
+        if (! $this->profile_image_path) return null;
+
+        return str_starts_with($this->profile_image_path, 'http')
+            ? $this->profile_image_path
+            : Storage::url($this->profile_image_path);
     }
 }
