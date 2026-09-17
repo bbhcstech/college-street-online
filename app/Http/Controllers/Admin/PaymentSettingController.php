@@ -94,7 +94,7 @@ class PaymentSettingController extends Controller
 
         SiteSetting::updateOrCreate(['key' => 'payment_qr'], [
             'value' => $uploaded,
-            'meta' => ['disk' => 'public'],
+            'meta' => ['disk' => config('filesystems.default', 'public')],
         ]);
 
         try {
