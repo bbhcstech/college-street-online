@@ -1,0 +1,40 @@
+name: CI code Quality & Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tests:
+    name: Run Tests & Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, sqlite3, pdo_sqlite, bcmath, curl
+          coverage: none
+      - name: validate composer.json
+        run: composer validate --strict
+
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Generate App Key 
+        run: php artisan key:generate 
+
+      - name: Check PHP Syntax
+        run: |
+          find app config routes -name "*.php" -exec php -l {} + 
+
+      - name: Run Automated Tests 
+        run: php artisan test
