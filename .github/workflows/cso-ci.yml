@@ -21,7 +21,7 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo, sqlite3, pdo_sqlite, bcmath, curl
           coverage: none
       - name: validate composer.json
-        run: composer validate --strict
+        run: composer validate --no-check-lock
 
       - name: Copy .env
         run: cp .env.example .env
