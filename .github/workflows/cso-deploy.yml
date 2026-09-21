@@ -19,8 +19,9 @@ jobs:
           key: ${{secrets.EC2_SSH_KEY}}
           script: |
             cd /var/www/college-street-online
-            git pull origin main
-            composer install --no-dev --optimize-autoloader
+            git fetch origin main
+            git reset --hard origin/main
+            composer install --no-dev --optimize-autoloader --ignore-platform-reqs
             php artisan migrate --force
             php artisan config:clear
             php artisan cache:clear
