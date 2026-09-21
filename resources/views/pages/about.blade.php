@@ -6,7 +6,7 @@
                 class="current">About Us</span></div>
     </div>
     <section class="page-hero">
-        <div class="container"><span class="eyebrow"><span class="dot"></span> About Us &bull; 🚀 Live CI/CD Verified</span>
+        <div class="container"><span class="eyebrow"><span class="dot"></span> About Us</span>
             <h1>Kolkata's Book Market, Reimagined for the Web</h1>
             <p class="lead">College Street has been the heart of Bengal's book trade for over a century. College Street
                 Online brings that same spirit of discovery, trust, and community online.</p>
