@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('books', function (Blueprint $table) {
+        $isSqlite = Schema::getConnection()->getDriverName() === 'sqlite';
+
+        Schema::create('books', function (Blueprint $table) use ($isSqlite) {
             $table->id();
             $table->foreignId('publisher_id')->constrained('publishers')->cascadeOnDelete();
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
@@ -22,7 +24,7 @@ return new class extends Migration {
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->softDeletes(); // soft-delete so historical order lines stay intact (FR-2)
             $table->timestamps();
-            if (DB::getDriverName() !== 'sqlite') {
+            if (! $isSqlite) {
                 $table->fullText('title');
             }
             $table->index('title_transliterated');
