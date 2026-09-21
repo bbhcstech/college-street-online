@@ -7,16 +7,18 @@
     <title>@yield('title', config('app.name'))</title>
     <meta name="description"
         content="@yield('description', 'College Street Online — books, delivered from Kolkata\'s legendary book market.')">
-    <link rel="icon" href="{{ asset('images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/site.css') }}">
     <script>
         (function () {
-            var stored = localStorage.getItem('cso-theme');
-            if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            var stored = localStorage.getItem('cso-theme') || localStorage.getItem('bith-theme');
+            if (stored === 'dark' || (!stored && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
         })();
     </script>
+    <link rel="icon" href="{{ asset('images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ asset('css/site.css') }}">
 </head>
 
 <body>

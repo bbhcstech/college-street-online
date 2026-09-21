@@ -6,15 +6,16 @@ use App\Models\BookReview;
 use App\Models\Category;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
-    /** FR-4: keyword + Bengali-transliteration search, with category/price filters (planned improvements from the SRS). */
+    
     public function index(Request $request)
     {
         $sort = $request->query('sort', 'title');
         $books = Book::active()
-            ->with(['author', 'category'])
+            ->with(['author', 'category', 'inventory', 'markets'])
             ->search($request->query('q'))
             ->when($request->query('category'), fn ($q, $cat) => $q->whereHas('category', fn ($c) => $c->where('slug', $cat)))
             ->when($request->query('min_price'), fn ($q, $v) => $q->where('price', '>=', $v))
@@ -65,15 +66,18 @@ class BookController extends Controller
         session()->put('recently_viewed_books', array_slice($recent, 0, 8));
 
         $book->load(['author', 'category', 'publisher', 'inventory', 'reviews.customer']);
-        $related = Book::active()->where('category_id', $book->category_id)->where('id', '!=', $book->id)->limit(4)->get();
+        $related = Book::active()->with(['author', 'category', 'inventory', 'markets'])->where('category_id', $book->category_id)->where('id', '!=', $book->id)->limit(4)->get();
         $eligibleOrder = null;
 
-        if (auth()->check() && auth()->user()->isCustomer()) {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if ($user && $user->isCustomer()) {
             $reviewedOrderIds = BookReview::where('book_id', $book->id)
-                ->where('customer_id', auth()->id())
+                ->where('customer_id', $user->id)
                 ->pluck('order_id');
 
-            $eligibleOrder = Order::where('customer_id', auth()->id())
+            $eligibleOrder = Order::where('customer_id', $user->id)
                 ->whereIn('status', ['delivered', 'completed'])
                 ->whereHas('items', fn ($query) => $query->where('book_id', $book->id))
                 ->whereNotIn('id', $reviewedOrderIds)

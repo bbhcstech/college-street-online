@@ -11,7 +11,7 @@
 
     /* ---------------- Theme toggle ---------------- */
     const root = document.documentElement;
-    const THEME_KEY = 'bith-theme';
+    const THEME_KEY = 'cso-theme';
 
     function applyTheme(theme) {
         if (theme === 'dark') {
@@ -183,14 +183,11 @@
         sections.forEach((s) => spy.observe(s));
     }
 
-    /* ---------------- Scroll-reveal ----------------
-       Generous rootMargin + threshold:0 so fast/jerky scrolling on long
-       pages can't skip an element between intersection checks, plus a
-       debounced fallback sweep that force-reveals anything still missed
-       (e.g. very fast programmatic scrolls, reduced-motion edge cases) so
-       content never gets permanently stuck invisible. */
-    const revealEls = document.querySelectorAll('.reveal');
-    if (revealEls.length) {
+    /* ---------------- Scroll-reveal ---------------- */
+    function initScrollReveal() {
+        const revealEls = document.querySelectorAll('.reveal');
+        if (!revealEls.length) return;
+
         if ('IntersectionObserver' in window) {
             const reveal = new IntersectionObserver((entries, obs) => {
                 entries.forEach((entry) => {
@@ -200,34 +197,32 @@
                     }
                 });
             }, { threshold: 0, rootMargin: '200px 0px 200px 0px' });
-            revealEls.forEach((el) => reveal.observe(el));
+            revealEls.forEach((el) => {
+                if (!el.classList.contains('in-view')) {
+                    reveal.observe(el);
+                }
+            });
         } else {
             revealEls.forEach((el) => el.classList.add('in-view'));
         }
 
-        // Safety-net sweep: catches anything the observer missed (rapid
-        // scroll, tab thrown into background then restored, etc). Runs on
-        // every animation frame while scrolling (not just once scrolling
-        // stops) so nothing can be scrolled past too fast to be caught.
         function sweepReveal() {
             const vh = window.innerHeight;
-            revealEls.forEach((el) => {
-                if (el.classList.contains('in-view')) return;
+            document.querySelectorAll('.reveal:not(.in-view)').forEach((el) => {
                 const r = el.getBoundingClientRect();
                 if (r.top < vh + 300 && r.bottom > -300) el.classList.add('in-view');
             });
         }
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                requestAnimationFrame(() => { sweepReveal(); ticking = false; });
-                ticking = true;
-            }
-        }, { passive: true });
-        window.addEventListener('load', sweepReveal);
-        setTimeout(sweepReveal, 800);
-        setTimeout(sweepReveal, 2000);
+
+        sweepReveal();
+        setTimeout(sweepReveal, 100);
+        setTimeout(sweepReveal, 400);
     }
+    window.csoInitScrollReveal = initScrollReveal;
+    initScrollReveal();
+    window.addEventListener('scroll', () => {
+        window.csoInitScrollReveal && window.csoInitScrollReveal();
+    }, { passive: true });
 
     /* ---------------- Animated stat counters ---------------- */
     document.querySelectorAll('[data-counter]').forEach((el) => {
@@ -381,19 +376,106 @@
     });
 })();
 
-/* ---------------- Ecosystem tab switcher (homepage only) ---------------- */
+/* ---------------- Instant Seamless SPA Page Navigation ---------------- */
 (function () {
     'use strict';
-    const tabs = document.querySelectorAll('[data-eco-tab]');
-    if (!tabs.length) return;
-    tabs.forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.ecoTab;
-            tabs.forEach((b) => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('[data-eco-panel]').forEach((panel) => {
-                panel.classList.toggle('active', panel.dataset.ecoPanel === target);
+    
+    // Create top progress bar element
+    const bar = document.createElement('div');
+    bar.id = 'cso-pjax-bar';
+    bar.style.cssText = 'position:fixed;top:0;left:0;height:3px;background:var(--accent-gold,#c59b27);box-shadow:0 0 10px var(--accent-gold,#c59b27);z-index:99999;width:0%;opacity:0;transition:width 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;pointer-events:none;';
+    document.body.appendChild(bar);
+
+    function startProgress() {
+        bar.style.opacity = '1';
+        bar.style.width = '35%';
+        setTimeout(() => { if (bar.style.opacity === '1') bar.style.width = '75%'; }, 100);
+    }
+
+    function endProgress() {
+        bar.style.width = '100%';
+        setTimeout(() => {
+            bar.style.opacity = '0';
+            setTimeout(() => { bar.style.width = '0%'; }, 200);
+        }, 100);
+    }
+
+    async function navigateTo(url, push = true) {
+        startProgress();
+        try {
+            const res = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
-        });
+            if (!res.ok) {
+                window.location.href = url;
+                return;
+            }
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            const newMain = doc.querySelector('main');
+            const currentMain = document.querySelector('main');
+            if (!newMain || !currentMain) {
+                window.location.href = url;
+                return;
+            }
+
+            // Update title
+            document.title = doc.title || document.title;
+
+            // Update active navbar states
+            const currentPath = new URL(url, window.location.origin).pathname;
+            document.querySelectorAll('.cso-nav-item').forEach((item) => {
+                const itemHref = item.getAttribute('href');
+                if (!itemHref) return;
+                const itemPath = new URL(itemHref, window.location.origin).pathname;
+                const isMatch = (itemPath === '/' && currentPath === '/') || (itemPath !== '/' && currentPath.startsWith(itemPath));
+                item.classList.toggle('active', isMatch);
+            });
+
+            // Smoothly swap main content
+            currentMain.replaceWith(newMain);
+            window.scrollTo({ top: 0, behavior: 'instant' });
+
+            if (window.csoInitScrollReveal) {
+                window.csoInitScrollReveal();
+            }
+
+            if (push) {
+                history.pushState({ url }, '', url);
+            }
+
+            // Close mobile menu if open
+            document.querySelector('.mobile-nav')?.classList.remove('open');
+
+            endProgress();
+        } catch (err) {
+            window.location.href = url;
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
+        const href = anchor.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || anchor.target || anchor.hasAttribute('download')) return;
+
+        try {
+            const urlObj = new URL(anchor.href, window.location.origin);
+            if (urlObj.origin !== window.location.origin) return;
+            // Avoid intercepting forms, auth, admin logout or profile drawer toggles
+            if (anchor.closest('form') || anchor.hasAttribute('data-no-pjax') || anchor.hasAttribute('data-customer-sidebar-toggle')) return;
+
+            e.preventDefault();
+            if (window.location.href !== urlObj.href) {
+                navigateTo(urlObj.href);
+            }
+        } catch (err) {}
+    });
+
+    window.addEventListener('popstate', () => {
+        navigateTo(window.location.href, false);
     });
 })();
+
+

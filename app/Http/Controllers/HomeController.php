@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -12,8 +13,12 @@ class HomeController extends Controller
         $recommendedBooks = collect();
         $activeOrders = collect();
 
-        if (auth()->check() && auth()->user()->isCustomer()) {
-            $activeOrders = Order::where('customer_id', auth()->id())
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if ($user && $user->isCustomer()) {
+            $userId = $user->id;
+            $activeOrders = Order::where('customer_id', $userId)
                 ->whereNotIn('status', ['delivered', 'completed', 'cancelled', 'returned'])
                 ->withCount('items')
                 ->with(['items.book'])
@@ -21,7 +26,7 @@ class HomeController extends Controller
                 ->limit(3)
                 ->get();
 
-            $recentOrders = Order::where('customer_id', auth()->id())
+            $recentOrders = Order::where('customer_id', $userId)
                 ->withCount('items')
                 ->with(['items.book'])
                 ->latest()
@@ -29,7 +34,7 @@ class HomeController extends Controller
                 ->get();
 
             $orderedBookIds = OrderItem::whereHas('order', fn ($query) =>
-                $query->where('customer_id', auth()->id())
+                $query->where('customer_id', $userId)
             )->pluck('book_id');
 
             $preferredCategoryIds = Book::whereIn('id', $orderedBookIds)
@@ -41,6 +46,7 @@ class HomeController extends Controller
                 $recommendedBooks = Book::active()
                     ->whereIn('category_id', $preferredCategoryIds)
                     ->whereNotIn('id', $orderedBookIds)
+                    ->with(['author', 'category', 'inventory', 'markets'])
                     ->inRandomOrder()
                     ->limit(4)
                     ->get();
@@ -53,7 +59,7 @@ class HomeController extends Controller
         if (!empty($recentlyViewedIds)) {
             $viewedBooksMap = Book::active()
                 ->whereIn('id', $recentlyViewedIds)
-                ->with(['author', 'category'])
+                ->with(['author', 'category', 'inventory', 'markets'])
                 ->get()
                 ->keyBy('id');
 
@@ -71,9 +77,12 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
+        $relations = ['author', 'category', 'inventory', 'markets'];
+
         return view('pages.home', [
-            'newArrivals' => Book::active()->latest()->limit(4)->get(),
+            'newArrivals' => Book::active()->with($relations)->latest()->limit(4)->get(),
             'bestsellers' => Book::active()
+                ->with($relations)
                 ->withSum(['orderItems as units_sold' => fn ($query) =>
                     $query->whereHas('order', fn ($order) => $order->whereIn('status', ['delivered', 'completed']))
                 ], 'quantity')
@@ -81,6 +90,7 @@ class HomeController extends Controller
                 ->limit(4)
                 ->get(),
             'deals' => Book::active()
+                ->with($relations)
                 ->whereNotNull('mrp')
                 ->whereColumn('mrp', '>', 'price')
                 ->orderByRaw('((mrp - price) / mrp) DESC')
