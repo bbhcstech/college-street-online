@@ -30,6 +30,7 @@ class OrderTest extends TestCase
             'email' => 'ordercust_' . uniqid() . '@example.com',
             'password' => bcrypt('password'),
             'role' => 'customer',
+            'status' => 'active',
             'country_code' => 'IN',
         ]);
 
@@ -38,6 +39,7 @@ class OrderTest extends TestCase
             'email' => 'pub_' . uniqid() . '@example.com',
             'password' => bcrypt('password'),
             'role' => 'publisher',
+            'status' => 'active',
         ]);
 
         $publisher = Publisher::create([
@@ -64,28 +66,28 @@ class OrderTest extends TestCase
         ]);
 
         $order = Order::create([
-            'order_number' => 'CSO-' . strtoupper(uniqid()),
             'customer_id' => $customer->id,
+            'subtotal' => 450.00,
+            'shipping_fee' => 0.00,
+            'platform_fee' => 0.00,
+            'discount_amount' => 0.00,
             'total_amount' => 450.00,
             'shipping_address' => '123 College Street, Kolkata',
-            'contact_phone' => '+91 9876543210',
-            'status' => 'pending',
-            'payment_status' => 'pending',
-            'payment_method' => 'bank_transfer',
+            'shipping_phone' => '+91 9876543210',
+            'status' => 'confirmed',
+            'country' => 'IN',
+            'currency' => 'INR',
         ]);
 
         OrderItem::create([
             'order_id' => $order->id,
             'book_id' => $book->id,
-            'publisher_id' => $publisher->id,
             'quantity' => 1,
             'unit_price' => 450.00,
-            'line_total' => 450.00,
         ]);
 
         $response = $this->actingAs($customer)->get(route('account.orders'));
         $response->assertStatus(200);
-        $response->assertSee($order->order_number);
+        $response->assertSee('Ancient India');
     }
 }
-

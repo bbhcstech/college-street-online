@@ -29,6 +29,7 @@ class CartTest extends TestCase
             'email' => 'customer_' . uniqid() . '@example.com',
             'password' => bcrypt('password'),
             'role' => 'customer',
+            'status' => 'active',
             'country_code' => 'IN',
         ]);
 
@@ -37,6 +38,7 @@ class CartTest extends TestCase
             'email' => 'pub_' . uniqid() . '@example.com',
             'password' => bcrypt('password'),
             'role' => 'publisher',
+            'status' => 'active',
         ]);
 
         $publisher = Publisher::create([
@@ -114,4 +116,3 @@ class CartTest extends TestCase
         ]);
     }
 }
-
