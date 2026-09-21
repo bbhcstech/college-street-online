@@ -26,8 +26,8 @@ jobs:
       - name: Copy .env
         run: cp .env.example .env
 
-      - name: Install Composer Dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Install Composer Dependencies 
+        run: composer install --prefer-dist --no-interaction --no-progress --ignore-platform-reqs 
 
       - name: Generate App Key 
         run: php artisan key:generate 

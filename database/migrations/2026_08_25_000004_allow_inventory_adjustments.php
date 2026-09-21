@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration {
     public function up(): void
     {
-        DB::statement('ALTER TABLE inventory_transactions MODIFY transaction_type VARCHAR(30) NOT NULL');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE inventory_transactions MODIFY transaction_type VARCHAR(30) NOT NULL');
+        }
     }
 
     public function down(): void
