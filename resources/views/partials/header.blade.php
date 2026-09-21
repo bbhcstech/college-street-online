@@ -7,7 +7,9 @@
         'publisher' => route('publisher.profile.edit'),
         default => route('account.profile'),
     };
-    $searchCategories = \App\Models\Category::orderBy('name')->get(['name', 'slug']);
+    $searchCategories = \Illuminate\Support\Facades\Cache::remember('header_categories', 3600, fn () =>
+        \App\Models\Category::orderBy('name')->get(['name', 'slug'])
+    );
 @endphp
 
 <header class="site-header cso-enhanced-header">
@@ -229,20 +231,36 @@
 {{-- Navbar Custom CSS Enhancements --}}
 <style>
     .cso-enhanced-header {
-        background: rgba(255, 255, 255, 0.92) !important;
-        backdrop-filter: blur(12px) saturate(160%) !important;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(16px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
         border-bottom: 1px solid var(--border, #e2e8f0) !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
+        transition: all 0.25s ease;
+    }
+    .cso-enhanced-header .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 10px 20px;
+        max-width: 1360px;
+        margin: 0 auto;
     }
     html.dark .cso-enhanced-header {
-        background: rgba(15, 23, 42, 0.92) !important;
+        background: rgba(15, 23, 42, 0.95) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25) !important;
     }
     .cso-brand {
         display: flex;
         align-items: center;
         gap: 10px;
         text-decoration: none;
+        flex-shrink: 0;
         transition: transform 0.2s ease;
     }
     .cso-brand:hover {
@@ -251,10 +269,12 @@
     .cso-main-nav {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
+        flex-shrink: 0;
     }
     .cso-nav-item {
-        padding: 8px 14px;
+        position: relative;
+        padding: 6px 12px;
         font-family: var(--font-heading, inherit);
         font-weight: 600;
         font-size: 0.88rem;
@@ -272,13 +292,36 @@
         font-weight: 700;
         background: color-mix(in srgb, var(--brand-primary, #1e3a8a) 10%, transparent);
     }
+    .cso-nav-item.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 12px;
+        right: 12px;
+        height: 2px;
+        background: var(--brand-primary, #1e3a8a);
+        border-radius: 2px;
+    }
+    html.dark .cso-nav-item {
+        color: #94a3b8;
+    }
+    html.dark .cso-nav-item:hover {
+        color: #93c5fd;
+        background: rgba(147, 197, 253, 0.08);
+    }
     html.dark .cso-nav-item.active {
         color: #60a5fa;
-        background: rgba(96, 165, 250, 0.15);
+        background: rgba(96, 165, 250, 0.12);
+    }
+    html.dark .cso-nav-item.active::after {
+        background: #60a5fa;
     }
     .cso-search-box {
         display: flex;
         align-items: center;
+        flex: 1;
+        max-width: 420px;
+        min-width: 240px;
         background: var(--surface-alt, #f8fafc);
         border: 1px solid var(--border, #cbd5e1);
         border-radius: 50px !important;
@@ -290,11 +333,29 @@
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary, #1e3a8a) 15%, transparent);
         background: var(--surface, #ffffff);
     }
+    .cso-search-box input {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: 80px;
+        color: var(--text-primary);
+    }
+    .cso-search-box select {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding-right: 4px;
+    }
     .search-select-divider {
         width: 1px;
-        height: 20px;
+        height: 18px;
         background: var(--border, #cbd5e1);
-        margin: 0 8px;
+        margin: 0 6px;
     }
     .cso-search-btn {
         background: var(--brand-primary, #1e3a8a) !important;
@@ -305,13 +366,22 @@
         padding: 0 !important;
         display: grid !important;
         place-items: center !important;
+        border: none !important;
+        cursor: pointer;
+        flex-shrink: 0;
         transition: transform 0.15s ease, background-color 0.2s ease !important;
     }
     .cso-search-btn:hover {
         transform: scale(1.06);
     }
-    .cso-profile-btn, .cso-login-btn {
+    .cso-header-actions {
         display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    .cso-profile-btn, .cso-login-btn {
+        display: inline-flex;
         align-items: center;
         gap: 8px;
         padding: 6px 14px 6px 8px !important;
@@ -322,16 +392,19 @@
         font-weight: 600 !important;
         color: var(--text-primary) !important;
         box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+        text-decoration: none;
+        cursor: pointer;
         transition: all 0.2s ease !important;
     }
     .cso-profile-btn:hover, .cso-login-btn:hover {
         border-color: var(--brand-primary, #1e3a8a) !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+        transform: translateY(-1px);
     }
     .cso-cart-btn {
         position: relative;
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         display: grid;
         place-items: center;
@@ -358,6 +431,15 @@
         border-radius: 20px !important;
         border: 2px solid var(--surface, #ffffff) !important;
         box-shadow: 0 2px 6px rgba(239,68,68,0.4) !important;
+    }
+    .cso-theme-toggle {
+        cursor: pointer;
+        border: 1px solid var(--border, #e2e8f0);
+        transition: all 0.2s ease;
+    }
+    .cso-theme-toggle:hover {
+        border-color: var(--brand-primary, #1e3a8a);
+        transform: scale(1.04);
     }
 
     html.dark .cso-profile-btn,
@@ -394,5 +476,8 @@
         background: var(--surface-alt, #12314e) !important;
         border-color: var(--border, #1d3e5c) !important;
         color: var(--text-primary, #edf1fa) !important;
+    }
+    html.dark .search-select-divider {
+        background: #1d3e5c;
     }
 </style>

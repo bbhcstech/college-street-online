@@ -1,6 +1,8 @@
 @unless(auth()->check() || session()->has('country_confirmed'))
     @php
-        $activeCountries = \App\Models\Country::where('is_active', true)->orderBy('name')->get();
+        $activeCountries = \Illuminate\Support\Facades\Cache::remember('active_countries_list', 86400, fn () =>
+            \App\Models\Country::where('is_active', true)->orderBy('name')->get()
+        );
         $selectedCountryCode = session('customer_country', 'IN');
     @endphp
     <div id="guest-country-modal" style="position:fixed;bottom:20px;right:20px;z-index:9999;max-width:380px;width:calc(100% - 40px);background:var(--card-bg, #ffffff);border:1px solid var(--border-color, #e2e8f0);box-shadow:0 10px 25px -5px rgba(0,0,0,0.15);border-radius:12px;padding:20px;font-family:var(--font-body, inherit);">
