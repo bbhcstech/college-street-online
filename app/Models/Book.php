@@ -43,7 +43,7 @@ class Book extends Model
 
         return str_starts_with($this->cover_image_url, 'http')
             ? $this->cover_image_url
-            : Storage::url($this->cover_image_url);
+            : Storage::disk('public')->url($this->cover_image_url);
     }
 
     public function scopeActive($q) { return $q->where('status', 'active'); }
