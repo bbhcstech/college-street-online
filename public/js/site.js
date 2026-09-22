@@ -158,9 +158,17 @@
             });
         });
 
+        custSidebar.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => toggleCustSidebar(false));
+        });
+
         custCloseBtns.forEach((btn) => {
             btn.addEventListener('click', () => toggleCustSidebar(false));
         });
+
+        if (custOverlay) {
+            custOverlay.addEventListener('click', () => toggleCustSidebar(false));
+        }
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') toggleCustSidebar(false);
@@ -445,8 +453,11 @@
                 history.pushState({ url }, '', url);
             }
 
-            // Close mobile menu if open
+            // Close mobile menu & customer profile drawer if open
             document.querySelector('.mobile-nav')?.classList.remove('open');
+            document.querySelector('[data-customer-sidebar]')?.classList.remove('open');
+            document.querySelector('.customer-sidebar-overlay')?.classList.remove('open');
+            document.body.classList.remove('customer-sidebar-open', 'mobile-nav-open');
 
             endProgress();
         } catch (err) {
