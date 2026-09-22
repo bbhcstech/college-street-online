@@ -463,7 +463,19 @@
         try {
             const urlObj = new URL(anchor.href, window.location.origin);
             if (urlObj.origin !== window.location.origin) return;
-            // Avoid intercepting forms, auth, admin logout or profile drawer toggles
+
+            const pathname = urlObj.pathname.toLowerCase();
+            // Bypass SPA for Admin/Publisher portals and documents that use separate dedicated layouts/stylesheets
+            if (
+                pathname.startsWith('/admin') ||
+                pathname.startsWith('/publisher') ||
+                pathname.includes('/invoice') ||
+                pathname.includes('/download')
+            ) {
+                return;
+            }
+
+            // Avoid intercepting forms, auth submit, or profile drawer toggles
             if (anchor.closest('form') || anchor.hasAttribute('data-no-pjax') || anchor.hasAttribute('data-customer-sidebar-toggle')) return;
 
             e.preventDefault();
