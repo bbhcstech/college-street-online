@@ -18,7 +18,11 @@
         <form method="POST" action="{{ route('admin.payment-settings.bank') }}" id="bank-settings-form">
             @csrf @method('PUT')
 
-            <div class="payment-method-options" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;padding:16px;background:var(--a-bg-surface-alt, #f8fafc);border-radius:10px;margin-bottom:24px;border:1px solid var(--a-border);">
+            <div class="payment-method-options" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;padding:16px;background:var(--a-bg-surface-alt, #f8fafc);border-radius:10px;margin-bottom:24px;border:1px solid var(--a-border);">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.92rem;">
+                    <input type="checkbox" name="method_upi_qr" value="1" @checked($enabledMethods['upi_qr']) style="width:18px;height:18px;cursor:pointer;">
+                    <strong>Enable UPI / QR Code Transfer</strong>
+                </label>
                 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.92rem;">
                     <input type="checkbox" name="method_bank_transfer" value="1" @checked($enabledMethods['bank_transfer']) style="width:18px;height:18px;cursor:pointer;">
                     <strong>Enable Domestic Bank Transfer</strong>
