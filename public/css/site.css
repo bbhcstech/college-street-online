@@ -87,6 +87,7 @@ html.dark {
 }
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -351,6 +352,7 @@ html.dark .btn-outline:hover {
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(14px) saturate(140%);
   border-bottom: 1px solid var(--border);
+  transition: box-shadow 200ms ease;
 }
 .header-inner {
   display: flex;
@@ -358,13 +360,12 @@ html.dark .btn-outline:hover {
   justify-content: space-between;
   max-width: none;
   padding-inline: 32px;
-  height: 84px;
-  transition: height 220ms ease;
+  height: 72px;
 }
 .header-actions { margin-left: auto; }
-@media (max-width: 640px) { .header-inner { padding-inline: 16px; } }
-.site-header.is-compact .header-inner {
-  height: 64px;
+@media (max-width: 640px) { .header-inner { padding-inline: 16px; height: 66px; } }
+.site-header.is-compact {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
 }
 .brand {
   display: flex;
